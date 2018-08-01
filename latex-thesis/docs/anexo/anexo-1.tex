@@ -1,0 +1,20 @@
+\chapter{ANNEX A - CROSS-ENTROPY}\label{annexA} 
+  \section{Example of cross-entropy calculation}  
+  The main goal when developing a probabilistic classificator is to map inputs to probabilistic predictions, incrementally adjusting the model's parameters as the amount of erros are observed. Thus, that prediction get closer and closer to ground-truth probabilities. One way to interpret cross-entropy is to see it as a negative log-likelihood for the ground-truth ($y_i'$), under their prediction ($y_i$). Then, \textquotedblleft get closer\textquotedblright~means that when distance between $y_i'$ and $y_i$ is minimal.
+  
+  Taking an example from internet\footnote{Available at https://rdipietro.github.io/friendly-intro-to-cross-entropy-loss/\#cross-entropy. Accessed \today.}, supposing a fixed model (hypothesis) that predicts for $n$ classes ${1,2,...,n}$ their hypothetical occurrence probabilities $y_1,y_2,...,y_n$. Suppose that now observing (in reality) $k_1$ instances of class 1, $k_2$ instances of class 2, $k_n$ instances of class $n$, so on. According to this model, the likelihood of this happening is:
+  \begin{align}
+   P[data|model] &= y^{k_1}_1~y^{k_2}_2~...~y^{k_n}_n~,  
+  \end{align}
+  taking the logarithm and changing the sign:
+  \begin{align}
+   -log~P[data|model] &= -k_1~\log~y_1~-k_2~\log~y_2~...~-k_n~\log~y_n\\
+   &= -\sum_ik_i~log~y_i~,
+  \end{align}
+    
+  dividing the right-hand sum by the number of observations $N=k_1+k_2+...+k_n$, and denote the empirical probabilities as $y_i'=k_i/N$, the cross-entropy is then obtained:
+  \begin{align}
+   -\frac{1}{N}log~P[data|model] &= -\frac{1}{N}\sum_ik_i~\log~y_i\\
+   &= -\sum_iy_i'~\log~y_i\\
+   &= Loss_{y'}(y)~.
+  \end{align}

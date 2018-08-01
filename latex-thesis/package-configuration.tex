@@ -1,0 +1,145 @@
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\makeatletter
+\patchcmd{\@verbatim}
+  {\verbatim@font}
+  {\verbatim@font\scriptsize}
+  {}{}
+\makeatother
+
+\newcommand*\makelabelcases[1]{\textit{Q.$#1$}:}
+\SetEnumitemKey{question}
+  {itemsep=0pt,align=left,leftmargin=\parindent,
+   itemindent=!,before=\let\makelabel\makelabelcases}
+
+\definecolor{myCyan}{RGB}{128, 255, 255}
+\definecolor{myPurple}{RGB}{128, 0, 255}   
+   
+   
+\makeatletter
+\newread\pin@file
+\newcounter{pinlineno}
+\newcommand\pin@accu{}
+\newcommand\pin@ext{pintmp}
+% inputs #3, selecting only lines #1 to #2 (inclusive)
+\newcommand*\partialinput [3] {%
+  \IfFileExists{#3}{%
+    \openin\pin@file #3
+    % skip lines 1 to #1 (exclusive)
+    \setcounter{pinlineno}{1}
+    \@whilenum\value{pinlineno}<#1 \do{%
+      \read\pin@file to\pin@line
+      \stepcounter{pinlineno}%
+    }
+    % prepare reading lines #1 to #2 inclusive
+    \addtocounter{pinlineno}{-1}
+    \let\pin@accu\empty
+    \begingroup
+    \endlinechar\newlinechar
+    \@whilenum\value{pinlineno}<#2 \do{%
+      % use safe catcodes provided by e-TeX's \readline
+      \readline\pin@file to\pin@line
+      \edef\pin@accu{\pin@accu\pin@line}%
+      \stepcounter{pinlineno}%
+    }
+    \closein\pin@file
+    \expandafter\endgroup
+    \scantokens\expandafter{\pin@accu}%
+  }{%
+    \errmessage{File `#3' doesn't exist!}%
+  }%
+}
+\makeatother
+
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={blue},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\lstdefinestyle{bash}
+{ 
+    language=Bash,
+    numbers=none,     
+    keywordstyle=\color{green}\sf,    
+    basicstyle=\scriptsize\ttfamily,
+    rulecolor=\color{white},
+    backgroundcolor=\color{gray},
+    commentstyle=\color{gray},
+    captionpos=b,    
+    breaklines=true,    
+    stringstyle=\color{red!60},
+    morecomment=[l][\color{magenta}]{\#},
+    identifierstyle=\color{green},  
+    tabsize=1,
+    title=\lstname,
+    columns=flexible
+}
+
+\lstdefinestyle{java}
+{ 
+    language=Java,
+    numbers=left, numberstyle=\tiny, numbersep=3pt,
+    keywordstyle=\color{blue}\sf,  
+    basicstyle=\scriptsize\ttfamily,
+    rulecolor=\color{darkgray},
+    backgroundcolor=\color{gray!10},    
+    commentstyle=\color{gray},
+    captionpos=b,    
+    breaklines=true,    
+    stringstyle=\color{red!60},
+    morecomment=[l][\color{magenta}]{\#},
+    identifierstyle=\color{green},  
+    tabsize=2,
+    keepspaces=true,  
+    title=\lstname,
+    columns=flexible
+}
+
+\lstdefinestyle{cpp}
+{ 
+    language=C,
+    numbers=left, numberstyle=\tiny, numbersep=3pt,
+    keywordstyle=\color{blue}\sf,  
+    basicstyle=\scriptsize\ttfamily,
+    rulecolor=\color{darkgray},
+    backgroundcolor=\color{gray!10},    
+    commentstyle=\color{gray},
+    captionpos=b,    
+    breaklines=true,    
+    stringstyle=\color{red!60},
+    morecomment=[l][\color{magenta}]{\#},
+    identifierstyle=\color{green},  
+    tabsize=2,
+    keepspaces=true,  
+    title=\lstname,
+    columns=flexible
+}
+
+\lstset{escapechar=@,style=cpp}
+
+\newcommand{\data}{/data/phd}
+\newcommand{\documents}{/home/lotte/Documents}
+\newcommand{\dropbox}{/home/lotte/Dropbox}
+\newcommand{\figspath}{\dropbox/design/phd/thesis} 
+\newcommand{\bibpath}{\dropbox/phd/bib/thesis-2} 
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
+\newcommand{\q}[1]{``#1''}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash}m{#1}}
+\newcolumntype{L}[1]{>{\let\newline\\\arraybackslash}m{#1}}
+
+\setlist[description]{leftmargin=\parindent,labelindent=\parindent}
+
+\newcommand{\spheading}[2][10em]{
+  \rotatebox{90}{\parbox{#1}{\centering #2}}}
+    
+\newcommand*\daywidth{6cm}
+\newcommand*\hourheight{1.2em}

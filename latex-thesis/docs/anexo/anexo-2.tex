@@ -1,0 +1,38 @@
+\chapter{ANNEX B - 2D EVALUATION}\label{annexB} 
+For validation, reference and prediction images (of the same dimension and color map) are essentially required. Once in agreement, the images are confronted so that an $N$ number of randomly selected samples are compared according to their color properties. The resulting success and error count is acquired in the form of a matrix, the confusion matrix. One of the axes denotes the reference classes, and another, the predicted classes. The resulting matrix as well as the success and error metrics ($TP$, $TN$, $FP$, and $FN$), therefore, is illustrated in Figure \ref{cm-representation}.
+\begin{figure}[H]
+    \centering    
+    \caption{Multiclass confusion matrix and the respective success and error rates.}
+    \vspace{6mm}
+    \includegraphics[width=0.8\textwidth]{\dropbox/phd/pics/confusion-matrix.png}       
+	\legenda{}
+    \label{cm-representation}
+\end{figure}
+
+Then, considering $M$ as the confusion matrix, $C$ number of classes, $i$ (predicted) and $j$ (reference) as the axes, the metrics are given by:
+\begin{equation}
+ M_{ij}=
+ \begin{cases}
+  TP = {\forall~m~\in~M:~i=j,m~\Re>0}~,\\  
+  FP = {\sum_{j=1}^CM_{ij}-TP:~j={1,...,C}}~,\\
+  FN = {\sum_{i=1}^CM_{ij}-TP:~i={1,...,C}}~,\\
+  TN = {\sum_{i=1,j=1}^CM_{ij} - TP - FP - FN:~i={1,...,C},j={1,...,C}}~,
+ \end{cases}
+\end{equation}
+where, in summary, $TP$ is the diagonal elements, $FP$ is the sum of elements in column, except $TP$, $FN$ is the sum of elements in row, except $TP$, and $TN$ is the sum of all elements execpt $TP$, $FP$, and $FN$. Then, the accuracy and F1-score is finally calculated:
+\begin{align}
+ Accuracy &= \frac{TP + TN}{n}~,
+\end{align}
+where $n$ is the number of random samples used, 
+\begin{align}
+ Precision &= TP/(TP+FP)~,
+\end{align}
+\begin{align}
+ Recall &= TP/(TP+FN)~,
+\end{align}
+finally:
+\begin{align}
+ F1 &= 2 * \frac{precision * recall}{precision + recall}~, 
+\end{align}
+
+The evaluation's source-code described here, is shared and can be found in Github (link available in Table \ref{tools-developed}).

@@ -1,0 +1,58 @@
+\chapter{APPENDIX A - MATERIAL DETAILS}\label{apendiceA}	
+    \section{Tools and modules used along the study}\label{apendiceA-tools}
+    \begin{table}[!htb]
+      \renewcommand{\arraystretch}{1.6}
+      \caption{Sources-code, softwares, libraries and its public links on Github.}
+      \scriptsize \centering	
+      \rowcolors{2}{white}{gray!25}
+      \begin{tabular}{L{1.8cm}|L{3.2cm}|C{1.8cm}|C{0.9cm}|C{1.4cm}|C{0.8cm}|L{2.5cm}}
+	      \toprule
+	      \textbf{Name} & \textbf{Description}  & \textbf{Type} & \textbf{Version} & \textbf{Purpose} & \textbf{URL} & \textbf{Reference} \\ 
+	      \toprule
+	      scipy & Mathematics, science, and engineering & Python module & & Image Processing & \href{https://www.scipy.org}{\faLink} & - \\ 
+	      numpy & Scientific computing & SciPy module & & Image Processing & \href{http://www.numpy.org}{\faLink} & - \\
+	      matplotlib & Comprehensive 2D Plotting & SciPy module & & Image Processing & \href{http://matlibplot.sourceforce.net}{\faLink} & \cite{hunter2007} \\ 
+	      sklearn & Machine Learning & Python module & 0.18.1 & Image Processing & \href{http://scikit-learn.org}{\faLink} & - \\ 
+	      pylsd & Line Segment Detector (LSD) & Python Library & - & Image Processing & \href{https://github.com/primetang/pylsd}{\faGithub}$~~$\href{http://www.ipol.im/pub/art/2012/gjmr-lsd/}{\faLink} & - \\ 
+	      skimage & Image processing & Python module & 0.14 & Image Processing & \href{http://scikit-image.org}{\faLink} & - \\ 
+	      quickshift & Image segmentation & SkImage module & - & Image Processing & \href{http://scikit-image.org/docs/dev/api/skimage.segmentation.html}{\faLink} & \cite{vedaldi2008} \\ 
+	      cv2 & OpenCV Image Processing & Python Library & 3.2.0.8 & Image Processing & \href{https://github.com/opencv/opencv}{\faGithub}$~~$\href{http://opencv.org}{\faLink} & - \\ \hline
+	      tensorflow & Tensorflow & Python Library & 1.5 & Image Processing & \href{https://github.com/tensorflow/tensorflow}{\faGithub}$~~$\href{https://github.com/tensorflow}{\faLink} & -\\ \hline	      
+	      embree & High Performance Ray Tracing Kernels & C++ Library & 2.0 & Ray-tracing & \href{https://github.com/embree}{\faGithub}$~~$\href{https://embree.github.io/}{\faLink} & -\\ 
+	      vtk & The Visualization Toolkit & C++ Library & 7.1.1 & Ray-tracing & \href{https://github.com/Kitware/VTK}{\faGithub}$~~$\href{https://www.vtk.org/Wiki/VTK}{\faLink} & - \\ \hline
+	      cgal & Computational Geometry Algorithms (CGAL) & C++ Library & 4.10 & Point cloud processing & \href{https://github.com/CGAL/cgal}{\faGithub}$~~$\href{http://www.cgal.org}{\faLink} & \cite{cgal410} \\ 
+	      pcl & Point Cloud Library (PCL) & C++ Library & 4.7 & Point cloud processing & \href{https://github.com/PointCloudLibrary}{\faGithub}$~~$\href{http://pointclouds.org}{\faLink} & \cite{pcl2011} \\
+	      lastools & LAStools & C++ Module & - & Point cloud processing & \href{https://github.com/LAStools/LAStools}{\faGithub}$~~$\href{https://rapidlasso.com}{\faLink} & \cite{rapidlasso} \\
+	      libigl & C++ geometry processing & C++ Library & 1.0 & Visualization & \href{https://github.com/libigl/libigl}{\faGithub}$~~$\href{http://libigl.github.io/libigl/tutorial/}{\faLink} & \cite{libigl} \\
+	      CloudCompare & 3D point cloud and mesh processing & GUI & 2.9 & Visualization & \href{https://github.com/CloudCompare/CloudCompare}{\faGithub}$~~$\href{http://www.cloudcompare.org}{\faLink} & - \\ 
+	      MeshLab & 3D point cloud and mesh processing & GUI & 2016.12 & Visualization & \href{https://github.com/cnr-isti-vclab/meshlab}{\faGithub}$~~$\href{http://www.meshlab.net}{\faLink} & \cite{meshlab} \\  
+	      \bottomrule
+      \end{tabular}
+      \label{tools-used}
+      \FONTE{Author's production.}      
+    \end{table}
+
+    \section{Author's production along this study}\label{apendiceA-development}
+    \begin{table}[H]
+      \renewcommand{\arraystretch}{1.6}
+      \caption{Sources-code produced by the author throughout the study. The usability and further explanations, can be found at the respective Github links.}
+      \scriptsize \centering	
+      \rowcolors{2}{white}{gray!25}
+      \begin{tabular}{L{1.3cm}|L{4cm}|C{2.2cm}|C{1.2cm}|C{2.5cm}|C{0.7cm}|C{0.7cm}}
+	      \toprule
+	      \textbf{Name} & \textbf{Description} & \textbf{Methodological stage} & \textbf{Language} & \textbf{Github} & \textbf{Type} & \textbf{URL}\\
+	      \toprule
+	      Image processing & Preprocessing on images to apply the Superpixel routine. The preprocessing procedures here include filtering, colormap conversion (i.e. HSV, Lab, Local Entropy), etc & Detection & C++ & rodolfolotte/image & - & \href{https://github.com/rodolfolotte/image/tree/master/processing}{\faGithub}\\	      
+	      Superpixel & Segmentation routine with numerous versions of Superpixels, for example, SLIC, SLICO, LSD and SEEDS. The routine was programmed to perform experiments involving classification of façades & Detection & C++ & rodolfolotte/gdal-segment & \faCodeFork & \href{https://github.com/rodolfolotte/gdal-segment}{\faGithub}\\ 	      
+	      Point cloud preprocessing & Includes point cloud preprocessing routines, such as simplification, filtering, CRF classification, etc & Reconstruction & C++ & rodolfolotte/point-cloud & - & \href{https://github.com/rodolfolotte/point-cloud}{\faGithub}\\	      
+          Inputs preparation & Preparation code for neural network inputs. The code includes preparation of annotated images and creation of text files containing the paths of the images & Detection & Python & rodolfolotte/deep-learning & - & \href{https://github.com/rodolfolotte/deep-learning/tree/master/cnn-projects/inputs}{\faGithub}\\	      
+          CNN & Routines responsible for the Convolutional Neural Network training, as well as the routines for the inferences & Detection & Python & rodolfolotte/deep-learning & \faCodeFork & \href{https://github.com/rodolfolotte/KittiSeg}{\faGithub}\\	      
+	      Ray-tracing & Read the camera parameters, and by the configuration of image blocks, project the segmented image onto the mesh, in a way the triangles mesh are assigned according to each class & Ray-Tracing & C++ & rodolfolotte/3d-reconstruction & - & \href{https://github.com/rodolfolotte/3d-reconstruction}{\faGithub}\\	      
+	      Evaluation & Evaluates the segmented images against ground-truth. Here, all evaluation metrics and plots can be setted up & Detection & Python & rodolfolotte/image & - & \href{https://github.com/rodolfolotte/image/tree/master/evaluation}{\faGithub}\\	      
+	      PC vizualization & Routines to visualize meshes and customized point of views, colors, etc & Reconstruction & C++ & rodolfolotte/3d-reconstruction & - & \href{https://github.com/rodolfolotte/3d-reconstruction}{\faGithub}\\ \hline
+	      Thesis & \LaTeX version of this thesis & Documentation & \LaTeX\ & rodolfolotte/documentation & - & \href{https://github.com/rodolfolotte/documentation}{\faGithub}\\ \hline
+	      \bottomrule	
+      \end{tabular}
+      \label{tools-developed}
+      \FONTE{Author's production.}
+    \end{table}

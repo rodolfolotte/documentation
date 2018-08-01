@@ -1,0 +1,112 @@
+\documentclass[
+%SemVinculoColorido,
+%SemFormatacaoCapitulo,
+%SemFolhaAprovacao,
+%SemImagens,
+%CitacaoNumerica, %% o padrão é citação tipo autor-data
+%PublicacaoDissOuTese, %% (é também o "default") com ficha catal. e folha de aprovação em branco. Caso tenha lista de símbolos e lista de siglas e abreviaturas retirar os comentários dos arquivos siglas.tex e abreviaturasesiglas.tex. Retirar também os comentários indicados nesse arquivo, nos includes
+%PublicacaoArtigoOuRelatorio, %% texto sequencial, sem quebra de páginas nem folhas em branco
+%PublicacaoProposta, 
+%PublicacaoQualificacao, %% feito por rodolfo lotte (lotte@dsr.inpe.br)
+%PublicacaoLivro, %% com capítulos
+%PublicacaoLivro,SemFormatacaoCapitulo, %% sem capítulos
+%english, portuguese %% para os documentos em Português com abstract.tex em Inglês
+portuguese,english %% para os documentos em Inglês com abstract.tex em Português
+,LogoINPE	%% comentar essa linha para fazer aparecer o logo do Governo
+,CCBYNC	% as opções de licença são: CCBY, CCBYSA, CCBYND, CCBYNC, CCBYNCSA, CCBYNCND e INPECopyright
+]{tdiinpe}
+%]{../../../../../iconet.com.br/banon/2008/03.25.01.19/doc/tdiinpe}
+
+% PARA EXIBIR EM ARIAL TIRAR O COMENTÁRIO DAS DUAS LINHAS SEGUINTES
+%\renewcommand{\rmdefault}{phv} % Arial
+%\renewcommand{\sfdefault}{phv} % Arial
+% PARA PUBLICAÇÕES EM INGLÊS:
+% renomear o arquivo: abnt-alf.bst para abnt-alfportuguese.bst
+% renomear o arquivo: abnt-alfenglish.bst para abnt-alf.bst
+
+%\watermark{Review No. 1.0} 
+
+\usepackage{rotating}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{hhline}
+\usepackage{hyperref}
+\usepackage{caption3}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\usepackage{lscape}
+\usepackage{multirow}
+\usepackage{dcolumn,longtable}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{courier}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{colortbl}
+\usepackage{marvosym}
+\usepackage{fontawesome}
+\usepackage{fancyvrb}
+\usepackage[pdftex]{graphicx}	
+\usepackage{graphicx,subfigure}
+\usepackage{url}
+\usepackage{etoolbox}
+\usepackage{calc}
+\usepackage{lmodern}
+
+
+\input{./package-configuration}
+\input{./configuracao} 
+
+\makeindex 
+
+\begin{document}
+    
+    \maketitle
+    
+    % -- BEGINNING ------------------------------------------------------------------------------
+    \include{./docs/beginning/epigrafe}
+    \include{./docs/beginning/dedicatoria}
+    \include{./docs/beginning/agradecimentos}         
+    \include{./docs/beginning/resumo}
+    \include{./docs/beginning/abstract}
+    \includeListaFiguras
+    \includeListaTabelas 
+    \include{./docs/beginning/abbrev}
+    \include{./docs/beginning/simbolos}
+    
+    \includeSumario
+    \inicioIntroducao
+    % -------------------------------------------------------------------------------------------
+    
+    % -- CHAPTERS -------------------------------------------------------------------------------
+    \include{./docs/chapter/introduction}
+    \include{./docs/chapter/review}
+    \include{./docs/chapter/methodology}
+    \include{./docs/chapter/results}
+    \include{./docs/chapter/conclusion}
+    % -------------------------------------------------------------------------------------------
+    
+    % -- BIB  -----------------------------------------------------------------------------------
+    \bibliography{\bibpath}
+    % -------------------------------------------------------------------------------------------
+    
+    % -- APENDICES  -----------------------------------------------------------------------------
+    \inicioApendice
+    \include{./docs/apendices/apendice_a}
+    \include{./docs/apendices/apendice_c}
+    % -------------------------------------------------------------------------------------------
+    
+    % -- GLOSSARIO  -----------------------------------------------------------------------------
+    \include{./docs/glossary/glossary}    
+    % -------------------------------------------------------------------------------------------
+    
+    % -- ANEXOS  --------------------------------------------------------------------------------
+    \inicioAnexo
+    \include{./docs/anexo/anexo-1}
+    \include{./docs/anexo/anexo-2}
+    % -------------------------------------------------------------------------------------------
+    
+\end{document}
