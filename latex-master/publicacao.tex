@@ -1,0 +1,120 @@
+\documentclass[%
+%%% PARA ESCOLHER O ESTILO TIRE O SIMBOLO %(COMENT?RIO)
+%SemVinculoColorido,
+%SemFormatacaoCapitulo,
+%SemFolhaAprovacao,
+%SemImagens,
+%CitacaoNumerica, %% o padr?o ? cita??es tipo autor-data
+%PublicacaoDissOuTese, %% (? tambem o "default") com ficha catal. e folha de aprova?eo em branco. 
+%			Caso tenha lista de s?mbolos e lista de siglas e abreviaturas retirar os comentarios 
+%			dos arquivos siglas.tex e abreviaturasesiglas.tex. Retirar tambem os coment?rios indicados nesse 
+%			arquivo, nos includes
+%PublicacaoArtigoOuRelatorio, %% texto sequencial, sem quebra de p?ginas nem folhas em branco
+%PublicacaoProposta, %% igual tese/disserta?eo, mas sem ficha catal. e fol. de aprov.
+%PublicacaoLivro, %% com capitulos
+%PublicacaoLivro,SemFormatacaoCapitulo, %% sem capitulosl
+english,portuguese %% escolha o idioma (brazilian, portuguese, american, british, english)
+%,LogoINPE	%% comentar essa linha para fazer aparecer o logo do Governo
+]{tdiinpe}
+%]{../../../../../iconet.com.br/banon/2008/03.25.01.19/doc/tdiinpe}
+
+% PARA EXIBIR EM ARIAL TIRAR O COMENT?RIO DAS DUAS LINHAS SEGUINTES
+%\renewcommand{\rmdefault}{phv} % Arial
+%\renewcommand{\sfdefault}{phv} % Arial
+
+% PARA PUBLICACAO:
+% renomear o arquivo: abnt-alf.bst para abnt-alfportuguese.bst
+% renomear o arquivo: abnt-alfenglish.bst para abnt-alf.bst
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Pacotes j? previamente carregados:      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% ifthen,calc,graphicx,color,inputenc,babel,hyphenat,array,setspace, %
+%%% bigdelim,multirow,supertabular,tabularx,longtable,lastpage,lscape, %
+%%% rotate,caption2,amsmath,amssymb,amsthm,subfigure,tocloft,makeidx,  %
+%%% eso-pic,calligra,hyperref,ae,fontenc                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% insira neste campo, comandos de LaTeX %%%
+%%% \usepackage{_exemplo_}
+% etc.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\watermark{Revisao de seu documento
+%% comente este comando quando for gerar a versao final
+\usepackage{listings}
+\usepackage{hyphenat}
+\usepackage{rotating}
+\usepackage{dsfont}
+\usepackage{listings}
+\usepackage{amsmath}
+
+\lstset{numbers=left,
+	extendedchars=\true, % permite acentos
+	inputencoding=latin1, 
+	commentstyle=\it, % deixa os comentario
+	stringstyle=\bf, 
+	belowcaptionskip=5pt, 
+	numbers=left, 
+	stepnumber=1, 
+	firstnumber=1, % primeira linha
+	numberstyle=\tiny, % tamanho da fonte da numeracao
+	breaklines=true, % permitir quebra de linha
+	frame=tb, % borda em cima e em baixo
+	basicstyle=\footnotesize, % estilo basico
+	keywordstyle=\color{blue},
+	stringstyle=\ttfamily, 
+	showstringspaces=false, 
+	mathescape, 
+	tabsize=3  
+}
+\renewcommand{\lstlistingname}{Código-Fonte}
+\renewcommand{\lstlistlistingname}{Lista de Listagens}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+\input{./configuracao} %% funcoes pertinentes no arquivo configuracao.tex
+
+\makeindex  %% nao alterar, gera INDEX, caso haja algum termo indexado no texto
+
+\begin{document} 
+
+\maketitle 
+
+%%% Comente as linhas opcionais abaixo caso nao as deseje
+\include{./capitulos/epigrafe} %% Opcional
+\include{./capitulos/dedicatoria} %% Opcional
+\include{./capitulos/agradecimentos} %% Opcional
+\include{./capitulos/resumo} %% obrigatorio
+\include{./capitulos/abstract} %% obrigatorio
+
+\includeListaFiguras %% obrigatorio
+\includeListaTabelas %% obrigatorio
+\include{./capitulos/abreviaturasesiglas} %% opcional %% altere o arquivo siglaseabreviaturas.tex
+
+%\include{./capitulos/simbolos} %% opcional %% altere o arquivo simbolos.tex
+
+\includeSumario  %% obrigatorio
+\inicioIntroducao %% nao altere este comando
+
+\include{./capitulos/introducao} %% 1o introducao
+\include{./capitulos/estado_arte} %% 2o capitulo
+\include{./capitulos/material_metodos} %% 3o capitulo
+\include{./capitulos/resultados} %% 4o capitulo
+\include{./capitulos/conclusoes} %% 5o capitulo
+
+%% Bibliografia 
+\bibliography{./bib/bib_dissertacao} %% aponte para seu arquivo de bibliografia no formato bibtex (p.ex: referencia.bib)
+
+%\include{./capitulos/glossario} %% insira os termos do gloss?rio no arquivo glossario.tex %% opcional
+
+%\inicioApendice %% opcional, comente esta linha e a seguintes se nao houver apendice(s)
+\include{./capitulos/apendice1} %% insira apendices tal qual capitulos acima
+%\include{./capitulos/apendice2} %% arquivo apendice2.tex
+
+%\inicioAnexo
+%\include{./capitulos/anexo}
+%\include{./capitulos/anexo1}
+
+%\inicioIndice
+%\include{./capitulos/contracapa}
+\end{document}

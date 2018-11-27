@@ -142,38 +142,6 @@ The convolution layers sequentially perform the linear operations regarding a ce
 
 When the encoded input finally encounter the softmax layer (resulting in the probabilities performed by the cross-entropy function), 3 transposed layers decode the signals (deconvolution). In other words, the decoder performs the upsampling based on pooling indexes (from the encoder polling), finally getting the predicted map. The dropout layer is a technique for reducing overfitting, which avoids some redundant or complex adaptations on training data. 
 
-%the weights connected to each filter
-% VGG16
-% Convolution using 64 filters
-% Convolution using 64 filters + Max pooling
-% Convolution using 128 filters
-% Convolution using 128 filters + Max pooling
-% Convolution using 256 filters
-% Convolution using 256 filters
-% Convolution using 256 filters + Max pooling
-% Convolution using 512 filters
-% Convolution using 512 filters
-% Convolution using 512 filters + Max pooling
-% Convolution using 512 filters
-% Convolution using 512 filters
-% Convolution using 512 filters + Max pooling
-% Fully connected with 4096 nodes
-% Fully connected with 4096 nodes
-% Output layer with Softmax activation with 1000 nodes
-
-	  
-% Diferença entre Fully Connected e Fully Convolutional networks: https://www.quora.com/How-is-Fully-Convolutional-Network-FCN-different-from-the-original-Convolutional-Neural-Network-CNN 
-
-% Procurar referência
-%Fully convolutional indicates that the neural network is composed of convolutional layers without any fully-connected layers or MLP usually found at the end of the network. A CNN with fully connected layers is just as end-to-end learnable as a fully convolutional one. The main difference is that the fully convolutional net is learning filters every where. Even the decision-making layers at the end of the network are filters. A fully convolutional net tries to learn representations and make decisions based on local spatial input. Appending a fully connected layer enables the network to learn something using global information where the spatial arrangement of the input falls away and need not apply.
-
-% TensorFlow > https://www.tensorflow.org/tutorials/image_recognition
-
-% https://www.youtube.com/watch?v=LxfUGhug-iQ
-
-% boas explicações
-% https://wildcse.blogspot.com/2018/03/convolution-neural-network-intro.html
-
 \subsection{Multi-View surface reconstruction}  
 The input is a set of images which are initially fed to standard SfM/MVS algorithms to produce a 3D model. 
 To produce the 3D model using the standard SfM/MVS algorithms, the set of optical images to be presented must respect some specifications. For example, not all datasets listed in Table \ref{datasets} have properties that could allow the application of SfM/MVS. Random, rectified, and cropped images are not overlapped or, at least, were not taken in the same moment. Only with RueMonge2014 it was possible to run this experiment. A case where random images are taken at different time was proposed by \citeonline{snavely2009}, but not used in this study. 
@@ -332,12 +300,6 @@ where $b_1$ and $b_2$ are the skew coefficients, $w$ and $h$ the image width and
 \normalsize
 where $\xi_1$, $\xi_2$, $\xi_3$, and $\xi_4$ are the radial and, $\zeta_1$, $\zeta_2$, $\zeta_3$, and $\zeta_4$, the tangential distortion coefficients. As the images used have no radial and tangential distortions, they are null and turn $\Theta$ as being the own axis $x$ and $y$.
 
-% As described in previous section, each image has its position $C$ and orientation $R$, consisting respectively of the camera projection center located at the origin of the 3D coordinate system $C = (C_X, C_Y, C_Z)$, and rotation matrix $R = (R_X, R_Y, R_Z)$. The origin of a certain ray, then, it is all camera projection center $C$, with its direction given by $R$. Considering no optical blur, distortion, or defocus, a point $C_i$ is mapped to a point in the image plane $(u, v)$ by:  
-% \begin{align}
-%     p_i(u,v,f) = \frac{f}{Z}\begin{pmatrix}X\\Y\\Z\end{pmatrix}~,
-% \end{align}
-% where $f$ is the known focal distance (left in Figure \ref{ray-tracing}), $u=f\frac{X}{Z}$, and $v=f\frac{Y}{Z}$. 
-% 
 Now, knowing the pixel class from the incident ray (Figure \ref{ray-tracing-2a}), the mesh triangle is finally labeled as such. It is evident, therefore, that the rays trajectory from the images can intersect one another. Because of that, different rays can reach an identical point on the mesh, what in fact creates questions such as \textquotedblleft which class should be assigned to each individual mesh facet?\textquotedblright. \cite{hayko2014} proposed the Reducing View Redundancy (RVR) technique, where the number of overlapped images is reduced, which does not fit to our purpose, since the greater the number of overlaps, better the labeling (more classes to choose).
 
 If more than one ray reach the same triangle (detail in Figure \ref{ray-tracing-2a}), then, it is labeled by the most frequent class from the $C_n$ rays (Figure \ref{ray-tracing-2b}).
@@ -353,7 +315,6 @@ If more than one ray reach the same triangle (detail in Figure \ref{ray-tracing-
     \FONTE{Author's production.}
 \end{figure}
 
-%That could be solved though the application of a simple rule such as the mode (most frequent class) or even a smarter decision rule (e.g. choose the class where the segmented image's ray had the highest accuracy during the CNN inference), but we have noticed that a simple mode operation can provide sufficient labeling.   
 The final result of 3D labeling by ray-tracing is then acquired (Figure \ref{ray-tracing-3}). Regions that have not been segmented (such as facades not perpendicular to acquisition - adjacent streets) are also treated as such during the process (dark regions in the figure - class background). Other regions, although they have been labeled as background, they were a consequence of the acquisition and angle of incidence of the rays.  
 \begin{figure}[!htp]
     \centering	   

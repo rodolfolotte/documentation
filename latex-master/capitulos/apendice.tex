@@ -1,0 +1,108 @@
+\chapter{APÊNDICES}
+Este Capí­tulo tem o objetivo de apresentar todas as rotinas de implementação construí­das para a realização deste trabalho. Todas as rotinas 
+foram realizados no ambiente de desenvolvimento MATLAB versão 7.8.0.347. Os testes foram realizados sobre a imagem original com extensão 
+\emph{tiff}, e os resultados finais mostrados no padrão \emph{jpg}. 
+
+\section{Fluxo principal de execução do código}
+Os códigos-fonte são apresentados de acordo com o fluxo de execução do Código-Fonte \ref{Principal}. As demais rotinas de implementação, 
+utilizadas para o auxí­lio de operações básicas, tais como: conversão de imagem e algoritmo de Bresenham, são apresentadas na 
+Seção \ref{cfAuxiliar}.
+
+\subsection{Principal}
+É por meio do Código-Fonte \ref{Principal} que o processo de extração se inicia, neste são inseridas as chamadas para cada um dos processos
+ilustrados na Figura \ref{fluxo2}. Ao final, é obtida a matriz com a localização das estradas presentes na imagem, sendo que cada segmento de
+reta é agregado a uma linha dessa matriz.
+\lstinputlisting[language=Matlab, label=Principal, caption={Código de execução principal do método de extração de estradas}]{codes/SSS.m}
+
+\subsection{Carregamento dos padrões de treinamento}
+O Código-Fonte \ref{carregaPadroes} possui como principal função o carregamento dos oito padrões de treinamento. Cada um dos padrões constituem-se
+de valores em ní­veis de cinza (entre $0$ a $255$), utilizados para o treinamento da RNA.
+\lstinputlisting[language=Matlab, label=carregaPadroes, caption={Código que obtém a matriz de padrões de treinamento}]{codes/carregaPadroes.m}
+
+\subsection{Carregamento dos pesos da RNA}
+A rotina responsável por gerar os valores iniciais dos pesos de conexão é descrita no Código-Fonte \ref{carregaPesos}, em que, inicialmente, são 
+gerados valores aleatórios que, posteriormente, são normalizados.
+\lstinputlisting[language=Matlab, label=carregaPesos, caption={Código que carrega a matriz de pesos de conexões da RNA}]{codes/carregaPesos.m}
+
+\subsection{Treinamento da RNA}
+Todas as rotinas envolvendo o treinamento da rede neural do tipo SOM é apresentado no código abaixo, sendo apenas o ajuste 
+dos pesos realizado pelo Código-Fonte \ref{ajustarPesos}. Ao final do Código-Fonte \ref{treinaSOM} é obtido a matriz de pesos com os seus
+valores já ajustados, ou seja, a rede está pronta para o reconhecimento dos padrões apresentados.
+\lstinputlisting[language=Matlab, label=treinaSOM, caption={Código que realiza o treinamento da RNA do tipo SOM}]{codes/treinaSOM.m}
+
+\subsubsection{Ajuste dos pesos da RNA}
+O Código-Fonte \ref{ajustarPesos} ajusta os valores dos pesos conforme a localização do neurônio vencedor, a taxa de ajuste, a influência
+de seus vizinhos e o raio de abrangência desses.
+\lstinputlisting[language=Matlab, label=ajustarPesos, caption={Código que realiza o ajuste dos pesos da RNA}]{codes/ajustarPesos.m}
+
+\subsection{Obtenção da matriz unitária}
+A matriz unitária é obtida por meio do cálculo da norma dos pesos em cada ponto do mapa de Kohonen, em que cada um deste corresponde a uma 
+determinada entrada (Figura \ref{normFig}). O Código-Fonte \ref{matrizUnitaria} é responsável por este processamento.
+\lstinputlisting[language=Matlab, label=matrizUnitaria, caption={Código que obtém a matriz unitária dos pesos finais}]{codes/matrizUnitaria.m}
+
+\subsection{Carregamento da Imagem}
+Após o cálculo da matriz unitária, é carregada a imagem em formato \emph{.tiff}. O Código-Fonte \ref{carregaImagem}, responsável por essa tarefa,
+que verifica a composição da imagem, a convertendo para ní­veis de cinza, caso esta possua outra composição.
+\lstinputlisting[language=Matlab, label=carregaImagem, caption={Código que carrega uma imagem do tipo \emph{.tiff}}]{codes/carregaImagem.m}
+
+\subsection{Carregamento das Amostras}
+Uma vez a imagem carregada, é realizada a leitura das amostras. Nesta etapa, são considerados os parâmetros de tamanho do salto da janela
+de varredura e quantidade de orientações por amostra.
+\lstinputlisting[language=Matlab, label=carregaAmostrasEsp, caption={Código que realiza a varredura na imagem para o carregamento da matriz de amostras}]{codes/carregaAmostrasEsp.m}
+
+\subsection{Localização dos centros no domí­nio de Kohonen}
+O Código-Fonte \ref{localizaCluster} é responsável por obter a localização dos centros de cada aglomerado, isto é, cada centro caracteriza a 
+forma exata pela qual a rede foi treinada a reconhecer. Esta informação é útil, pois é por meio desses pontos que o operador determina a 
+presença de estradas ou não, verificando a distância entre o ponto de uma determinada amostra e cada um dos centros.
+\lstinputlisting[language=Matlab, label=localizaCluster, caption={Código que obtém a localização dos centros dos aglomerados}]{codes/localizaCluster.m}
+
+\subsection{Semeação}\label{semeacaoCode}
+Sendo a localização dos centros dos aglomerados uma informação conhecida, inicia-se o processo de semeação. O Código-Fonte \ref{semearImagem}
+apresenta as rotinas correspondentes a este processo. Cada amostra é comparada com cada um dos centros, determinando se pertencentes ou não 
+aos padrões referentes a estrada. Ao final, é adquirido um vetor cujos elementos caracterizam o í­ndice de cada amostra reconhecida como estrada.
+\lstinputlisting[language=Matlab, label=semearImagem, caption={Código que realiza a semeação}]{codes/semearImagem.m}
+
+\subsection{Pinta pontos-sementes}
+O Código-Fonte \ref{pintaPontosImagemEsp} converte cada valor no vetor de saí­da do Código-Fonte \ref{semearImagem} em coordenadas ($x,y$) da 
+imagem, ou seja, í­ndice da amostra para a localização do \emph{pixel} e, em seguida, desenha o ponto-semente.
+\lstinputlisting[language=Matlab, label=pintaPontosImagemEsp, caption={Código que pinta os pontos-sementes sobre a imagem}]{codes/pintaPontosImagemEsp.m}
+
+\subsection{Fragmentação os segmentos retos}
+Até o momento do processo os pontos-sementes estão dispostos em um vetor, sem qualquer conhecimento de quais são os segmentos de reta e quais
+são os pontos espúrios no conjunto. O Código-Fonte \ref{segmenta_estradas} realiza justamente esta tarefa, que além de separar cada um dos 
+segmentos retos, poda os pontos de descontinuidades ou isolados que são inúteis para a extração.
+\lstinputlisting[language=Matlab, label=segmenta_estradas, caption={Código que separa cada segmento de reta identificado em cada linha de uma matriz, realizando a poda em conjunto}]{codes/segmenta_estradas.m}
+
+\subsubsection{Ordena os í­ndices para a fragmentação}
+Para a determinação se um ponto é ou não pertencente a um mesmo segmento de reta, é analisado a sua sequência em relação ao próximo ponto do vetor.
+Desta forma, ao fragmentar segmentos de reta na horizontal os pontos devem ser analisados na sequência comum (e.g.: $1$, $2$, $3$,...). No 
+entanto, se forem fragmentados na vertical os í­ndices de amostras neste vetor devem ser alterados, de forma que a análise seja realizada da 
+mesma forma que a orientação horizontal. O Código-Fonte \ref{ordena} realiza a ordenação do vetor (obtido na Seção \ref{semeacaoCode}) conforme 
+a orientação em que se deseja analisar.
+\lstinputlisting[language=Matlab, label=ordena, caption={Código que ordena os í­ndices para a fragmentação dos segmentos de reta conforme sua orientação}]{codes/ordena.m}
+
+\subsection{Pinta pontos-sementes (Após a poda)}
+Após a fragmentação e o processo de poda, os pontos-sementes são desenhados novamente, porém, com o decréscimo dos pontos espúrios e os 
+segmentos descontí­nuos.
+\lstinputlisting[language=Matlab, label=pintaPontosImagemEsp_seg, caption={Código que pinta os pontos-sementes sobre a imagem após a realização da poda}]{codes/pintaPontosImagemEsp_seg.m}
+
+\subsection{Execução do método \emph{Open-Snakes}}
+A obtenção dos eixos de simetria se inicia nesta etapa. Inicialmente, o Código-Fonte \ref{snakes} realiza a interpolação entre os pontos de cada segmento de reta, 
+obtendo-se as respectivas curvas iniciais. Em seguida, é realizado o processo iterativo para a minimização da energia de cada um dos segmentos. Ao final, é adquirido
+duas matrizes de coordenadas $x$ e $y$, correspondentes a localização espacial de cada curva.
+\lstinputlisting[language=Matlab, label=snakes, caption={Código que obtém o eixos de simetria das estradas}]{codes/snakes.m}
+
+\section{Códigos-Fonte auxiliares no processo de extração}\label{cfAuxiliar}
+As rotinas apresentadas abaixo, são utilizadas como auxiliadoras durante o processo de extração. 
+
+\subsection{Converte a imagem de composição RGB para ní­veis de cinza}
+O Código-Fonte \ref{rgbtogray} verifica a composição da imagem selecionada pelo usuário, caso esta não possuir as caracterí­sticas de ní­veis de cinza, a imagem é 
+convertida. 
+\lstinputlisting[language=Matlab, label=rgbtogray, caption={Código que realiza a conversão da imagem de composição RGB para ní­veis de cinza}]{codes/rgbtogray.m}
+
+\subsection{Obtém os \emph{pixels} entre dois pontos}
+O algoritmo de Bresenham, conhecido também por algoritmo de Ponto Médio, determina em uma matriz (Imagem), os \emph{pixels} que devem ser destacados entre dois pontos
+na imagem, tal que entre eles formem uma reta. O Código-Fonte \ref{bresenham} realiza esta operação para a aquisição de diferentes orientações nas amostras.
+\lstinputlisting[language=Matlab, label=bresenham, caption={Código de Bresenham para a obtenção dos \emph{pixels} entre dois pontos em uma imagem}]{codes/bresenham.m}
+
+

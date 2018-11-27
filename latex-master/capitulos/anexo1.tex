@@ -1,0 +1,90 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Anexos
+\hypertarget{estilo:anexo}{} %% uso para este manual
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{ANEXO B - EXEMPLOS DE TABELAS} %% 
+\label{anexoB} %% 
+
+% Exemplo de tabela simples:
+
+\begin{table}[hb]
+\renewcommand{\baselinestretch}{1.4}% for tabular environment
+\small
+   \centering
+   \caption{Effects of the two types of scaling proposed by Dennard and Co-Workers.}
+%   \label{\fullpaperid:table:1}% you must prefix your labels (here table:1) with the string \fullpaperid: (this will be important when combining all the full papers for the final book)
+   \begin{tabular}{lcc}
+       \hline% horizontal line
+       \itshape Parameter&
+           \itshape $\kappa$ Scaling&
+           \itshape $\kappa$, $\lambda$ Scaling\\*
+       \hline
+       Dimension&
+           $\kappa^{-1}$&
+           $\lambda^{-1}$\\*
+       Currant&
+           $\kappa^{-1}$&
+               $\lambda/\kappa^{2}$\\*
+       Dopant Concentration&
+           $\kappa$&
+           $\lambda2/\kappa$\\*
+       \hline
+   \end{tabular}
+\end{table}
+
+% Exemplos de 2 tabelas avançadas
+
+\begin{table}[!ht]
+\caption{Quantitative evaluation of the resulting levelings by RO, ADF, ISO and ADF
+   markers.}
+%\label{\fullpaperid:table:2}
+\begin{center}
+\renewcommand{\baselinestretch}{1.2}% for tabular environment
+\small
+\begin{tabular}{cccccc}
+\hline
+   & \multirow{2}{22mm}{\renewcommand{\baselinestretch}{0.7}\small\centering Quantitative measures} & \multicolumn{4}{c}{Markers} \\ \cline{3-6}
+   & & \multicolumn{1}{c}{RO} & \multicolumn{1}{c}{ASF} & \multicolumn{1}{c}{ISO} & \multicolumn{1}{c}{ADF} \\ \hline
+   \multirow{3}{20mm}{\renewcommand{\baselinestretch}{0.7}\small\centering Test image scale 2}
+& RMSE & 0.126 & 0.187 & 0.118 & 0.103 \\
+& NMSE & 0.046 & 0.101 & 0.040 & 0.031 \\
+& SSIM & 0.9981 & 0.9956 & 0.9984 & 0.9989 \\ \hline
+   \multirow{3}{18mm}{\renewcommand{\baselinestretch}{0.7}\small\centering Cameraman scale 4}
+& RMSE & 13.748 & 15.649 & 10.132 & 4.325 \\
+& NMSE & 0.011 & 0.014 & 0.006 & 0.001 \\
+& SSIM & 0.923 & 0.847 & 0.904 & 0.933 \\ \hline
+   \multirow{3}{18mm}{\renewcommand{\baselinestretch}{0.7}\small\centering Cameraman scale 7}
+& RMSE & 20.963 & 22.652 & 13.108 & 4.650 \\
+& NMSE & 0.024 & 0.029 & 0.010 & 0.001 \\
+& SSIM & 0.851 & 0.757 & 0.866 & 0.925 \\ \hline
+   \multirow{3}{23mm}{\renewcommand{\baselinestretch}{1.2}\small\centering Crop of cameraman scale 7}
+& RMSE & 30.914 & 31.943 & 17.831 & 2.870 \\
+& NMSE & 0.053 & 0.057 & 0.018 & 0.001 \\
+& SSIM & 0.831 & 0.772 & 0.891 & 0.983 \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[!ht]
+\caption{Establishing a relation between the scales of the different markers.}
+%\label{\fullpaperid:table:1}
+\begin{center}
+\renewcommand{\baselinestretch}{1.2}% for tabular environment
+\small
+\begin{tabular}{ccccc}
+\hline
+\multirow{4}{16mm}{\renewcommand{\baselinestretch}{0.7}\small\centering Leveling's Scale} & \multicolumn{4}{c}{Values for the scale relation of the four different type of markers} \\ \cline{2-5}
+& \multirow{3}{29mm}{\renewcommand{\baselinestretch}{1}\small\centering Structure element's size $r$ for RO and ASF} & \multicolumn{2}{c}{Isotropic diffusion} & \multirow{3}{20mm}{\renewcommand{\baselinestretch}{1}\small\centering Anisotropic diffusion iterations $t$} \\ \cline{3-4}
+& & \multirow{2}{23mm}{\renewcommand{\baselinestretch}{0.7}\small\centering Standard deviation $\sigma$} & \multirow{2}{12mm}{\renewcommand{\baselinestretch}{0.7}\small\centering Kernel size} & \\
+& & & & \\ \hline
+1 & 1 & 0.5 & $5 \times 5$ & 100 \\
+2 & 2 & 1.0 & $7 \times 7$ & 200 \\
+3 & 3 & 1.5 & $11 \times 11$ & 300 \\
+4 & 4 & 2.0 & $13 \times 13$ & 400 \\
+5 & 5 & 2.5 & $17 \times 17$ & 500 \\
+6 & 6 & 3.0 & $19 \times 19$ & 600 \\
+7 & 7 & 3.5 & $23 \times 23$ & 700 \\ \hline
+\end{tabular}
+\end{center}
+\end{table} 

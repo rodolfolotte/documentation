@@ -1,0 +1,69 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CAPÍTULO 4
+
+\chapter{ANÁLISE E RESULTADOS}
+
+%---------------------------------- Artigo
+
+Em imagens \emph{SAR}, nem sempre as estradas são encontradas com perfis mais claros. No entanto, as estradas na imagem utilizada é 
+formada por estradas com este perfil. Desta forma, a RNA foi treinada para reconhecer somente este padrão. A orientação de uma estrada na imagem 
+é uma informação desconhecida e desta forma, foram criadas oito diferentes orientações do perfil claro. Para a janela de cada padrão, foi 
+definida a dimensão de 19x19 \emph{pixels}. Por convenção, os dados de cada padrão foram alinhados em um vetor, de forma que se tornassem um 
+padrão unidimensional, definindo a arquitetura da rede com 361 entradas e camada de saída como um mapa bidimensional de dimensão 60x60.
+
+Após o treinamento da rede, é realizada a leitura dos valores de cada \emph{pixel}. É estabelecida uma grade da 
+mesma dimensão que os padrões de treinamento, de forma que ela seja varrida na imagem em saltos 
+pré-definidos. Os valores de cada corretamente são deixados de marcar quadrante lido são atribuídos como uma entrada para a rede. Como detalhado na Seção \ref{mapas}, após o 
+treinamento da rede é possível classificar o que é e o que não é estrada na imagem. Os pontos que caracterizam a presença de uma estrada 
+foram sinalizados de acordo com a distância euclidiana entre o neurônio vencedor (do respectivo padrão apresentado) e cada centro dos oito 
+padrões que caracterizam uma estrada. A partir deste cálculo, pode-se analisar se o padrão esta dentro do raio de pertinência dos aglomerados de 
+interesse, e se assim estiver, o \emph{pixel} central deste padrão é então sinalizado como pertencente a uma estrada. Foram definidos alguns 
+valores \emph{ad-hocs}\footnote{Hipótese informal, definida sem um mecanismo explicativo essencial.}, tais como variável de aprendizado,
+número de épocas e número de neurônios na camada de saída, baseando-se somente em dados experimentais.
+
+Para a validação do método apresentado neste trabalho, foram adotados as medidas de desempenho para a extração de estradas abordada por Harvey 
+\cite{harvey}. No entanto, a abordagem tratada pelo autor especifica medidas de desempenho para segmentos lineares, em que é definido um modelo de
+referência, e a partir deste, obtêm-se os valores de desempenho do método. Seguindo o mesmo conceito, define-se um modelo de referência para a
+identificação dos pontos Figura (\ref{figuraRef}). Na Figura \ref{figura8}, é apresentada a sequência de resultados de acordo com os valores
+do raio de pertinência (Tabela \ref{tabela1}).
+\begin{figure}[htb]
+    \centering	   
+    \subfigure[]{\label{res1}\includegraphics[width=0.39\textwidth]{figs/result1_10.jpg}} \hspace{0.5cm}   
+    \subfigure[]{\label{res2}\includegraphics[width=0.39\textwidth]{figs/result1_20.jpg}} \\
+    \subfigure[]{\label{res3}\includegraphics[width=0.39\textwidth]{figs/result1_30.jpg}} \hspace{0.5cm} 
+    \subfigure[]{\label{res4}\includegraphics[width=0.39\textwidth]{figs/result1_40.jpg}}      
+    \caption{Resultados da identificação. (a) Experimento 1. (b) Experimento 2. (c) Experimento 3. (d) Experimento 4.}
+    \label{figura8}     
+\end{figure}
+
+%treinamento de determinadas RNAs possa ser um processo instável, considerou-se que os resultados alcançados a partir destes valores 
+%fossem resultados estáveis, ou seja, o resultado alcançado possa ser considerado coerente em relação a seus parâmetros.
+
+%A Tabela \ref{tabela1}, apresenta as medidas de desempenho referente aos testes aplicados.\\ %Foram testados diferentes valores para os parâmetros da rede a fim
+%de analisar seu comportamento.\\
+\begin{table}[htbp]
+\renewcommand{\baselinestretch}{1.2}
+\small
+\centering
+\caption{Medida de desempenho.}
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}
+\begin{center}
+\begin{tabular}{l||c||c|c|c}
+\hline \hline
+& \mc{1}{c}{Pertinência$^*$} & \mc{1}{c}{Perfeição} & \mc{1}{c}{Correção} & \mc{1}{c}{Qualidade}\\ \hline \hline
+Experimento 1 & 10\% & 0,95 & 0,43 & 0,73\\
+Experimento 2 & 20\% & 0,88 & 0,48 & 0,70\\
+Experimento 3 & 30\% & 0,84 & 0,65 & 0,75\\
+Experimento 4 & 40\% & 0,65 & 0,79 & 0,72\\
+Experimento 5 & 50\% & 0,10 & 0,78 & 0,55\\
+\hline \hline
+\end{tabular}
+\label{tabela1}
+\end{center}
+\flushleft
+\scriptsize $~~~~~~~~~~~~~~~~$ \textbf{*}$~$As porcentagens de \emph{pertinência} dizem respeito à redução do raio do aglomerado.
+\end{table}
+
+Analisando a Tabela \ref{tabela1} e a Figura \ref{figura8}, percebe-se claramente que o raio de pertinência afeta diretamente o fator de correção.
+que consiste na porcentagem de pontos que o modelo de referência cobre o obtido. Assim, entende-se que, à medida que o raio se reduz, são reduzidos também
+os pontos marcados incorretamente. No entanto, alguns dos pontos não são marcados, afetando o fator de qualidade.

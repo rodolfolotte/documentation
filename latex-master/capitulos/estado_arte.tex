@@ -1,0 +1,216 @@
+\chapter{REVISÃO DA LITERATURA}
+Atualmente, existem inúmeras técnicas para extração de estradas em imagens digitais. As pesquisas envolvendo este problema se resumem em imagens provenientes de sensores ópticos e de micro-ondas, ambos apresentando soluções diferenciadas. Com a grande disponibilidade de artigos abordando o problema, nota-se um intenso avanço no desenvolvimento de novos métodos nas últimas décadas \cite{tupin,pete2,gruen}. Tendo em vista a enorme quantidade de trabalhos, este capítulo destina-se a apresentar as principais contribuições para o tema, descrevendo brevemente cada uma delas. A seguir, os trabalhos estão categorizados de acordo com os respectivos métodos de extração.
+
+\section{Métodos de Semeação \emph{(Seeding)}}
+Apesar de não se tratar de um método de extração, a semeação é, muitas vezes, uma importante ferramenta nesse processo e, portanto, relacionada neste capítulo como um dos métodos de extração. Sua principal função é selecionar pontos na imagem, na qual cada um destes pontos caracterize a localização aproximada da feição de interesse. A Figura \ref{figuraSeeding1} ilustra um exemplo de como seria um resultado ótimo de semeação sobre uma imagem óptica, isto é, o número total de pontos identificados corresponde à porcentagem máxima de acertos. Nota-se também, que nenhum ponto foi identificado incorretamente, fator que também contribui para um resultado ótimo. 
+\begin{figure}[htb]
+    \centering    
+    \subfigure{\includegraphics[width=0.98\textwidth]{figs/seeding.jpg}}
+    \caption{Exemplo de uma semeação ótima sobre uma imagem óptica.}    
+    \label{figuraSeeding1}   
+\end{figure}
+
+Geralmente, esse tipo de resultado é obtido a partir de métodos robustos de semeação. Na imagem acima, por exemplo, a identificação destas estradas possivelmente necessitaria de recursos computacionais na qual consideraria a largura do objeto a ser identificado, seus valores espectrais, sua curvatura, variação da intensidade de cores, os possíveis obstáculos (como árvores, carros e edificações), inclinação, bifurcações, entre outras.
+Considerar todas essas características nem sempre é uma tarefa fácil, ainda sim, alguns pontos não são devidamente marcados ou são marcados incorretamente, fazendo com que o método sempre chegue a resultados bons, mas não ótimos. Em imagens ópticas, a acurácia dos resultados é uma questão relativamente fácil de se alcançar, quando comparada à de imagens de radar. Nessas imagens a redução do ruído \emph{speckle} (ruído inerente de imagens de radar) é quase sempre uma etapa necessária de pré-processamento.
+
+Uma vez que a semeação seja aplicada, a informação das prováveis localizações das estradas torna-se conhecida, assim, o processo de extração torna-se ainda mais rápido e eficiente, justificando assim, a importância da semeação no processo. \citeonline{harvey} destaca a importância da qualidade dos pontos iniciais para o desempenho do algoritmo de extração. Geralmente, o método de semeação é utilizado em alguns trabalhos como predecessor ao algoritmo de extração. Algoritmos como o delineador de estradas (\emph{road trackers}) e Modelo de Contorno Ativo (\emph{Snakes}) são exemplos de métodos de extração que utilizam a marcação de pontos-sementes.
+
+Na literatura, a semeação na abordagem de extração de estradas pode ser categorizada em automática, semiautomática e manual. Alguns dos trabalhos são descritos a seguir. 
+
+\subsection{Semeação Automática}
+A semeação automática é realizada sem nenhuma interferência humana, ou seja, tanto a definição dos parâmetros do método quanto a sua aplicação é realizada de forma autônoma. 
+
+\citeonline{hu} utilizaram o conceito para o delineamento de estradas sobre imagens ópticas, onde a semeação é realizada de forma automática. Os autores pré-estabelecem as geometrias ideais de uma estrada, definindo formas diferentes para as vias, tais como vias com interseções e contínuas. A partir destas, é realizada uma varredura na imagem, buscando os pontos em que a correlação com essas formas são menores que um determinado limiar.
+
+\citeonline{pete2} propuseram um eficiente método para a identificação do eixo de simetria de estradas em imagens ópticas. A abordagem apresentada identifica as bordas paralelas das estradas de acordo com um operador gradiente, que a partir do \emph{pixel} central da via, fornece tanto a orientação da borda quanto a sua localização. Tal processo é realizado pelo algoritmo denominado extrator de eixo anti-paralelo (\emph{Anti-parallel Centerline Extractor - ACE}), proposto em \citeonline{agouris2}. Após a identificação das bordas, o processo é seguido pela construção da rede de estradas com o auxílio do algoritmo de auto-organizável de mapeamento de estradas (\emph{Self-Organizing Road Mapping - SORM}), proposto em \citeonline{pete2}.
+
+% zlotnick a. and carmine, p. 1993. Finding road seeds in aerial images. Computer Vision, graphics, and image processing: image 
+% understanding 57.
+
+\subsection{Semeação Semiautomática}
+Este processo, realizado de forma semiautomática, diferencia-se apenas pela interferência humana em parte do processo. Essa interferência pode ocorrer no início do método (por exemplo marcação de ponto inicial ou de partida), ou no final (por exemplo ajuste na direção durante o delineamento). 
+
+\citeonline{zhao} apresentaram um algoritmo semiautomático para a extração de estradas em imagens ópticas orbitais de alta resolução. A metodologia apresentada consiste em três etapas, na qual a imagem é submetida a um processo de classificação em uma primeira etapa, e, por meio das classes identificadas como rodovias, é definida uma máscara para utilização nas etapas posteriores. A segunda etapa é caracterizada pelo processo de semeação. Nesta, é obtido primeiramente uma imagem binária correspondente às bordas da imagem. Os pontos são marcados, conforme a análise dos vizinhos dos \emph{pixels} de borda. Na terceira e última etapa da extração, é realizado um processo iterativo, em que, em cada iteração, um modelo de estrada retangular é rotacionado sobre o eixo dos pontos, de forma que a direção do novo ponto apresente maior correlação entre todas as direções analisadas. A rotação da estrada sobre o eixo dos pontos é ilustrada na Figura \ref{seedingRotatinga}. Este método é considerado uma abordagem semiautomática, pois a cada nova direção processada pelo método, esta pode ser contestada e remarcada pelo operador, caso desejável.
+\begin{figure}[htb]
+    \centering    
+    \subfigure{\includegraphics[width=0.36\textwidth]{figs/seeding2.jpg}}
+    \caption{Rotação de estrada retangular sobre o eixo dos pontos num processo de Semeação semiautomática.}    
+    \FONTE{Adaptado de \citeonline{zhao}.}
+    \label{seedingRotatinga}   
+\end{figure}
+
+%merlet, n. and zerubia, J. 1996. New prospects in line detection by dynamic programming. ieee transactions on pattern analysis and machine
+% intelligence 18(4), pp. 426-431.
+
+\subsection{Semeação Manual}
+Neste tipo de semeação, todos os pontos são marcados por um operador humano. \citeonline{dalpoz} utilizaram o conceito de programação dinâmica para a extração de rodovias em imagens ópticas aerotransportadas e orbitais. O processo é inicializado por um operador humano, que fornece, grosseiramente, pontos sementes descrevendo a região da estrada. 
+
+\citeonline{fazan2} apresentam um método de extração de estradas com o auxílio da semeação manual de pontos. Nesta semeação um operador define um conjunto de pontos-sementes, no qual o primeiro identifica o início da rodovia, e um segundo a direção. O processo de extração é realizado pelo delineamento da estrada por estratégia de teste ativo, técnica relacionada com o conceito de visão ativa \cite{dalpoz2}, que analisa a trajetória local do último ponto extraído, resultando, por fim, no eixo central da via.
+
+\citeonline{gruen2} utilizaram também um semeador manual para a extração de estradas em imagens ópticas. Nesse trabalho, os autores apresentam uma nova abordagem para a extração de estradas, denominado como Linha Curvilínea Básica de Mínimos Quadrados ou \emph{LSB-Snakes} (\emph{Least Square B-spline Snakes}), que utiliza o ajuste dos mínimos quadrados combinados ao método \emph{Snakes} para o delineamento das fronteiras das vias.
+
+Com essas diversas abordagens, conclui-se que a forma de se identificar a passagem de uma estrada em um determinado ponto na imagem pode ser obtida de diversas formas. A semeação manual mostrou-se como a opção mais vantajosa para o método de extração. Com este tipo de semeação, a localização dos pontos se torna propícia à conversão, uma vez que é possível contornar obstáculos imprevistos na imagem, tais como árvores ou nuvens, no caso de imagem óptica, e estradas com ruído, no caso de imagens de radar. Esse tipo de operação faz com que o processo tenha um provável êxito, no entanto, exige ainda um operador humano. 
+
+\section{Principais Métodos para a Extração de Estradas} 
+\subsection{Classificação}
+O processo de classificação consiste em categorizar os dados presentes nas imagens em diferentes classes de padrões, de forma que seja atribuída uma identidade ou valores de probabilidade para os dados analisados. Tais classes representam as feições e alvos terrestres, tais como: água, cerrado, área urbana, área de desmatamento, entre outras. A classificação nada mais é que o reconhecimento desses grupos, cujos membros exibem características comuns. 
+
+A classificação de imagens pode ainda ser subdividida em supervisionada e não supervisionada. Na primeira, é definido um conjunto de amostras das categorias a serem utilizadas na classificação e, posteriormente, com o recurso computacional, processa a imagem de modo que cada região analisada seja associada a uma das classes. A segunda é útil quando não se possui informações relativas às classes de interesse na área imageada. Segundo \citeonline{haupt}, os classificadores podem ser utilizados para categorizar qualquer tipo de dados, o que implica que podem ser utilizados em níveis diferentes no processo de extração de estradas, seja no pré-processamento, processamento ou pós-processamento. Na identificação de estradas, um classificador é tipicamente utilizado de acordo com as propriedades da estrada presente na imagem. Para o problema de extração de estradas em imagens digitais, \citeonline{haupt} categoriza cinco classificadores ópticos
+ e supervisionados em:
+\begin{itemize}
+ \item Classificadores Espectrais: Os classificadores espectrais são utilizados para comparar a assinatura espectral da classe padrão com as amostras não conhecidas. Existem diversas maneiras de se aplicar esse tipo de classificador, entre essas, as mais utilizadas são os classificadores estatísticos, classificadores por Redes Neurais Artificiais (RNA) e classificadores \emph{fuzzy}\footnote{Método matemático
+ (computacional) utilizado no tratamento de incertezas.}. 
+ \item Classificadores Texturais: Os classificadores texturais visam dividir as classes de padrões pelas propriedades texturais contidas na imagem. O processo de classificação se inicia definindo as classes de padrões que serão utilizadas para a classificação dos mesmos.
+ \item Classificadores Geométricos: Nesse tipo de classificação, as feições são identificadas por suas propriedades estruturais ou geométricas, ou seja, no caso da identificação de estradas, por exemplo, as feições tendem a aparecer na imagem como segmentos retos, contínuos, com largura relativamente pequena. Desta forma, estas informações estruturais são levadas em conta na definição das classes de padrões que serão utilizadas na  classificação.
+ \item Classificadores Contextuais: Na classificação contextual, é necessário que se conheçam as informações dos \emph{pixels} vizinhos para  o desenvolvimento do processo de extração. A informação contextual, como é chamada, permite definir regiões onde as estradas possuem características similares, tais como curvatura, largura e níveis de intensidade. Sendo assim, é possível otimizar o processo de extração em diferentes regiões da imagem, a exemplo de estradas presentes em áreas urbanas, que podem diferenciar-se muito das estradas presentes em uma área de vegetação. 
+ \item Classificadores por Padrões Automáticos de Classes: Os classificadores por reconhecimento automático de classe são classificadores que requerem algum método de aprendizagem no seu processamento. A classificação por reconhecimento de padrões consiste em armazenar as informações obtidas da leitura das classes de amostras, de forma que esta leitura seja útil em futuras identificações, ou seja, é construído uma base de conhecimento tal que ao apresentar um determinado padrão a esse classificador, ele, por meio da correlação entre seu conhecimento e dessa amostra, saberá dizer em qual classe esta pertencerá.
+\end{itemize}
+
+\citeonline{pete3} utilizaram o método K-médias e os Mapas Auto-Organizáveis para a classificação de imagens ópticas em alta resolução. O algoritmo intitulado SORM (\emph{Self-Organizing Road Map}), possibilita a conexão dos pontos provenientes da classificação, de forma que seja aplicada uma análise topológica com métricas \emph{fuzzy}, obtendo-se, com isso, os eixos centrais do conjunto de estradas. 
+
+\citeonline{baumgartner3} fazem um comparativo dos modelos de estradas reais com os presentes em imagens digitais e apresentam um classificador contextual para a extração de estradas. Ao considerar as características radiométricas, geométricas e topológicas de estradas, os autores definem as relações que estas estruturas podem ter com outros objetos na imagem, tais como árvores, carros, edifícios, entre outros. Tal relação é considerada como contexto local enquanto que, as informações quanto à região em que a estrada se encontra, tal como floresta ou área urbana, são consideradas como contexto global. 
+
+\citeonline{mena} apresentaram um método automático para a extração de estradas em imagens óticas de alta resolução, abordando o uso de classificadores estatísticos, em que o processo de classificação resulta em duas classes de padrões, i.e., uma imagem binária contendo as informações de estradas e não estradas. \citeonline{haralick} apresenta as diferentes abordagens de textura em uma imagem digital, e além disso, generaliza a abordagem estrutural-estatística para textura, agregando a este modelo, novas primitivas de texturização.
+
+\subsection{Transformada de Hough}
+A Transformada de Hough (TH) é um operador matemático capaz de detectar formas geométricas em imagens digitais, tais como retas, círculos e elipses. Desenvolvida em 1962 por Paul Hough, tornou-se uma contribuição relevante na área de visão computacional. O método consiste em aplicar na imagem original uma transformação, tal que todos os pontos pertencentes a um mesmo segmento de reta sejam mapeados em um único ponto no domínio da TH. 
+
+% Embora o método seja aplicável em qualquer composição de imagem, ele é comumente aplicado sobre uma imagem binária, geralmente após o processamento de detectores de bordas. A transformação para o domínio da TH é expressa por:
+% \begin{align}
+% \rho = x~cos \theta + y~sen, \theta
+% \end{align}
+% em que $\rho$ representa a distância entre um determinado ponto da reta e a origem no plano-$xy$ (reta imaginária) e, $\theta$ é o ângulo 
+% entre o eixo $y$ e a reta imaginária. Na Figura \ref{figura1} é ilustrado como a transformação ocorre, tal que cada ponto no plano-$xy$ é 
+% convertido em uma senóide no plano da TH, e desta forma, o segmento reto presente na imagem poderá ser interpretado pelos máximos presentes 
+% no domínio da TH, ou seja, nas interseções das senóides de cada ponto da reta.
+% \begin{figure}[htb]
+%     \centering
+%     \subfigure[]{\includegraphics[width=0.33\textwidth]{figs/th_graf3.jpg}} \hspace{0.3cm}
+%     \subfigure[]{\includegraphics[width=0.33\textwidth]{figs/th_graf2.jpg}}
+%     \caption{Parametrização de ($\rho$, $\theta$): (a) No plano-$xy$ (imagem). (b) No domínio da TH.}
+%     \FONTE{Adaptado de \citeonline{woods}.}
+%     \label{figura1}   
+% \end{figure}
+
+Por ser um operador muito eficiente na detecção de linhas, a TH é muito utilizada na extração de feições lineares. \citeonline{gamba4} apresentaram uma variação do algoritmo, de forma a serem consideradas diferentes larguras para as feições. Além de reduzir o tempo de processamento, o algoritmo fornece melhores resultados, detectando os pontos de início e término dos segmentos retos, ao invés de linhas completas. A utilização da TH pode ser aplicada também na detecção de curvas com baixo grau de curvatura. 
+
+\citeonline{amberg} utilizaram, a princípio, a Programação Dinâmica para a extração dos eixos centrais das vias, e posteriormente, a TH é utilizada para a conexão dos pontos descontínuos provenientes da extração. 
+
+\citeonline{hu2} obtiveram bons resultados utilizando a TH como auxiliadora no processo de extração de estradas. O método apresentado pelos autores é usado em uma imagem óptica de alta resolução, em que a TH é aplicada iterativamente sobre uma imagem classificada, até que se obtenham todas as vias. 
+
+\subsection{Morfologia Matemática}
+A morfologia matemática é utilizada há muito tempo no processamento de imagens digitais, e as aplicações realizadas com operadores morfológicos remetem à Teoria dos Conjuntos. Processos como união, interseção, dilatação, erosão, fechamento, abertura e afinamento são operações fundamentais na morfologia matemática. Os operadores são utilizados no problema de extração de estradas para a remoção de pequenas regiões indesejáveis, tais como buracos, sombras ou carros, permitindo também a suavização de formas e contornos. Na extração de estradas, a morfologia matemática é frequentemente utilizada como filtro durante as etapas de pré e pós-processamento \cite{haupt}. 
+
+Os processos de dilatação, erosão, abertura e afinamento formam a base da morfologia matemática \cite{woods}. Tais técnicas são frequentemente utilizadas como recurso na extração de estradas. \citeonline{chanussot} apresentaram um método automático para a extração de feições lineares em imagens \emph{SAR}, na qual utilizaram operadores morfológicos para a filtragem das estradas e remoção de regiões indesejáveis. A princípio, são definidos as características geométricas da via, tais como largura, contraste e comprimento. Na Figura \ref{figOpMorfologicos3} é ilustrado este processo em um recorte na imagem. Para tais filtragens, os autores utilizaram o operador morfológico de abertura (\emph{opening}) para a remoção de pequenas regiões escuras e entorno claro, denominados vales Figura \ref{morf0b}, em seguida é aplicado o mesmo operador, no entanto, direcional, removendo cristas descontínuas Figura \ref{morf1}. Após a remoção desses pontos, a imagem torna-se mais suave, aplicando-se o operador de fechamento (\emph{closing}) as regiões de vales são removidas Figura \ref{morf2}. Por fim, é aplicado o operador cartola (\emph{top-hat}) para a remoção de resíduos escuros, restantes do último processamento, resultado em uma imagem com feições claras realçadas Figura \ref{morf3}.
+\begin{figure}[htb]
+    \centering
+    \subfigure[]{\label{morf0a}\includegraphics[width=0.32\textwidth]{figs/morf0a.jpg}} \hspace{0.5cm}
+    \subfigure[]{\label{morf0b}\includegraphics[width=0.32\textwidth]{figs/morf0b.jpg}} \\
+    \subfigure[]{\label{morf1}\includegraphics[width=0.32\textwidth]{figs/morfol1a.jpg}} 
+    \subfigure[]{\label{morf2}\includegraphics[width=0.32\textwidth]{figs/morfol2a.jpg}} 
+    \subfigure[]{\label{morf3}\includegraphics[width=0.32\textwidth]{figs/morfol3a.jpg}}   
+    \caption{Aplicação do operador morfológico de abertura para realce de estradas. (a) Imagem original. (b) Imagem após a aplicação do 
+    operador de abertura. (c) Imagem após a aplicação do operador de abertura direcional. (d) Imagem após a aplicação do operador de fechamento. 
+    (e) Imagem final, após a aplicação do operador \emph{top-hat}.} 
+    \FONTE{Adaptado de \citeonline{chanussot}.}
+    \label{figOpMorfologicos3}   
+\end{figure}
+
+\citeonline{idbraim} utilizaram o operador morfológico de abertura para a reconstrução de elementos lineares em imagens ópticas. A operação é realizada com um operador direcional de estrutura linear, sendo sua largura de cinco \emph{pixels}. Esse processo é realizado em complemento na aplicação de filtros de realces, onde são destacadas as feições conforme sua orientação. Um operador muito utilizado para a obtenção do eixo de simetria de feições lineares, é o operador de afinamento, que tem como objetivo obter o esqueleto da forma. 
+
+\citeonline{zhang2} utilizaram o processo de afinamento para a obtenção dos eixos de simetria e estradas. O processo é realizado sobre uma imagem segmentada, onde são aplicados dois outros operadores: de abertura, para que sejam removidos pontos espúrios da detecção, e de fechamento, para que os extremos dos segmentos de estrada desconectados sejam conectados.
+
+Os operadores morfológicos são, em geral, componentes importantes no processamento de imagens digitais e principalmente na extração de estradas. Sua aplicação é eficaz na remoção de regiões indesejadas e operações que envolvam o contexto local. 
+
+\subsection{Segmentação} 
+O processo de segmentação por regiões em imagens digitais é o processo de agrupamento de dadas regiões, com o objetivo de simplificar a representação da imagem e, consequentemente, facilitar o seu processo e análise. \citeonline{barrow} definem como segmentação por regiões o processo de particionamento de uma imagem em regiões semanticamente interpretadas. O resultado gerado a partir deste processo consiste em um conjunto de regiões disjuntas, com interseção nula e cuja união do conjunto de regiões é a própria imagem, ou seja, considerando $I$ uma imagem, a segmentação é o processo que particiona $I$ em $n$ sub-regiões $R_i$, para $i=1,2,...,n$, tal que:
+\begin{enumerate}
+ \item $\cup_{i=1}^n R_i = I$       
+ \item $R_i$ é uma região conectada, $ i=1,2,...,n$
+ \item $R_i \cap R_j = \varnothing ~ \forall ~ i\neq j$
+ \item $P(R_i) = $ verdadeiro, $ i=1,2,...,n$
+ \item $P(R_i \cup R_j) = $ falso, para $ i\neq j$
+\end{enumerate}
+em que $P(R_i)$ representa um predicado lógico sobre os pontos no conjunto $R_i$. A primeira condição indica que todos os \emph{pixels} da imagem pertencem a uma determinada região. A condição \textbf{b} indica que todos os pontos de uma determinada região devem estar conectados. A condição \textbf{c} indica que as regiões devem ser disjuntas. A condição \textbf{d} determina a propriedade que deve ser satisfeita pelos \emph{pixels} em uma determinada sub-região. Por último, a condição \textbf{e} indica que as sub-regiões $R_i$ e $R_j$ são distintas em relação à propriedade definida \cite{woods}. Os \emph{pixels} pertencentes a uma dada região possuem características similares, e cada região difere significativamente de suas vizinhas.
+
+Assim como a semeação, a segmentação não é considerada um método de extração de estradas como listado nessa seção, embora seja uma operação muito útil e eficiente em grande parte dos métodos de extração. O resultado desta operação permite separar as diversas regiões contidas na imagem em regiões únicas e bem definidas, tornando possível, por exemplo, a seleção dos segmentos pertencentes às regiões de estradas. A segmentação tem um papel importante no processamento de imagens de radar. \citeonline{mena} utilizaram a segmentação baseada na análise de textura da imagem, em que o processo é realizado sobre uma imagem óptica. Após concluir a etapa de segmentação, a imagem é submetida a um processo de esqueletonização, fornecendo os eixos de simetria da rede de estradas. \citeonline{amini2} utilizaram o método de divisão e junção (\emph{split and merge}) para a segmentação. O método é baseado na estrutura \textquotedblleft \emph{quadtree}\footnote{Árvore estrutural de dados em que subdivide recursivamente a imagem em quadrantes de quatro, a fim de determinar a homogeneidade de regiões \cite{finkel}.}\textquotedblright$~$para a partição da imagem, que explora as regiões homogenias (\emph{split}) e em seguida as combinam caso suas vizinhas possuir características semelhante. Ao fim, é criada uma imagem segmentada. 
+
+\citeonline{grote} utilizaram o conceito de segmentação para a extração de estradas em imagens ópticas de alta resolução, focando a extração em áreas urbanas. Com o processo de segmentação, são geradas pequenas regiões na imagem cujas bordas coincidem com as bordas das estradas, e os extremos de cada região são então conectados aos extremos de outras regiões, de acordo com critérios de distância, direção e ângulo.
+
+\subsection{Modelos Deformáveis}
+O conceito tradicional denominado Modelo de Contorno Ativo ou simplesmente \emph{Snakes}, possui um grande número de trabalhos abordando-o como método extrator de estradas, principalmente, ao se tratar da obtenção dos eixos centrais das vias. Desenvolvido inicialmente por \citeonline{kass}), o método consiste em um processo iterativo e adaptativo para a identificação de contornos de objetos, de modo que uma 
+curva poligonal seja convergida para as formas do objeto. O progresso da curva até a localização desejada é alcançada minimizando-se, a cada ciclo iterativo, uma determinada propriedade da curva, denominada energia. A Figura \ref{figSnake} ilustra este processo em sua representação tradicional.
+\begin{figure}[htb]
+    \centering
+    \subfigure[]{\includegraphics[width=0.30\textwidth]{figs/snake3.jpg}} \hspace{0.3cm}   
+    \subfigure[]{\includegraphics[width=0.30\textwidth]{figs/snake4.jpg}}   
+    \caption{Ilustração da aplicação de \emph{Snakes} com curva fechada (método tradicional) para a identificação de objetos: (a) Interpolação 
+    inicial. (b) Evolução final da curva.}
+    \label{figSnake}   
+\end{figure}
+
+A utilização de Modelos Deformáveis na extração de estradas em imagens digitais consiste em uma abordagem promissora, embora se trate de uma técnica complexa, sua utilização permite identificar com exatidão o contorno de objetos presentes na cena. No entanto, o modelo apresenta uma sensibilidade muito grande quanto a seleção de seus parâmetros. Na literatura, os trabalhos de extração de estradas abordando o uso de Modelos Deformáveis mostram-se eficazes em imagens ópticas. Por outro lado, na imagem de radar, a aplicação desse modelo possui limitações, justamente pela presença de ruído em grande quantidade. A área de Modelos Deformáveis possui inúmeras variantes, todas com o objetivo de reconhecer o contorno de objetos presentes na cena. Nesta seção, serão apresentados alguns trabalhos que utilizaram tal recurso para a extração de estradas, destacando, principalmente, o Modelo de Contorno Ativo, que será melhor discutido na Seção \ref{snakes}.
+
+\citeonline{silvestre} introduz algumas das técnicas para a obtenção de contornos de objetos, tais como o Modelo Geométrico (\emph{Level Set}) \cite{osher}, cujo processo de identificação de contornos não necessita da parametrização da curva, embora basear-se também na otimização de uma função objetivo. O Modelo de Formas Ativas (\emph{Active Shape Models}) \cite{cootes} não é uma abordagem paramétrica, ao invés disso, 
+o modelo se baseia nas características do objeto a ser identificado, que após definido, aplica-se o processo de deformação, obtendo o contorno das formas de acordo com a minimização da distância entre os pontos correspondentes à forma e ao objeto a ser extraído. Os Modelos Probabilísticos \cite{staib} permitem incorporar funções de probabilidade tal que delimitem na imagem, as estruturas das classes a serem extraídas. 
+
+Outros métodos, como o modelo Balão (\emph{Balloon})\cite{cohen}, possui características semelhantes comparado ao método tradicional, no entanto, a curva inicial deste é iniciada dentro do objeto a ser extraído, e evolui até que se alcance as fronteiras do objeto, comportando-se como um balão ao ser enchido. O método de Fluxo do Vetor Gradiente (\emph{Gradient Vector Flow - GVF}) \cite{xu} é uma outra alternativa para a aquisição de 
+contornos de objetos. Trata-se também de uma abordagem paramétrica que agrega uma nova energia externa baseando-se no gradiente da imagem. O conceito apresenta benefícios, principalmente, pela não necessidade de pontos-sementes próximos ao contorno, além de convergir eficientemente para as formas do objeto. 
+
+
+
+O método possibilitou uma significante contribuição para a área de Visão Computacional. Como mencionado anteriormente, surgiram inúmeras variantes a partir desse trabalho, entre essas evoluções, o método \emph{Snakes} deixou de ser modelado apenas como uma curva fechada, como em sua representação original, mas passou também a possuir representações abertas. A curva aberta possibilita o delineamento de segmentos retos, tais como as estradas na Figura \ref{figSnake1}. 
+\begin{figure}[htb]
+    \centering
+    \subfigure[]{\includegraphics[width=0.48\textwidth]{figs/snake1.jpg}} \hspace{0.1cm}   
+    \subfigure[]{\includegraphics[width=0.48\textwidth]{figs/snake2.jpg}}   
+    \caption{Ilustração da aplicação de \emph{Snakes} com curva aberta para a identificação de estradas: (a) Interpolação inicial. (b) Evolução 
+    final da curva em um processo de obtenção do eixo de simetria.}
+    \label{figSnake1}   
+\end{figure}
+
+Dada as suas características o método \emph{Snakes} é frequentemente utilizado na extração de estradas. \citeonline{gruen} utilizaram uma extensão ao método, cuja abordagem permite extrair os eixos centrais das vias em imagens ópticas. Nessa abordagem, o método \emph{Snakes} é executado em conjunto com a Programação Dinâmica \cite{bellman2}, o qual é utilizada como método de otimização na evolução da curva. A abordagem apresentada pelos autores permite a extração de estradas, nas quais existam obstáculos, como sombras causadas por árvores, veículos, edificações. 
+
+\citeonline{mayer} utilizaram o método \emph{Ribbon-Snakes} em imagens ópticas de alta resolução. O método estende a abordagem tradicional de \emph{Snakes}, em que acrescenta uma características de largura $w$ no modelo paramétrico. Desta forma, ao extrair o eixo de simetria da feição de interesse, são expandidos paralelamente ao ponto $(x_i,y_i)$, a distância $w_i$ para cada um dos lados da curva, de modo a obter as fronteiras das estradas Figura \ref{figribbonsnake}. Em relação a abordagem tradicional, o método \emph{Ribbon-Snakes} pode apresentar algumas vantagens. Obter as bordas da estrada é um processo útil em regiões em que a largura das vias varia ou, até mesmo, por se obter a largura das vias mesmo em condições adversas, tal como a presença de sombras ou árvores (em imagens ópticas) que prejudicam a identificação real das fronteiras. O mesmo é considerado para a imagem de radar, embora os obstáculos na extração sejam outros.
+\begin{figure}[htb]
+    \centering
+    \subfigure{\includegraphics[width=0.66\textwidth]{figs/ribbonsnakes.jpg}}      
+    \caption{Ilustração do conceito de expansão do método \emph{Ribbon-Snakes}.}
+    \FONTE{Adaptado de \citeonline{mayer}.}
+    \label{figribbonsnake}   
+\end{figure}
+
+\citeonline{bentabet} propuseram um método para a extração de estradas em imagens de radar, utilizando para tanto o método \emph{Snakes}. Em uma etapa de pré-processamento, os autores utilizaram filtros redutores de ruído \emph{speckle}, destacando os filtros de \emph{Frost}\cite{frost} e \emph{Lee}\cite{lee} como sendo filtros eficientes na minimização deste tipo de ruído. Após a etapa de suavização, é aplicado um detector de linhas, proposto por \citeonline{ziou} e, por fim, utilizou-se de \emph{Snakes} para a extração das vias. Os parâmetros de rigidez e elasticidade (ver Seção \ref{snakes}), utilizados pela \emph{Snakes}, são estimados automaticamente no processo de extração apresentado. 
+
+\citeonline{agouris} apresentaram  uma extensão do método \emph{Snakes} para a detecção de estradas em imagens ópticas, denominado Modelo de \emph{Snakes} diferencial. Neste caso, o método original é acrescido de um novo termo, que é relacionado com as informações da imagem existentes em um banco de dados geográficos. Tal termo descreve a diferença entre a solução atual da curva com a informação pré-existente. Com isso, são analisadas as mudanças geoespaciais das estradas em relação ao dado armazenado e, se houver mudanças consideráveis, estas são atualizadas no banco.
+
+\citeonline{bentabet} classificaram os principais trabalhos envolvendo a extração de estradas em imagens de radar, organizando-os por complexidade. Na próxima seção, são apresentados alguns desses trabalhos, que não se enquadraram de forma específica nos tópicos apresentados neste capítulo, porém, possuem grande importância na literatura sobre a extração de estradas em imagens digitais.
+
+\subsection{Outras Abordagens}
+Muitos dos trabalhos envolvendo o problema de extração de estradas, não possuem ainda uma abordagem específica para a sua resolução, alguns por apresentarem conceitos híbridos, outros por apresentarem conceitos inovadores. Nesta seção, são descritos alguns dos importantes trabalhos envolvendo a extração de estradas em imagens de radar.
+
+\citeonline{tupin} propuseram um eficiente método automático para a extração de feições lineares em imagens de radar. Para tanto, os autores dividiram o processamento em duas etapas. A primeira é caracterizada pela detecção das estruturas lineares na imagem, onde são utilizados dois filtros: o detector de bordas por relação \cite{bovik}, utilizado para o realce de linhas na presença de ruído \emph{speckle}, e um segundo filtro proposto pelos autores, que consiste em um detector de linhas por correlação cruzada, chamados pelos autores de D1 e D2, respectivamente. Os resultados de ambos detectores são combinados e repassados à segunda etapa do processamento, esta caracterizada pela conexão dos segmentos lineares e construção da rede de estradas. Isso é executado, criando-se um Campo Aleatório Markoviano (\emph{Markov Random Field - MRF}), técnica melhor fundamentada em \citeonline{spitzer}, em que, para cada extremo dos segmentos de reta, é agregada uma probabilidade de junção, probabilidade esta estabelecida de acordo com regras geométricas entre o par de pontos, indicando a possível 
+conexão. Assim, é gerado um mapa de possíveis conexões, na qual somente os pares com probabilidades satisfeitas segundo um limiar são conectados. 
+
+\citeonline{costa} estenderam a abordagem dos detectores de \citeonline{tupin} e aplicaram a TH sobre o resultado dos detectores proposto pelos autores. \citeonline{lisini2} utilizaram também os detectores propostos em \citeonline{tupin}. Nessa abordagem apresentada pelos autores, são aplicados os detectores de linhas e, posteriormente, ajusta-se os resultados com a imagem classificada. Com isso, é realizado um processo de reconstrução da rede de estradas, na qual são selecionados os segmentos de reta que satisfazem os valores de largura (\emph{pixels}) e orientação. Selecionadas as vias, estas são submetidas ao operador morfológico de afinamento, que obtêm seus eixos de simetria. Finalmente, é aplicado um algoritmo de linearização, tornando-as mais alinhadas.
+
+\citeonline{zhou} combinaram a análise multiescala com informações polarimétricas para a extração de feições lineares em imagens de radar. São aplicados detectores de linhas em baixa resolução em diferentes polarizações da imagem. Em seguida, cada resultado é submetido a uma combinação. Em uma segunda etapa, é realizada a detecção de linhas em alta resolução, em que são aplicados detectores \emph{fuzzy} em uma imagem filtrada.
+
+\citeonline{baumgartner2} propuseram um método automático para a extração de estradas em imagens ópticas, utilizando o conceito multiescala combinado à análise do contexto global e local da imagem. Inicialmente, o processo de extração é realizado sobre áreas rurais, e depois estendido às áreas urbanas e de florestas. Esta ordem de processamento é justificada já que nas áreas rurais possuem interferências menores de objetos como edifícios, automóveis ou árvores, e assim, o processo realizado nas áreas rurais pode ser utilizado como modelo para as etapas seguintes. Esse processo é realizado em diferentes escalas da imagem, onde, em baixas resoluções são aplicados filtros detectores de borda. A partir desta análise, são obtidas as hipóteses dos segmentos de estradas, os quais são posteriormente combinados, formando a rede de estradas. A abordagem se mostrou útil não só pelo resultado da extração, mas também por apresentar eficiência nos resultados onde houve intersecções de vias.
+
+\citeonline{xiao} propuseram uma nova forma de extrair estradas em imagens de radar. A abordagem tratada pelos autores remete à Inteligência Computacional, com o uso de algoritmo genético (\emph{Genetic Algorithm - GA}). A princípio, a imagem é submetida a uma etapa de pré-processamento, na qual é realizada a classificação da mesma em classes, como vegetação, áreas de construções e estradas. A classificação é realizada por um operador \emph{fuzzy}, denominado FCM (\emph{Fuzzy C Means}). Após a classificação, é atribuído um conjunto de pontos sementes para cada segmento de estrada, em que, para cada conjunto, é estabelecida uma curva passando por seus respectivos pontos. O GA implica na busca de soluções inspirada na genética humana de evolução.
+
+Entre as inúmeras técnicas para a extração de estradas tanto em imagens óticas como de radar, nesta seção foram destacadas as de maior importância na literatura. O levantamento de soluções para o problema é vasto, e fica evidente que outros métodos adequariam-se perfeitamente ao conteúdo deste trabalho. Um levantamento mais completo envolvendo a extração de estradas é apresentado por \citeonline{mena2}.
+
+Grande parte dos trabalhos na área utilizam operadores manuais ou semiautomáticos para a semeação. Um método completamente automático, tal como apresentado por \citeonline{tupin}, é construído, geralmente, sobre muita pesquisa e cautela. Os detalhes envolvendo a implementação automática são, quase sempre, constituídos por modelos complexos de extração de estradas, o que acaba por ultrapassar o escopo desta pesquisa. O propósito deste trabalho é apresentar um operador que realize a extração dos eixos de simetria das estradas e caminhos presentes em imagens de radar \emph{SAR} aerotransportadas, de forma que este processo seja realizado de maneira semiautomatica. Para tanto, será apresentada uma abordagem híbrida, utilizando dois conceitos descritos anteriormente: o método de semeação para a identificação de pontos que caracterizam a presença de uma estrada, conjugado ao método \emph{Snakes}. 
+
+O método de semeação apresentado é fundamentado em técnicas de Inteligência Computacional, mais precisamente nos Mapas Auto-Organizáveis, técnica que permite o reconhecimento de formas em imagens digitais, de acordo com padrões de treinamento. O método de semeação possui autonomia em parte de sua execução, portanto, é denominado um método semiautomatico. O pontos-sementes identificados pelo semeador são interpolados conforme o segmento
+de reta identificado, a curva inicial gerada é aplicada ao método \emph{Snakes} que, por fim, obtêm os eixos centrais das estradas. Este trabalho não busca uma solução ótima para o problema, mas sim a pesquisa acerca da utilização de métodos específicos em processamento de imagem de radar de abertura sintética de alta resolução espacial.
+
+% Para a análise e validação dos resultados obtidos, será utilizada a curva característica operacional de receptor (\emph{Receiver Operating Characteristic - ROC}) \cite{green}, que permite avaliar a relação dos pontos identificados corretamente ou verdadeiro positivo (\emph{true positive - TP}) e identificados incorretamente ou falso positivos (\emph{false positive - FP}). 
+
+No capítulo seguinte, será apresentado o detalhamento do processo de extração de estradas. A primeira parte da seção é destinada à apresentação dos dados utilizados para o conjunto de testes do método. Na segunda parte, são descritos todas as etapas de desenvolvimento do método, iniciando-se pelo detalhamento do método de semeação e, posteriormente, o método \emph{Snakes} para a identificação de estradas. Por fim, os resultados são analisados e discutidos, seguindo critérios específicos de avaliação. 
+
+
+
+

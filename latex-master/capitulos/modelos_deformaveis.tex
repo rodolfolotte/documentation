@@ -1,0 +1,175 @@
+\section{Modelos Deformáveis}\label{snakes}
+
+O termo Modelos Deformáveis surgiu em 1998 empregado por Singh et al. [\citeyear{terzopoulos}], que embora o emprego da técnica tenha sido em 1988
+por Kass et al. [\citeyear{kass}]. A técnica consiste em obter formas (ou contornos), dos objetos presentes em uma imagem digital, permitindo 
+que um contorno inicial se deforme e evolua para as bordas do objeto até que determinadas condições de conversão estabelecidas no modelo, sejam
+alcançadas e, desta forma, seja identificada os objetos na imagem. 
+
+Os modelos deformáveis são considerados robustos pela sua capacidade em adaptar-se a imagem e identificar os objetos com eficiência, e portanto, 
+uma contribuição considerável para a Visão Computacional. Se diz Modelos Deformáveis por existirem mais de um tipo de técnica deformável. 
+Silva et al. \citeyear{silvestre} introduz algumas delas:
+\begin{itemize}
+ \item \emph{Level Set} consiste em um modelo não paramétrico, cujo processo de identificar o contorno dos objetos presentes na imagem não 
+ necessita da parametrização da curva. O método evoluiu a partir da pesquisa apresentada por Osher e Sethian \citeyear{osher}, em que os autores
+ mostram 
+ \item \emph{Active Shape Models}
+ \item \emph{Deformable Templates} 
+ \item \emph{Modelos Probabilísticos}
+ \item \emph{Modelos deformáveis com modelação da forma global}
+\end{itemize}
+Além das técnicas citadas acima, há o próprio \emph{Active Contour Model}, e talvez essa, a mais abordada em trabalhos cujo tema é a extração de 
+feições lineares ou contornos de objetos. 
+ 
+Por questões de escopo, as abordagens citadas acima, não serão detalhadas neste trabalho. Na próxima seção serão apresentados detalhes do 
+Modelo de Contorno Ativo \cite{kass}, citado acima, introduzindo o modelo, fundamentos e aplicações.
+
+\subsection{Modelo de Contorno Ativo}
+
+O Modelo de Contorno Ativo ou simplesmente \emph{Snakes}, foi desenvolvido em 1988 por Kass et al. \citeyear{kass}, na qual definiram como sendo
+um problema de minimização do funcional de energia da \emph{snake}, onde o comportamento dessa curva durante esse processo, se assemelha à uma
+cobra, justificando assim, o nome do método.
+
+O método não é eficaz quando não é fornecido como entrada, uma localização próxima a feição de interesse, entretanto, na maioria das vezes o
+método é submetido a um processo semi-automático, onde um operador fornece pontos na imagem, denominados pontos sementes, na qual se localizam
+próximo a feição a ser extraída. Esses pontos são então interpolados, obtendo-se uma curva inicial. O processo de minimização dessa curva, permite
+``empurra-la'' para o contorno do objeto presente na imagem \cite{kass}.
+
+O processo básico do método \emph{snake} é realizado sobre pontos contínuos na curva, embora seja possível realizá-lo sobre pontos discretos. 
+Na seção seguinte é apresentado a fundamentação matemática da teoria, considerando assim, a interpolação contínua dos pontos.
+
+\subsubsection{Energia da \emph{Snake}}
+
+Como dito anteriormente, o problema do método \emph{snake} se resumi ao processo de minimização da energia da curva. O modelo pode ser considerado
+assim, como sendo uma spline cúbica, controlada sobre a influência das força interna da curva e as forças da imagem, detalhadas nas seções seguintes.
+
+Representando a \emph{snake} parametricamente por $v(s)=(x(s),y(s))$, onde $s$ é relacionado ao comprimento de arco, com valores crescentes ao longo da
+curva, $s\in[0,1]$. O contorno ativo funciona pela minimização da energia total da curva, $E_{total}$, que é composta pela soma das energias interna,
+$E_{int}$, da imagem, $E_{image}$ e uma energia externa imposta pelo usuário, $E_{con}$, Equação \ref{energiaTotal}.
+\begin{align}\label{energiaTotal}
+ E*_{total} &= \int_0^1{E_{total}(v(s))ds} \notag \\
+ &= \int_0^1{E_{int}(v(s)) + E_{image}(v(s)) + E_{con}(v(s))ds}
+\end{align}
+Nas seções seguintes são detalhadas cada uma das energias.
+
+\subsubsection{Energia Interna}
+
+A força interna é responsável por manter a relação de suavidade da curva, enquanto que a energia externa impulsiona a curva na direção de linhas,
+bordas e contornos subjetivos \cite{kass}. A energia interna da curva pode ser escrita como:
+\begin{align}\label{energiaInterna}
+ E_{int}=\frac{1}{2}\int_0^1{\alpha(s)|v_s(s)|^2 + \beta(s)|v_{ss}(s)|^2 ds}
+\end{align}
+A Equação \ref{energiaInterna} é composta por dois termos, o termo de primeira ordem controlado pela constante $\alpha$ e a de segunda ordem
+controlada pela constante $\beta$. O termo de primeira ordem faz com que a \emph{snake} se comporte como uma membrana, representando a elasticidade
+da curva. O segundo termo diz respeito a rigidez, agindo como uma plana fina, permitindo assim, que durante o processo de minimização da energia
+da \emph{snake}, ela não se dobre \cite{kass}. As constantes $\alpha$ e $\beta$, funcionam como um fator de pesagem, permitindo o ajuste de acordo
+com as características da forma a ser identificada. A Figura \ref{snake1} ilustra o resultado final da \emph{snake} para diferentes valores de 
+$\alpha$.
+\begin{figure}[htb]
+    \centering	   
+    \subfigure[]{\label{snake1a}\includegraphics[width=0.28\textwidth]{figs/snake1a.jpg}} \hspace{0.3cm}    
+    \subfigure[]{\label{snake1b}\includegraphics[width=0.28\textwidth]{figs/snake1b.jpg}} \hspace{0.3cm}
+    \subfigure[]{\label{snake1c}\includegraphics[width=0.28\textwidth]{figs/snake1c.jpg}} \\
+    \caption{Exemplo da evolução da \emph{snake} para diferentes valores de $\alpha$: (a) Valor alto. (b) Valor mediano. (c) Valor baixo.}
+    %\FONTE{Chris Bregler and Malcolm Slaney \cite{bregler}}
+    \label{snake1}
+\end{figure}
+A constante $\beta$ especifica a rigidez do contorno. Desta forma, valores baixos de $\beta$ faz com que a curva desenvolva pontos de 
+descontinuidade na identificação.
+
+Agouris et al. (\citeyear{agouris}), mencionam que a escolha dos parâmetros $\alpha$ e $\beta$, podem ser realizados empiricamente, definindo-os
+de acordo com as características da imagem ou feição a serem extraídas. Bentabet et al. (\citeyear{bentabet}), utilizaram valores estimados 
+para $\beta$, onde inicialmente é verificado as características predominantes das feições por meio de uma base de dados com a verdade
+terrestre das feições, e então é obtido o valor médio da curvatura destas feições, e a partir dessa informação, estima-se o valor de $\beta$.
+Bentabet et al. (\citeyear{bentabet}) também destacam que tais parâmetros são altamente sensíveis e contribuem diretamente no resultado final 
+do processo.
+
+As variáveis $v_s(s)$ e $v_{ss}(s)$ são as derivadas de primeira e segunda ordem, respectivamente. A primeira fornece o coeficiente angular 
+tangente a curva no ponto $s$, e a segunda, o vetor normal a este ponto. 
+
+\subsubsection{Energia Externa}
+
+A energia da imagem, $E_{image}$, é composta pela soma do produto de três outras energias, Equação (\ref{energiaImagem}).
+\begin{align}\label{energiaImagem}
+  E_{image} = w_{line}E_{line} + w_{edge}E_{edge} + w_{term}E_{term}
+\end{align}
+onde $w_{line}$, $w_{edge}$ e $w_{term}$ são constantes que funcionam como ajustes para suas respectivas energias. $E_{line}$ especifica as características
+do contorno quanto aos níveis de intensidade da forma, ou seja, dependendo do valor de $w_{line}$, a curva será atraída ou por linhas claras ou 
+por linhas escuras. A energia é simplesmente os níveis de intensidade da imagem. Na abordagem original apresentada por Kass et al. (\citeyear{kass}), 
+são apresentadas duas representação do funcional de linha. A Equação \ref{energiaLine1}, a primeira apresentada pelos autores, a \emph{snake} é
+atraída por contornos com gradientes de imagem altos.
+\begin{align}\label{energiaLine1}
+ E_{line} = I(x,y)
+\end{align}
+A segunda representação é dado por:
+\begin{align}\label{energiaLine2}
+ E_{line} = -(G_{\sigma}*\delta^2I)^2 
+\end{align}
+onde os autores 
+
+a própria imagem. O funcional de borda, $E{edge}$, pode ser interpretado também, como um operador para a identificação de bordas na imagem, e é 
+dado por:
+\begin{align}\label{energiaEdge}
+ E_{edge} = -|\nabla I(x,y)|^2
+\end{align}
+onde $\nabla I(x,y)$ é o gradiente da imagem $I$. $E_{term}$ é definido por Kass et al. (\citeyear{kass}), como o funcional de terminação que
+tem como responsabilidade ignorar pontos de descontinuidades de segmentos de linhas e formas subjetivas. Para tanto, utilizou-se a curvatura das 
+linhas de nível de um imagem suavizada por um filtro gaussiano: $C(x,y)=G_{\sigma}(x,y)*I(x,y)$, e é definida como:
+\begin{align}\label{energiaEdge}
+ E_{term} &= \frac{\partial\theta}{\partial n_f} \notag \\ 
+ &= \frac{\partial^2C / \partial n^2}{\partial C / \partial n}\notag \\
+ &= \frac{C_{yy}C_{x^2}-2C_{xy}C_xC_y+C_{xx}C_y^2}{(C_x^2+C_y^2)^{\frac{3}{2}}}
+\end{align}
+onde $\theta=tan^{-1}(C_y/C_x)$, $n = (cos\theta,sin\theta)$ e $n_f=(-sin\theta,cos\theta)$. A combinação deste funcional com o funcional de 
+borda, faz com que a \emph{snake} evolua não só para os contornos do objeto, como também para regiões onde não há contornos, mas que criam a 
+ilusão de se existir um, Figura \ref{snake2}.
+\begin{figure}[htb]
+    \centering	   
+    \subfigure[]{\label{snake2a}\includegraphics[width=0.32\textwidth]{figs/snake2a.jpg}} \hspace{0.5cm}        
+    \subfigure[]{\label{snake2b}\includegraphics[width=0.32\textwidth]{figs/snake2b.jpg}} \\
+    \caption{Exemplo da obtenção de contornos criados por ilusão de ótica: (a) Imagem original. (b) Curva final.}
+    \FONTE{Adaptado de Kass et al. \citeyear{kass}}
+    \label{snake2}
+\end{figure}
+Em alguns trabalhos as energias $E_{edge}$ e $E_{term}$ são inutilizadas. Por fim, o parâmetro $E_{con}$, na Equação \ref{energiaTotal}, pode
+ser definida como sendo uma força de restrição imposta pelo usuário. $E_{con}$ pode ser introduzida de diversas maneiras, em alguns casos é inclusive
+inutilizada \cite{bentabet, agouris, youn}. Li et al. (\citeyear{li}), utilizaram o método \emph{snakes} para a identificação de filamentos, 
+onde é abordado a \emph{snakes} como uma curva aberta e energia externa como:
+\begin{align}
+  E_{ext} = \int_0^1{k*(E_{img}(v(s)) + k_{str}*E_{str}(v(s)))ds}
+\end{align}
+onde $k$ é uma constante que controla as energias interna e externa, e $k_{str}$ é uma constante que controla a energia da imagem, $E_{img}$, 
+definida como $E_{img}=G_{\sigma}*I$. Os autores destacam a diferença do termo de magnitude do gradiente $|\nabla G_{\sigma}*I|^2$, de 
+$\nabla E_{img}$, onde o primeiro identifica a fronteira do filamento, enquanto o outro o centro da feição.
+
+O processo de obtenção do contorno do objeto, é definido como sendo um processo de minimização da energia total da curva, Equação \ref{energiaTotal}. 
+Existem diferentes maneiras de se minimizar tal energia. Na seção seguinte, serão apresentadas as principais técnicas utilizadas para a resolução 
+deste problema.
+
+\subsubsection{Minimização da Energia Total}
+
+% Descrever a minimização da energia total
+
+É possível encontrar muitas extensões do método tradicional na literatura, uma destas extensões é o método denominado Modelo Balão de Contorno
+Ativo (\emph{Ballon Snakes}), desenvolvido por Laurent D. Cohen em 1991 \cite{cohen}. O modelo apresenta os mesmos princípios encontrados no 
+modelo tradicional, no entanto, onde a curva deveria se encolher quando não houvesse influências das energias da imagem, ela se expande. Este
+comportamento de expansão se assemelha a um balão sendo inflado, pela qual originou o nome do método. Para que a \emph{snake} se comporte desta 
+maneira, é necessário que se altere os valores de $f_x(x,y)$ e $f_y(x,y)$, definidos na Equação %cite Equação dentro da seção de minimização
+para:
+\begin{align}
+ f_x &= k_1n(s) -k \frac{\nabla P_x}{||\nabla P_x||} \\
+ f_y &= k_1n(s) -k \frac{\nabla P_y}{||\nabla P_y||}
+\end{align}
+onde $n(s)$ é o vetor unitário normal ao ponto $v(s)$ na curva e $k_1$, é a amplitude desta força, apontando para fora da curva, fazendo com que
+a expanda. Desta forma, quando a \emph{snake} é iniciada no interior do objeto de interesse, sua evolução se extenderá para as bordas internas 
+deste objeto, possibilitando ainda, resultados mais estáveis \cite{cohen}.
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,529 @@
+\chapter{RESULTADOS E DISCUSSÃO}\label{capResultados}
+Neste capítulo, são apresentados os resultados dos testes realizados para avaliar o desempenho do método de extração de estradas em imagens digitais desenvolvido e apresentado no capítulo anterior. As seções foram categorizadas de acordo com os diferentes experimentos realizados. Em razão da qualidade das imagens e também para efeitos de análise, os experimentos são realizados primeiramente sobre dados sintéticos e, posteriormente, sobre dados de radar. Sendo assim, a primeira parte deste capítulo consiste em apresentar os dados utilizados nos experimentos: imagens sintéticas (Seção \ref{secaoSint}) e imagens reais de radar (Seção \ref{secaoRadar}). Na Seção \ref{SecaoResultados} são apresentadas a avaliação e discussão envolvendo os resultados, as medidas obtidas, tempos de processamento e complexidade do método.
+
+% A avaliação de desempenho é realizada considerando-se duas imagens, a do resultado obtido e a do resultado desejado. Essas duas informações são então 
+% contrastadas e, assim, são obtidos os parâmetros apresentados na Seção \ref{metricas}, que, em seguida, são plotados na curva ROC.
+ 
+% Além da avaliação realizada sobre as medidas de validação, é realizado também a análise que considera os resultados de diferentes trabalhos 
+% envolvendo a extração de estradas em imagens de radar. Nessa análise, não são considerados somente os trabalhos abordando as técnicas 
+% apresentadas aqui, mas sim, os trabalhos que abordaram o conceito de extração de estradas em imagens de radar e utilizaram outras técnicas 
+% para a resolução do problema. Por ser grande o número de trabalhos que aborda o tema, foram selecionados os principais trabalhos que aplicaram 
+% a mesma métrica de validação, para que assim, fossem feitas as respectivas comparações.
+
+\section{Dados Sintéticos}\label{secaoSint}
+As imagens sintéticas empregadas neste trabalho possuem tamanhos pré-determinados de 574$\times$574 \emph{pixels} (linhas$\times$colunas) e foram simuladas visando o problema da extração de estradas. O processo de obtenção das imagens sintéticas envolvem três etapas: criação, classificação das regiões e modelagem estatística \cite{santanna}. O resultado das duas etapas iniciais denomina-se imagem \emph{phantom} (imagem idealizada de classes de homogeneidade) \cite{scofield}. Serão utilizadas três imagens sintéticas para os experimentos. As imagens, todas em alto contraste, são diferenciadas apenas em suas propriedades polarimétricas, deste modo, as características espectrais das estradas presentes nas diferentes imagens são modificadas. 
+
+Na seção seguinte, são apresentados os detalhes da obtenção da imagem \emph{phantom}, imagem simulada a partir de dados reais.
+
+\subsection{Obtenção do \emph{Phantom}}
+A imagem \emph{phantom} possui dimensões de 574$\times$574 \emph{pixels}, representando uma região contendo estradas (áreas claras) orientadas em direções distintas. As estradas presentes na cena possuem largura de 3 e 15 \emph{pixels}, respectivamente. Portanto, a imagem \emph{phantom} que será utilizada como imagem de verdade terrestre (imagem referência), possui apenas 2 classes: estrada (regiões de estrada na imagem) e fundo (regiões que não são estradas). 
+
+As imagens sintéticas geradas são polarimétricas, nas polarizações HH, HV e VV, e em uma visada (1-\emph{look}). As matrizes de covariância das duas classes da imagem utilizadas para a simulação das imagens sintéticas foram extraídas a partir de uma imagem SAR polarimétrica, banda L (1,27GHz), adquirida em outubro de 2005 pelo sensor R99B, da Força Aérea Brasileira da região do município de Paulínea, no estado de São Paulo (Figura \ref{RefPhantom}). 
+\begin{figure}[htb]\label{RefPhantom}
+    \centering	   
+    \includegraphics[width=0.50\textwidth]{figs/amostras.png}
+    \caption{Imagem SAR da região de Paulínea-SP e respectivas amostras para as classes estrada e fundo. Imagem em composição colorida HH(R), HV(G) e VV(B).}       
+\end{figure}
+As amostras possuem dimensões de 20$\times$20 \emph{pixels}. Para cada classe (estrada e fundo) foram extraídas 5 amostras, utilizadas para estimar a matriz de covariância de cada uma das classes. As matrizes de covariância complexas das classes estrada e fundo é dada, respectivamente, por:
+\begin{center}
+$\sum_{estrada} = 
+\begin{pmatrix}
+   (0,0129;0,0000) & (0,0012;-0,0007) & (0,0039;0,0019) \\ (0,0012;0,0007) & (0,0337;0,0000) & (-0,0008;-0,0012) \\ (0,0039;-0,0019) & (-0,0008;0,0012) & (0,0154;0,0000)
+ \end{pmatrix}
+$
+
+$\sum_{fundo} = 
+ \begin{pmatrix}
+  (0,0219;0,0000) & (-0,0066;-0,0009) & (0,0031;-0,0048) \\ (-0,0066;0,0009) & (0,0020;0,0000) & (-0,0007;0,0016) \\ (0,0031;0,0048) & (-0,0007;-0,0016) & (0,0015;0,0000)
+ \end{pmatrix}
+$
+\end{center}
+Os elementos são baseados na notação ($\Re,\Im$), em que $\Re$ representa a parte real do número complexo e $\Im$ a parte imaginária. A metodologia empregada para a obtenção da imagem \emph{phantom} (dado simulado) é detalhada por \citeonline{santanna}. A imagem \emph{phantom} empregada bem como as imagens simuladas, são apresentadas na Figura \ref{sinteticas}.
+
+\begin{figure}[!htb]
+    \centering	   
+    \subfigure[]{\label{recortePhantom}\includegraphics[width=0.40\textwidth]{figs/sintetica1.jpg}} \hspace{0.5cm}
+    \subfigure[]{\label{recortesintetico1a}\includegraphics[width=0.40\textwidth]{figs/ImagPolvv_HC.jpg}} \\     
+    \subfigure[]{\label{recortesintetico1b}\includegraphics[width=0.40\textwidth]{figs/ImagPolhh_HC.jpg}} \hspace{0.5cm}
+    \subfigure[]{\label{recortesintetico1c}\includegraphics[width=0.40\textwidth]{figs/ImagPolhv_HC.jpg}}
+    \caption{Imagens sintéticas de radar: (a) \emph{Phantom} (b) Polarização VV. (c) Polarização HH. (d) Polarização HV.}     
+    \label{sinteticas}
+\end{figure}
+
+\section{Dados de SAR}\label{secaoRadar}
+Para a realização dos experimentos foram adotados cinco diferentes recortes de uma imagem SAR com dimensões 513$\times$513, 434$\times$573, 247$\times$707, 460$\times$649 e 357$\times$357 \emph{pixels}, respectivamente. Os recortes recobrem a região de Paragominas no estado do Pará, com resolução radiométrica de 8 \emph{bits} e espacial de 2,5 metros na banda P e polarização HH. A imagem foi adquirida com o sensor OrbiSAR da empresa Orbisat da Amazônia Ind. e Aerolevantamento S.A. no período de aerolevantamento entre 11 de fevereiro de 2007 e 13 de março de 2007, com altitude de voo em torno de $11.000$ metros. Esta imagem é mostrada na Figura \ref{paragominasTotal}, em que são ressaltadas as cinco regiões que representam os recortes extraídos para a realização dos experimentos.
+\begin{figure}[!htb]
+    \centering	       
+    \includegraphics[width=0.90\textwidth]{figs/recortesParagominas.jpg}\\     
+    \caption{Imagem SAR da região de Paragominas-PA e as localizações das áreas de estudo.}      
+    \label{paragominasTotal} 
+\end{figure}
+
+Todos os recortes são baseados em regiões não urbanizadas. Na Figura \ref{recorte1} é ilustrado o recorte da região 1 (recorte 1) e a sua respectiva referência cartográfica, a qual será utilizada como verdade terrestre na localização das estradas. As estradas na Figura \ref{recorte1b} estão representadas por linhas tracejadas. Pode-se observar, ainda, que há um predomínio das estradas orientadas na direção horizontal, as quais aparecem na 
+imagem (Figura \ref{recorte1a}) em níveis de cinza mais claros que o nível de cinza do fundo e também apresentam largura maior que as estradas orientadas em outras direções. A classe fundo por apresentar alta variabilidade de níveis de cinza pode dificultar a tarefa de extração de estradas.
+% As referências cartográficas apresentadas nessa seção, constituem-se do resultado da interpretação visual realizada por uma equipe de 
+%profissionais, esta por sua vez, pertencentes a empresa Orbisat, acima citada.
+\begin{figure}[!htb]
+    \centering	   
+    \subfigure[]{\label{recorte1a}\includegraphics[width=0.42\textwidth]{figs/recorte1.png}} \hspace{0.5cm}
+    \subfigure[]{\label{recorte1b}\includegraphics[width=0.40\textwidth]{figs/ref.png}} 
+    %\subfigure[]{\label{recorte1c}\includegraphics[width=0.42\textwidth]{figs/ref_estradas_recorte1.jpg}}   
+    \caption{Recorte 1: (a) Imagem SAR (513$\times$513 \emph{pixels}). (b) Referência cartográfica.}
+    \FONTE{\citeonline{orbisat}.}
+    \label{recorte1}
+\end{figure}
+
+O recorte 2, mostrado na Figura \ref{recorte2a}, apresenta estradas em níveis de cinza claros, estreitas (aproximadamente 7 \emph{pixels}) e entorno escuro. As linhas tracejadas e contínuas vermelhas, expressas na referência cartográfica (Figura \ref{recorte2b}), representam as estradas na imagem. Assim como no recorte 1 (Figura \ref{recorte1}), as estradas com orientação horizontal são predominantes no recorte 2, sendo essas interceptadas por somente uma estrada de orientação próxima à vertical, na qual é caracterizada por níveis de cinza mais escuros em relação ao seu entorno. A classe fundo, entretanto, é aparentemente mais homogênea que a classe fundo apresentada no recorte 1, o que pode favorecer o método de extração. No entanto, as estradas no recorte 2 apresentam larguras menores, devido essa característica, o método pode confundi-las com seu entorno.
+\begin{figure}[!htb]
+    \centering	   
+    \subfigure[]{\label{recorte2a}\includegraphics[width=0.47\textwidth]{figs/recorte2.png}} \hspace{0.2cm}
+    \subfigure[]{\label{recorte2b}\includegraphics[width=0.47\textwidth]{figs/ref_recorte2.jpg}} 
+    %\subfigure[]{\label{recorte2c}\includegraphics[width=0.47\textwidth]{figs/ref_estradas_recorte2.jpg}}    
+    \caption{Recorte 2: (a) Imagem SAR (434$\times$573 \emph{pixels}). (b) Referência cartográfica.}   
+    \FONTE{\citeonline{orbisat}.}
+    \label{recorte2}
+\end{figure}
+
+O terceiro recorte, ilustrado na Figura \ref{recorte3}, apresenta uma complexidade maior em relação aos anteriores. As linhas tracejadas e contínuas vermelhas presentes na Figura \ref{recorte3b}, representam as estradas e caminhos a serem extraídos pelo método de extração. Todas as estradas presentes na cena são orientadas na direção diagonal, as quais aparecem na Figura \ref{recorte3b} em níveis de cinza claro e largura variando entre 1 a 3 \emph{pixels}. A classe fundo apresenta alta variabilidade de níveis de cinza. A presença de edificações, lagos e rios pode tornar confuso a classificação, principalmente no processo de semeação.
+\begin{figure}[!htb]
+    \centering	   
+    \subfigure[]{\label{recorte3a}\includegraphics[width=0.73\textwidth]{figs/recorte3.png}} 
+    \subfigure[]{\label{recorte3b}\includegraphics[width=0.73\textwidth]{figs/ref_recorte3.jpg}} 
+    %\subfigure[]{\label{recorte3c}\includegraphics[width=0.73\textwidth]{figs/ref_estradas_recorte3.jpg}}    
+    \caption{Recorte 3: (a) Imagem SAR (247$\times$707 \emph{pixels}). (b) Referência cartográfica.}  
+    \FONTE{\citeonline{orbisat}.}
+    \label{recorte3}  
+\end{figure}
+As características de superfície de rio ou lago fazem com que, quase sempre, o retorno do sinal transmitido tenha baixa intensidade, tornando estas regiões escuras. Devido à não-construção de uma heurística que certifique que tal região não é uma estrada e considerando que algumas estradas possuem características tais que tornam sua representação mais escura na imagem de radar, a probabilidade do método de extração reconhecer um lago como uma estrada é grande.
+
+Na Figura \ref{recorte4} é mostrada a região 4 (recorte 4), em que grande parte das estradas presentes na cena aparecem em níveis de cinza claros, caracterizadas pelas linhas tracejadas e contínuas vermelhas na Figura \ref{recorte4b}. Assim como na Figura \ref{recorte3}, a classe fundo apresenta também um grande variabilidade de níveis de cinza, causado pela presença de edificações, lagos e regiões de mata ciliar. As estradas são orientadas tanto na direção horizontal como na vertical, em larguras que variam entre 3 a 15 \emph{pixels}.
+\begin{figure}[!htb]
+    \centering	   
+    \subfigure[]{\label{recorte4a}\includegraphics[width=0.45\textwidth]{figs/recorte4.png}} \hspace{0.2cm}
+    \subfigure[]{\label{recorte4b}\includegraphics[width=0.45\textwidth]{figs/ref_recorte4.jpg}} 
+    %\subfigure[]{\label{recorte3c}\includegraphics[width=0.73\textwidth]{figs/ref_estradas_recorte3.jpg}}    
+    \caption{Recorte 4: (a) Imagem SAR (460$\times$649 \emph{pixels}). (b) Referência cartográfica.}  
+    \FONTE{\citeonline{orbisat}.}
+    \label{recorte4}  
+\end{figure}
+
+Por fim, na Figura \ref{recorte5}, é ilustrado o recorte 5. As estradas neste recorte aparecem em níveis de cinza mais claros que seu entorno, grande parte delas, aparecendo em larguras entre 1 e 2 \emph{pixels}. As linhas tracejadas identificam as estradas com larguras inferiores a 2 \emph{pixels}, e a linha contínua vermelha a estrada com largura aproximada de 12 \emph{pixels}. Nesta região, a variação de níveis de cinza da classe fundo pode ser classificada como moderada, contudo, os perfis de estrada com larguras inferiores podem dificultar o processo de extração.
+\begin{figure}[!htb]
+    \centering	   
+    \subfigure[]{\label{recorte5a}\includegraphics[width=0.40\textwidth]{figs/recorte5.jpg}} \hspace{0.3cm}
+    \subfigure[]{\label{recorte5b}\includegraphics[width=0.40\textwidth]{figs/ref_recorte5.jpg}} 
+    %\subfigure[]{\label{recorte3c}\includegraphics[width=0.73\textwidth]{figs/ref_estradas_recorte3.jpg}}    
+    \caption{Recorte 5: (a) Imagem SAR (357$\times$357 \emph{pixels}). (b) Referência cartográfica.}  
+    \FONTE{\citeonline{orbisat}.}
+    \label{recorte5}  
+\end{figure}
+
+As regiões 1 e 2 (Figuras \ref{recorte1} e \ref{recorte2}) representam regiões menos complexas para o método de extração. Tendo em vista a ausência de áreas heterogêneas, tais recortes apresentam estradas mais evidentes, sem grande interferência de ruído ou alta variabilidade de níveis de cinza em seu entorno. No entanto, as demais regiões podem apresentar um grau elevado de complexidade, tal como aquelas regiões cuja estradas não aparecem nitidamente, ou aparecem em larguras muito inferiores, o que pode aumentar a margem de erro do método de semeação. A presença de outros objetos não pertencentes à classe estrada, tais como rios, lagos, matas e edificações, podem contribuir consideravelmente com o mau desempenho do método. 
+
+Na próxima seção, são apresentados os resultados obtidos, bem como a análise de desempenho do método utilizando as imagens apresentadas nesta seção.
+
+\section{Resultados e Validação}\label{SecaoResultados}
+% No princípio básico de uma RNA, é exigido a apresentação de um conjunto de informações ou padrões de treinamento, tal que a rede se adapte a fim de 
+% reconhecer essas informações em uma aplicação futura. Uma vez que os padrões de treinamento utilizados neste trabalho são baseados nas informações 
+% presentes nas imagens de radar, os padrões presentes nas imagens sintéticas não são reconhecidos eficientemente pelo método. 
+A fim de avaliar a eficiência do método \emph{Snakes}, os pontos-sementes nas imagens sintéticas são selecionados manualmente, de forma que a localização desses pontos seja realizada adequadamente próximos às feições e, assim, a análise do extrator é voltada apenas para o comportamento do método \emph{Snakes}. As medidas de desempenho são baseadas no método desenvolvido por \citeonline{wiedemann2}.
+
+% ------------ IMAGEM SINTÉTICA -----------------------------------------------------------------------------------------------------------
+O primeiro experimento é realizado sobre a imagem sintética 1 de polarização VV, apresentada na Figura \ref{recortesintetico1a}. As feições presentes na imagem, aparecem em larguras de 3 e 15 \emph{pixels}, em níveis de cinza mais claro que a classe fundo. Em razão das estradas neste experimento serem mais evidentes e os pontos-sementes serem selecionados adequadamente por um método, a aplicação do método \emph{Snakes} foi favorecida. Os resultados da aplicação do método de extração são mostrados na Figura \ref{sintetica2Snakes}.
+\begin{figure}[!htbl]
+    \centering	   
+    \subfigure[]{\label{sintetica2a}\includegraphics[width=0.47\textwidth]{figs/FinalResults/ResultsSinteticas/result_seeding_sinthetic1_image.jpg}} \hspace{0.5cm}
+    \subfigure[]{\label{sintetica2b}\includegraphics[width=0.47\textwidth]{figs/FinalResults/ResultsSinteticas/result_snake_sinthetic1_image.jpg}} 
+    \caption{Resultados obtidos para a imagem sintética 1 (Figura \ref{recortesintetico1a}): (a) Pontos-sementes selecionados manualmente e
+     (b) Resultado final após a aplicação do método \emph{Snakes}.}
+    \label{sintetica2Snakes}
+\end{figure}
+
+Em alguns trechos da curva não ocorre a conversão para o eixo central da via, isso ocorre devido ao número de iterações não serem suficiente para o processo de minimização. Contudo, a eficiência do método para a extração do eixo de simetria em ambas as larguras de estrada (3 e 15 \emph{pixels}), mostrou-se satisfatória. Na Tabela \ref{validacaoSintetica1} são apresentados os valores adquiridos com a validação dos resultados apresentados na Figura 
+\ref{sintetica2Snakes}.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{4pt}
+\begin{center}
+\small
+\tabcolsep 2.9pt
+\caption{Medidas de desempenho do método sobre a Figura \ref{recortesintetico1a}.}
+\begin{tabular}{l||cccc}
+\hline
+& \textbf{Perfeição} & \textbf{Correção} & \textbf{Qualidade} & \textbf{Redundância}\\ \hline \hline 
+\textbf{Sintética 1} & $0,77$ & $0,63$ & $0,71$ & $0,02$ \\ \hline
+\end{tabular}
+\label{validacaoSintetica1}
+\end{center} 
+\end{table} 
+
+Uma vez que a semeação é realizada manualmente e os pontos-sementes selecionados sempre próximos às feições, é esperado que os fatores de perfeição, correção e redundância mantenha-se elevados, pois, a medida de perfeição diz respeito à porcentagem que conjunto extraído sobrepôs o conjunto referência, a correção, a porcentagem que o conjunto referência sobrepôs o conjunto extraído, e a medida de redundância, a porcentagem que os segmentos de reta pertencentes ao conjunto extraído sobrepôs uns aos outros. Sabendo que a semeação é realizada próxima às feições, e considerando a conversão esperada do método \emph{Snakes}, o conjunto extraído se manterá próximo dos eixos centrais, ou seja, medida de perfeição elevada, e consequentemente, medida de correção também elevada, pois nenhum ponto-semente foi selecionado distante das feições. O fator redundância é, portanto, também elevado, pois para uma única feição é semeada um único conjunto de pontos, o que, quase sempre, exclui a possibilidade de sobreposições.
+
+No segundo experimento, o método \emph{Snakes} é aplicado sobre a imagem sintética 2 de polarização HH (Figura \ref{recortesintetico1b}). As estradas, principalmente as de largura inferior, confundem-se quase que inteiramente com a classe fundo, tornando difícil a tarefa de reconhecimento. No entanto, as curvas convergiram com exatidão para o centro das vias em muito dos trechos dos segmentos de reta. O sinal do parâmetro $w_{line}$, que considera o tipo de perfil de estrada que a curva deve ser atraída, deve ser alterado. Considerando que as estradas na Figura \ref{recortesintetico1b} apresentam tonalidades mais escura que a classe fundo, é agregado o sinal positivo ao parâmetro $w_{line}$, que possibilita à curva atrair-se para o centro de feições escuras.
+
+Os experimentos realizados sobre a imagem sintética da Figura \ref{recortesintetico1b} são apresentados na Figura \ref{sintetica1Snakes}.
+\begin{figure}[!htbl]
+    \centering	   
+    \subfigure[]{\label{sintetica1a}\includegraphics[width=0.47\textwidth]{figs/FinalResults/ResultsSinteticas/result_seeding_sinthetic2_image.jpg}} \hspace{0.5cm}
+    \subfigure[]{\label{sintetica1b}\includegraphics[width=0.47\textwidth]{figs/FinalResults/ResultsSinteticas/result_snake_sinthetic2_image.jpg}} 
+    \caption{Resultados obtidos para a imagem sintética 2 (Figura \ref{recortesintetico1b}): (a) Pontos-sementes selecionados manualmente e
+     (b) Resultado final após a aplicação do método \emph{Snakes}.}
+    \label{sintetica1Snakes}
+\end{figure}
+
+A aplicação do método \emph{Snakes} mostrou-se eficiente ao identificar, em grande parte, os eixos centrais das estradas. Na Tabela \ref{validacaoSintetica2}, são apresentados os resultados obtidos na aplicação do método.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{4pt}
+\begin{center}
+\small
+\tabcolsep 2.9pt
+\caption{Medidas de desempenho do método sobre a Figura \ref{recortesintetico1b}.}
+\begin{tabular}{l||cccc}
+\hline
+& \textbf{Perfeição} & \textbf{Correção} & \textbf{Qualidade} & \textbf{Redundância}\\ \hline \hline 
+\textbf{Sintética 2} & $0,71$ & $0,57$ & $0,64$ & $0,01$\\ \hline
+\end{tabular}
+\label{validacaoSintetica2}
+\end{center} 
+\end{table}
+
+Apesar dos valores na Tabela \ref{validacaoSintetica2} aparentarem mau desempenho do método, sua eficiência é clara quando visualizada na Figura \ref{sintetica1b}. Pouco dos trechos com a presença de estradas, as curvas não convergiram adequadamente até o centro das feições, o que impediu de alcançar qualidade superior. É válido salientar que a qualidade da extração nesse experimento é dada principalmente pela seleção dos pontos-sementes próximos às estradas. %Assim, nota-se que o método \emph{Snakes} depende diretamente da localização dos pontos-sementes para o êxito da sua execução.
+
+% [RESULTADOS SINTETICA 3]
+No terceiro e último experimento, a imagem sintética de polarização HV apresentou resultados semelhantes aos obtidos na Figura \ref{sintetica1Snakes}. Assim como no primeiro experimento, em alguns trechos a curva não converge completamente para o eixo central. Os resultados da aplicação do método para a imagem sintética 3 são apresentados na Figura \ref{sintetica3Snakes}.
+\begin{figure}[!htbl]
+    \centering	   
+    \subfigure[]{\label{sintetica3a}\includegraphics[width=0.47\textwidth]{figs/FinalResults/ResultsSinteticas/result_seeding_sinthetic3_image.jpg}} \hspace{0.5cm}
+    \subfigure[]{\label{sintetica3b}\includegraphics[width=0.47\textwidth]{figs/FinalResults/ResultsSinteticas/result_snake_sinthetic3_image.jpg}} 
+    \caption{Resultados obtidos para a imagem sintética 3 (Figura \ref{recortesintetico1c}): (a) Pontos-sementes selecionados manualmente e
+     (b) Resultado final após a aplicação do método \emph{Snakes}.}
+    \label{sintetica3Snakes}
+\end{figure}
+
+Embora o reconhecimento do eixo central não tenha sido completo, as áreas não reconhecidas foram mínimas, justificando as medidas de desempenho apresentadas na Tabela \ref{validacaoSintetica3}. 
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{4pt}
+\begin{center}
+\small
+\tabcolsep 2.9pt
+\caption{Medidas de desempenho do método sobre a Figura \ref{recortesintetico1c}.}
+\begin{tabular}{l||cccc}
+\hline
+& \textbf{Perfeição} & \textbf{Correção} & \textbf{Qualidade} & \textbf{Redundância}\\ \hline \hline 
+\textbf{Sintética 3} & $0,77$ & $0,64$ & $0,71$ & $0,03$\\ \hline
+\end{tabular}
+\label{validacaoSintetica3}
+\end{center} 
+\end{table}
+
+Nesses três primeiros experimentos com imagens sintéticas, é testada a eficiência do método \emph{Snakes} sobre a presença de ruído na imagem, em que é utilizada a semeação manual dos pontos-sementes. A seguir, a semeação é realizada em experimentos utilizando imagens SAR reais, de modo que a semeação é aplicada de forma semiautomática, utilizando para tanto, o auxílio da rede SOM, apresentada no Capítulo \ref{conceitosTec}.
+
+% ------------ RECORTE DE RADAR -----------------------------------------------------------------------------------------------------------
+% -----------------------------------------------------------------------------------------------------------------------------------------
+A princípio, são selecionados alguns parâmetros para a alimentação do método de semeação, tais como a taxa de aprendizagem da rede SOM, a dimensão do mapa de Kohonen, a quantidade máxima de épocas de treinamento, tamanho do salto da janela de leitura e quantidade de perfis a serem lidos por amostra. Esses fatores são definidos empiricamente por um operador humano, baseando-se nas características da imagem. O parâmetro referente ao tamanho do salto, por exemplo, influencia consideravelmente na marcação dos pontos-sementes. Considerando uma imagem com largura predominante de estradas de 3 \emph{pixels}, ao se definir um salto relativamente grande, a probabilidade de a janela de leitura \textquotedblleft saltar\textquotedblright$~$ sobre uma estrada, descartando-a, é grande, e assim, independentemente da largura das estradas presentes na cena, é recomendado um fator de salto pequeno. A dimensão do mapa de Kohonen também deve possuir dimensão pequena. Isto se deve ao surgimento de regiões de incerteza no domínio de Kohonen, ou seja, as regiões tendem a não se especializar quando o mapa possui um grande 
+número de neurônios, de forma que sejam criadas pequenas áreas que induzem ao erro. Desta forma, a dimensão do mapa é definida como sendo a menor possível para a aplicação.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{-1pt}
+\begin{center}
+\tabcolsep 2.9pt
+\small
+\caption{Parâmetros adotados no método de extração para os recortes apresentados.}
+\begin{tabular}{l||C{3cm}C{3cm}C{3cm}}
+\hline
+\textbf{Imagem SAR} & \textbf{Largura Predominante (n\textordmasculine \emph{pixels})} & \textbf{Fator de salto (n\textordmasculine \emph{pixels})} & \textbf{Perfis por amostras} \\ \hline \hline 
+\textbf{Recorte 1} & \small$15$ & \small$12$ & \small$10$ \\
+\textbf{Recorte 2} & \small$7$ & \small$10$ & \small$10$ \\
+\textbf{Recorte 3} & \small$3$ & \small$10$ & \small$10$ \\
+\textbf{Recorte 4} & \small$10$ & \small$10$ & \small$10$ \\
+\textbf{Recorte 5} & \small$2$ & \small$10$ & \small$10$ \\  
+\hline
+\end{tabular}
+\label{tabelaParam}
+\end{center} 
+\end{table}
+
+A Tabela \ref{tabelaPadroes} são apresentados os níveis de intensidade utilizados para cada padrão de treinamento. Os padrões foram definidos em um perfil de 21 \emph{pixels}, tal que os valores de intensidade são estabelecidos a partir da observação das imagens reais utilizadas neste trabalho. Os quatro primeiros padrões da tabela dizem respeito aos padrões a serem reconhecidos, e os quatro últimos, os padrões a serem ignorados.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.5}\addtolength{\tabcolsep}{-1pt}
+\begin{center}
+\tabcolsep 1.2pt
+\scriptsize
+\caption{Níveis de cinza utilizados nos padrões de treinamento.}
+\begin{tabular}{l||c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c}
+\hline
+\textbf{Padrões} & \multicolumn{21}{c}{\textbf{Níveis de cinza}}\\ \hline \hline 
+\textbf{$X_1$} & 158&125&87&0&0&0&0&0&0&0&0&0&0&0&0&0&0&0&158&166&184\\
+\textbf{$X_2$} &186&163&168&191&199&186&176&204&0&0&0&184&212&204&201&194&204&212&201&212&207\\
+\textbf{$X_3$} & 158&125&87&255&255&255&255&255&255&255&255&255&255&255&255&255&255&255&158&166&184\\
+\textbf{$X_4$} & 186&163&168&191&199&186&176&204&255&255&255&184&212&204&201&194&204&212&201&212&207\\ \hline
+\textbf{$X_5$} & 186&186&199&173&176&168&171&207&196&201&181&186&176&194&196&189&201&186&209&196&186\\
+\textbf{$X_6$} & 245&247&237&250&255&245&237&230&235&247&237&232&232&240&250&247&245&250&242&250&237\\
+\textbf{$X_7$} & 255&255&255&255&255&255&255&255&255&255&255&255&255&255&255&255&255&255&255&255&255\\
+\textbf{$X_8$} &0&0&0&0&0&0&0&0&0&0&0&0&0&0&0&0&0&0&0&0&0\\ \hline
+\end{tabular}
+\label{tabelaPadroes}
+\end{center} 
+\end{table}
+
+No processo de poda, foram considerados (para todos os recortes) os limiares de $4$ e $2$ para os fatores de Limite Mínimo de Continuidade (LMC) e Limite Máximo de Descontinuidade (LMD), respectivamente. Da mesma forma, os valores de taxa de aprendizagem, dimensão do mapa de Kohonen, dimensão das amostras, raio de vizinhança e quantidade máxima de épocas, foram mantidas as mesmas, sendo $0,05$, $6\times6$, $21\times21$, $3$ e $2.000$, respectivamente.
+
+Os valores de perfeição e correção denotam o quanto foi extraído dos dados de referência e o quão corretamente as estradas foram extraídas, respectivamente. A qualidade é calculada a partir dessas duas medidas. Os resultados para as imagens de radar são apresentados conforme a sequência em que foram descritas na seção anterior. Para cada imagem, são exibidos os resultados (i) da semeação, os pontos-sementes obtidos antes e após a aplicação do algoritmo de poda, e (ii) o resultado final obtido após a aplicação do algoritmo de \emph{Snakes}. Nas figuras a seguir, são apresentados os resultados da semeação aplicados a Figura \ref{recorte1} (recorte 1).
+\begin{figure}[!htb]
+    \centering	   
+    \subfigure[]{\label{result1a}\includegraphics[width=0.47\textwidth]{figs/FinalResults/Cut1_Improved/antesPruning.png}} \hspace{0.5cm}
+    \subfigure[]{\label{result1b}\includegraphics[width=0.47\textwidth]{figs/FinalResults/Cut1_Improved/depoisPruning.png}} \\   
+    \caption{Resultados obtidos para o recorte 1 (Figura \ref{recorte1}): (a) Semeação sem a realização da poda. (b) Semeação após a poda.}    
+    \label{recorte1Resultado}
+\end{figure}
+
+Nota-se, pelo resultado da semeação, que o método de poda foi eficaz na exclusão dos pontos espúrios. Torna-se evidente que alguns pontos, mesmo sendo marcados corretamente pelo método, são excluídos na poda. Isso ocorre devido à quantidade de pontos ser inferior ao limiar LMC. O número de pontos-sementes em sequência deve atingir esse limite para que um determinado segmento de reta seja considerado. Após a semeação, os pontos-sementes são repassados ao método \emph{Snakes}, que por sua vez os interpola e aplica o processo de minimização da curva para cada um dos segmentos do conjunto.  
+\begin{figure}[!htb]
+    \centering	       
+    \subfigure[]{\label{result1bb}\includegraphics[width=0.47\textwidth]{figs/FinalResults/Cut1_Improved/snakeMap.png}} \hspace{0.5cm}
+    \subfigure[]{\label{result1c}\includegraphics[width=0.47\textwidth]{figs/FinalResults/Cut1_Improved/snakeNoMap.png}} \\ 
+    \subfigure[]{\label{result1aa}\includegraphics[width=0.47\textwidth]{figs/ref_estradas_recorte1.jpg}} \\
+    \caption{Resultados obtidos para o recorte 1 (Figura \ref{recorte1}): (a) Resultado sobre a imagem, após a aplicação do método \emph{Snakes}. (b) 
+     Resultado final sem a imagem. (c) Redes de estradas plotadas manualmente (referência).}    
+    \label{recorte1Snakes}
+\end{figure}
+
+O resultado final é mostrado na Figura \ref{recorte1Snakes}, em que se pode notar a eficiência do método na extração das estradas com largura aproximada de 15 \emph{pixels}. As estradas estreitas (entre 2 a 3 \emph{pixels}), no entanto, não é identificada pelo método de semeação que, consequentemente, não é extraída pelo método \emph{Snakes}. Na Tabela \ref{validacaoTable1} são apresentadas as medidas de desempenho obtidas a partir dos resultados na Figura \ref{recorte1Snakes}.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{4pt}
+\begin{center}
+\small
+\tabcolsep 2.9pt
+\caption{Medidas de desempenho do método sobre o recorte 1.}
+\begin{tabular}{l||cccc}
+\hline
+& \textbf{Perfeição} & \textbf{Correção} & \textbf{Qualidade} & \textbf{Redundância}\\ \hline \hline 
+\textbf{Recorte 1} & $0,47$ & $0,68$ & $0,58$ & $0,03$ \\ \hline
+\end{tabular}
+\label{validacaoTable1}
+\end{center} 
+\end{table}
+
+Ainda que as estradas com largura inferior não tenham sido identificadas pelo método de semeação, a qualidade dos resultados mostrou-se satisfatória em razão de as estradas largas serem predominantes nesse recorte. Os trechos marcados incorretamente foram mínimos, contribuindo para a qualidade da extração.
+
+No recorte 2 (Figura \ref{recorte2}), a classe fundo apresenta uma região mais homogênea quando comparada ao recorte 1. Embora essa característica seja favorável ao método de extração, o número de pontos espúrios é maior em relação aos apresentados na Figura \ref{recorte1Resultado}. No entanto, a qualidade da semeação mostrou-se equivalente. As estradas neste recorte são caracterizadas pela largura aproximada de 3 \emph{pixels} e perfis de tonalidades claras, e em alguns trechos, essa tonalidade se mistura com a classe fundo. Esses fatores fazem com que o método, no processo de leitura das amostras, se confunda e não determine de forma precisa a presença de uma estrada. Como a largura predominante neste recorte é menor em relação ao primeiro, o salto da janela de leitura é também definido com um valor menor.
+\begin{figure}[!ht]
+    \centering	   
+    \subfigure[]{\label{result2a}\includegraphics[width=0.47\textwidth]{figs/FinalResults/Cut2_Improved/antesPruning2.png}} \hspace{0.5cm}
+    \subfigure[]{\label{result2b}\includegraphics[width=0.47\textwidth]{figs/FinalResults/Cut2_Improved/depoisPruning2.png}} \\
+    \caption{Resultados obtidos para o recorte 2 (Figura \ref{recorte2}): (a) Semeação sem a realização da poda. (b) Semeação após a poda.}  
+    \label{recorte2Resultado}  
+\end{figure}
+
+Em algumas regiões da imagem, há a presença de lagos, matas e edificações, que prejudicam o método na identificação de estradas. Esta deficiência pode ser visualizada na Figura \ref{recorte2Resultado}, em que as transições de níveis de cinza causadas pelas fronteiras de vegetação são apontadas pelo método como sendo estradas. 
+\begin{figure}[!ht]
+    \centering	       
+    \subfigure[]{\label{result2d}\includegraphics[width=0.47\textwidth]{figs/FinalResults/Cut2_Improved/snakesMap.png}} \hspace{0.5cm}
+    \subfigure[]{\label{result2e}\includegraphics[width=0.47\textwidth]{figs/FinalResults/Cut2_Improved/snakesNoMap.png}} \\
+    \subfigure[]{\label{result2c}\includegraphics[width=0.47\textwidth]{figs/ref_estradas_recorte2.jpg}}
+    \caption{Resultados obtidos para o recorte 2 (Figura \ref{recorte2}): (a) Resultado sobre a imagem, após a aplicação do método \emph{Snakes}. (b) 
+     Resultado final sem a imagem. (c) Redes de estradas plotadas manualmente (referência).}    
+    \label{recorte2Snakes}
+\end{figure}
+
+Após a eliminação dos pontos espúrios no processo de poda, o método \emph{Snakes} é aplicado em cada um dos segmentos de reta. O resultado é apresentado na Figura \ref{recorte2Snakes} que, assim como no recorte 1, mostrou-se satisfatório. Uma vez que a localização dos pontos-sementes estejam próximos às estradas, a maioria das curvas convergiram para o eixo central da via. A Tabela \ref{validacaoTable2} apresenta as medidas de desempenho do método para o recorte 2.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{4pt}
+\begin{center}
+\small
+\tabcolsep 2.9pt
+\caption{Medidas de desempenho do método sobre o recorte 2.}
+\begin{tabular}{l||cccc}
+\hline
+& \textbf{Perfeição} & \textbf{Correção} & \textbf{Qualidade} & \textbf{Redundância}\\ \hline \hline 
+\textbf{Recorte 2} & $0,69$ & $0,71$ & $0,70$ & $0,25$ \\ \hline
+\end{tabular}
+\label{validacaoTable2}
+\end{center} 
+\end{table}
+
+Os segmentos de retas incorretos estão presentes em maior quantidade neste recorte, porém, a medida de correção foi elevada em decorrência da quantidade de acertos. A identificação correta das estradas é representada pelo fator perfeição. Ao analisar esse fator no recorte 2, nota-se que as estradas com feições claras e orientação próxima a horizontal foram identificadas de maneira correta. Alguns trechos das estradas presentes na cena
+são extraídos em duplicidade, o que justifica a elevação do fator redundância no recorte 2.
+
+O terceiro recorte (Figura \ref{recorte3}) é caracterizado por uma imagem com ruídos em excesso e estradas com largura predominante de 3 \emph{pixels}. Este cenário representa maior complexidade para o método em relação aos recortes 1 e 2. As estradas aparecem em orientações distintas, largura inferior a 3 \emph{pixels} e a presença de outros objetos não pertencentes a classe estrada, tais como lagos, edificações e mata ciliar, faz com que o método as identifiquem como sendo o padrão de interesse. A Figura  \ref{recorte3Resultado} representa o resultado do processo de semeação sem a aplicação da poda e após a poda, respectivamente.
+\begin{figure}[!ht]
+    \centering	   
+    \subfigure[]{\label{result3a}\includegraphics[width=0.67\textwidth]{figs/FinalResults/Cut3_Improved/antesPruning3.png}}
+    \subfigure[]{\label{result3b}\includegraphics[width=0.67\textwidth]{figs/FinalResults/Cut3_Improved/depoisPruning3.png}} \\
+    \caption{Resultados obtidos para o recorte 3 (Figura \ref{recorte3}): (a) Semeação sem a realização da poda. (b) Semeação após a poda.}
+    \label{recorte3Resultado}    
+\end{figure}
+
+Analisando a Figura \ref{recorte3Resultado}, nota-se que as interferências presentes neste recorte contribuíram notoriamente na \emph{\emph{performance}} do método. Muitos pontos são sinalizados em edificações, lagos e outros alvos. Em virtude desses obstáculos e da largura da estrada, o método apresentou resultados ruins, porém, um resultado esperado, tendo em vista a presença de ruído em grande quantidade. Na Figura \ref{recorte3Snakes} é apresentado o recorte 3 após a aplicação do método \emph{Snakes},
+\begin{figure}[!ht]
+    \centering	   
+    \subfigure[]{\label{result3c}\includegraphics[width=0.68\textwidth]{figs/FinalResults/Cut3_Improved/snakesMap.png}}
+    \subfigure[]{\label{result3d}\includegraphics[width=0.68\textwidth]{figs/FinalResults/Cut3_Improved/snakesNoMap.png}} 
+    \subfigure[]{\label{result3e}\includegraphics[width=0.68\textwidth]{figs/ref_estradas_recorte3.jpg}}
+    \caption{Resultados obtidos para o recorte 3 (Figura \ref{recorte3}): (a) Resultado sobre a imagem, após a aplicação do método 
+    \emph{Snakes}. (b) Resultado final sem a imagem. (c) Redes de estradas plotadas manualmente (referência).}   
+    \label{recorte3Snakes} 
+\end{figure}
+cujas curvas foram obtidas em pequena quantidade, evidenciando baixa qualidade do resultado. A Tabela \ref{validacaoTable3} 
+são mostrados os valores obtidos na validação do método sobre a aplicação no recorte 3.
+
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{4pt}
+\begin{center}
+\small
+\tabcolsep 2.9pt
+\caption{Medidas de desempenho do método sobre o recorte 3.}
+\begin{tabular}{l||cccc}
+\hline
+& \textbf{Perfeição} & \textbf{Correção} & \textbf{Qualidade} & \textbf{Redundância}\\ \hline \hline 
+\textbf{Recorte 3} & $0,13$ & $0,26$ & $0,21$ & $0,35$  \\ \hline
+\end{tabular}
+\label{validacaoTable3}
+\end{center} 
+\end{table}
+De fato, os valores apresentados na Tabela \ref{validacaoTable3} tem a ver com o baixo rendimento do método de extração que, embora ruins, é esperado, justamente pelas características da imagem e a maneira em que as estradas estão dispostas neste recorte.
+
+No recorte 4, mostrado na Figura \ref{recorte4}, as estradas aparecem na cena em larguras de 3 e 15 \emph{pixels}, aproximadamente, sendo predominante as estradas com largura inferior. Neste recorte, a classe fundo possui um número maior de elementos, que dificultou a tarefa de reconhecimento do método. A grande variabilidade de níveis de cinza presentes nas regiões de mata ciliar e rios fizeram com que o método de semeação reconhecesse estas áreas como estradas, justamente pelas transições de níveis de cinza serem similares aos padrões de treinamento.
+\begin{figure}[!ht]
+    \centering	   
+    \subfigure[]{\label{result4a}\includegraphics[width=0.45\textwidth]{figs/FinalResults/Cut4_Improved/antesPruning4.png}}
+    \subfigure[]{\label{result4b}\includegraphics[width=0.45\textwidth]{figs/FinalResults/Cut4_Improved/depoisPruning4.png}} \\
+    \caption{Resultados obtidos para o recorte 4 (Figura \ref{recorte4}): (a) Semeação sem a realização da poda. (b) Semeação após a poda.}  
+    \label{recorte4Resultado}
+\end{figure}
+
+Novamente, no recorte 4 pode-se notar a ineficiência do método de semeação na identificação das estradas com largura inferior a 3 \emph{pixels}. As feições 
+com largura entre 4 e 6 \emph{pixels} são identificadas, ainda que parcialmente. Na Figura \ref{recorte4} é apresentado o recorte 4 após a 
+aplicação do método \emph{Snakes}.
+\begin{figure}[!ht]
+    \centering	   
+    \subfigure[]{\label{result4c}\includegraphics[width=0.46\textwidth]{figs/FinalResults/Cut4_Improved/snakesMap4.png}}
+    \subfigure[]{\label{result4d}\includegraphics[width=0.46\textwidth]{figs/FinalResults/Cut4_Improved/snakesNoMap4.png}} 
+    \subfigure[]{\label{result4e}\includegraphics[width=0.46\textwidth]{figs/ref_estradas_recorte4.jpg}}
+    \caption{Resultados obtidos para o recorte 4 (Figura \ref{recorte4}): (a) Resultado sobre a imagem, após a aplicação do método 
+    \emph{Snakes}. (b) Resultado final sem a imagem. (c) Redes de estradas plotadas manualmente (referência).}    
+    \label{recorte4Snakes}
+\end{figure}
+
+Os eixos de simetria obtidos para o recorte 4 são considerados, no geral, satisfatórios, face às características da imagem. A Tabela \ref{validacaoTable4} são mostrados os valores obtidos na validação do método sobre a aplicação no recorte 4.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{4pt}
+\begin{center}
+\small
+\tabcolsep 2.9pt
+\caption{Medidas de desempenho do método sobre o recorte 4.}
+\begin{tabular}{l||cccc}
+\hline
+& \textbf{Perfeição} & \textbf{Correção} & \textbf{Qualidade} & \textbf{Redundância}\\ \hline \hline 
+\textbf{Recorte 4} & $0,31$ & $0,79$ & $0,60$ & $0,00$  \\ \hline
+\end{tabular}
+\label{validacaoTable4}
+\end{center} 
+\end{table}
+
+Os valores apresentados na Tabela \ref{validacaoTable4} são coerentes ao serem contrastados com a Figura \ref{recorte4Snakes}. A porcentagem maior do conjunto de estradas presentes na cena não são identificadas pelo método, reduzindo o índice de perfeição. Ambos os fatores de correção e redundância mantiveram-se com valores mínimos, demonstrando a não detecção de segmentos incorretos e a baixa sobreposição entre os segmentos extraídos, respectivamente.
+
+% ---------------------------------------------------
+No recorte 5 (Figura \ref{recorte5}), as estradas com largura de 1 \emph{pixel} são predominantes. A semeação é eficiente somente na estrada de largura aproximada de 12 \emph{pixels}, única na cena. Os demais pontos-sementes marcados na imagem constituem-se de pontos espúrios, que são eliminados pelo método de poda (Figura \ref{recorte5Resultado}).
+\begin{figure}[!ht]
+    \centering	   
+    \subfigure[]{\label{result5a}\includegraphics[width=0.40\textwidth]{figs/FinalResults/Cut5_Improved/antesPruning5.png}} \hspace{0.3cm}
+    \subfigure[]{\label{result5b}\includegraphics[width=0.40\textwidth]{figs/FinalResults/Cut5_Improved/depoisPruning5.png}} \\
+    \caption{Resultados obtidos para o recorte 5 (Figura \ref{recorte5}): (a) Semeação sem a realização da poda. (b) Semeação após a poda.}    
+    \label{recorte5Resultado}
+\end{figure}
+
+Embora o salto da janela de varredura tenha sido definido com valor menor, o reconhecimento das estradas não ocorre. Entre os experimentos realizados, grande parte dos pontos-sementes identificados em regiões de mata ciliar, edificações e lagos, são excluídos de maneira eficaz pelo método de poda, o que permite ao processo de extração ser aplicado somente em segmentos de reta cuja a continuidade dos pontos-sementes seja pertinente. Na Figura \ref{recorte5Snakes} são mostrados os resultados da aplicação do método \emph{Snakes} para os pontos-sementes obtidos no recorte 5.
+\begin{figure}[!ht]
+    \centering	   
+    \subfigure[]{\label{result5c}\includegraphics[width=0.40\textwidth]{figs/FinalResults/Cut5_Improved/snakesMap5.png}} \hspace{0.3cm}
+    \subfigure[]{\label{result5d}\includegraphics[width=0.40\textwidth]{figs/FinalResults/Cut5_Improved/snakesNoMap5.png}} 
+    \subfigure[]{\label{result5e}\includegraphics[width=0.40\textwidth]{figs/ref_estradas_recorte5.jpg}}
+    \caption{Resultados obtidos para o recorte 5 (Figura \ref{recorte5}): (a) Resultado sobre a imagem, após a aplicação do método 
+    \emph{Snakes}. (b) Resultado final sem a imagem. (c) Redes de estradas plotadas manualmente (referência).}    
+    \label{recorte5Snakes}
+\end{figure}
+
+Uma vez os pontos-sementes identificados próximos às estradas, a obtenção do eixo de simetria é quase sempre certa, tal como mostrados nos demais experimentos. Na Tabela \ref{validacaoTable5} são mostrados os valores obtidos na validação do método sobre a aplicação no recorte 5.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{4pt}
+\begin{center}
+\small
+\tabcolsep 2.9pt
+\caption{Medidas de desempenho do método sobre o recorte 5.}
+\begin{tabular}{l||cccc}
+\hline
+& \textbf{Perfeição} & \textbf{Correção} & \textbf{Qualidade} & \textbf{Redundância}\\ \hline \hline 
+\textbf{Recorte 5} & $0,09$ & $0,66$ & $0,47$ & $0,00$  \\ \hline
+\end{tabular}
+\label{validacaoTable5}
+\end{center} 
+\end{table}
+
+A porcentagem de acerto dos resultados, mostrada na Tabela \ref{validacaoTable5}, mostrou-se pertinente devido ao não reconhecimento da maioria das estradas presentes na cena. Nenhum segmento de reta foi extraído de forma incorreta, o que justifica o fator de correção elevado. Por ter extraído um único elemento, o fator perfeição apresentou valor inferior e, redundância, valor ótimo.
+
+% Por meio da Figura \ref{curvaROCfinal}, que relaciona os resultados dos oito diferentes experimentos, nota-se que o comportamento para cada tipo ou região é diferente. Quanto aos resultados obtidos com as imagens de radar, é possível notar que o grau de identificação do método é maior para as estradas com largura superior a 10 \emph{pixels}. 
+
+% Esse fator pode ser analisado por meio da comparação entre os recortes 1 e 2, ambos com ruídos moderados. A classe fundo no terceiro e quarto recorte é caracterizada pela presença de edificações, mata ciliar e lagos. A presença desses elementos proporciona a variação constante dos níveis de cinza, o que veio a dificultar a marcação dos pontos-sementes. Por último, no recorte 5, as estradas com largura aproximada de 2 \emph{pixel}, presentes em quase toda a cena, não foram identificadas pelo método de semeação, justificando a baixa qualidade do resultado. Os experimentos com imagens sintéticas se mantiveram dentro do esperado, visto que a .
+%=====================================
+% \begin{figure}[ht]
+%     \centering	   
+%     \subfigure{\includegraphics[width=0.9\textwidth]{figs/roc.jpg}}     
+%     \caption{Curva ROC para fim de comparação entre os experimentos apresentados.}    
+%     \label{curvaROCfinal}
+% \end{figure}
+
+% O gráfico ROC foi construído a partir dos valores de qualidade adquiridos de cada um dos experimentos. Entretanto, o comportamento da curva é linear justamente por existir somente um ponto de amostragem para cada experimento, tal como exemplificado por \citeonline{fawcett}. 
+
+As medidas de desempenho obtidas para cada experimento variam entre 0 e 1, em que o valor 0 representa o ajuste ótimo para a medida de Redundância, e 1 representa o ajuste ótimo para as medidas de Perfeição, Correção e Qualidade. Um fator de desempenho global que considera as quatro medidas pode ser calculado pela distância euclidiana, em que é calculada a distância das medidas em relação ao valores ótimos $P=[1,1,1,0]$:
+\begin{align}
+  d_{\wr} = \sqrt{(perf-1)^2 + (corr-1)^2 + (qual-1)^2 + (redu-0)^2}~.
+\end{align}
+A variação de $d_{\wr}$ é entre $0$ e $2$, em que admiti-se como melhor resultado aquele que produzir a menor distância $d_{\wr}$. 
+Na Tabela \ref{unificacao} são apresentados os valores de $d_{\wr}$ para cada experimento \cite{scofield}.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{-1pt}
+\begin{center}
+\tabcolsep 2.9pt
+\small
+\caption{Medidas de desempenho do método de extração de estradas para os recortes apresentados.}
+\begin{tabular}{l||C{1.8cm}C{1.8cm}C{2cm}C{2.6cm}C{3cm}}
+\hline
+\textbf{Imagem} & \textbf{Perfeição} & \textbf{Correção} & \textbf{Qualidade} & \textbf{Redundância} & \textbf{Unificação ($d_{\wr}$)}\\ \hline \hline 
+\textbf{Sintética 1} & $0,77$ & $0,63$ & $0,71$ & $0,02$ & $0,52$ \\
+\textbf{Sintética 2} & $0,71$ & $0,57$ & $0,64$ & $0,01$ & $0,62$ \\
+\textbf{Sintética 3} & $0,77$ & $0,64$ & $0,71$ & $0,03$ & $0,52$ \\ \hline
+\textbf{Recorte 1} & $0,47$ & $0,68$ & $0,58$ & $0,03$ & $0,74$ \\
+\textbf{Recorte 2} & $0,69$ & $0,71$ & $0,70$ & $0,25$ & $0,57$ \\
+\textbf{Recorte 3} & $0,13$ & $0,26$ & $0,21$ & $0,35$ & $1,43$ \\
+\textbf{Recorte 4} & $0,31$ & $0,79$ & $0,60$ & $0,01$ & $0,82$ \\
+\textbf{Recorte 5} & $0,09$ & $0,66$ & $0,47$ & $0,00$ & $1,10$ \\ \hline
+\end{tabular}
+\label{unificacao}
+\end{center} 
+\end{table}
+
+% Portanto, verifica-se que o método de extração de estradas apresentou melhor resultado ...
+
+Os resultados correspondentes à aplicação semiautomática do método de semeação sobre as imagens de radar, embora tenham apresentado bons resultados, necessitam de melhoramentos, principalmente no método de semeação, pois, conforme mostraram os experimentos, à medida em que as estradas se estreitam, e pelo o aumento de ruído, o método torna-se ineficiente.
+
+A fim de medir o tempo e complexidade do algoritmo, são apresentados a seguir o tempo e complexidade do método de extração de estradas divididos entre as etapas: Treinamento da RNA, Semeação e \emph{Snakes}. O tempo de processamento da segunda etapa depende diretamente da quantidade de segmentos de reta obtidos pelo método de Semeação. Assim, o valor apresentado diz respeito ao tempo médio de processamento do método \emph{Snakes} para cada uma das estradas obtidas,
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.}\addtolength{\tabcolsep}{-1pt}
+\begin{center}
+\small
+\tabcolsep 8.9pt
+\caption{Tempo de processamento e complexidade dos algoritmos.}
+\begin{tabular}{l||cc|c}
+\hline
+& \textbf{Tempo (s:S)} & \textbf{Variância (s:S)} & \textbf{Complexidade} \\ \hline \hline 
+\textbf{SOM} & $00:72$ & $00:0001$ & $O(n^2)$ \\
+\textbf{Semeação} & $04:73$ & $00:1836$ & $O(n^2)$ \\
+\textbf{\emph{Snakes}} & $04:17$ & $00:0097$ & $O(n^3)$ \\ \hline
+\textbf{Total} & $05:45+(04:17 * n)$ & $--$ & $O(n^3)$ \\ \hline \hline 
+\end{tabular}
+\label{complexidade}
+\end{center} 
+\end{table}
+em que \textit{s:S} denotam a unidade em segundos e centésimos, respectivamente, e $n$ refere-se a entrada correspondente para cada uma das operações, assim, no treinamento da rede SOM o $n$ corresponde a dimensão do mapa de Kohonen, na Semeação à dimensão da imagem e no método \emph{Snakes} ao número de pontos em um segmento de reta. O tempo de processamento apresenta variações entre os experimentos. Para medir o tempo médio de processamento do extrator, foram realizados cinco diferentes experimentos. Ao final, é obtido o tempo médio e a variação entre eles. Qualquer alteração entre os processamentos é identificada na medida de variância que, neste caso, deve ser mínima. Sendo assim, os valores na Tabela \ref{complexidade} dizem respeito não só ao tempo médio de processamento dos cinco experimentos, como também às suas respectivas variâncias.
+
+Não foram considerados quaisquer tipos de otimizações no processo, tanto no método de Semeação quanto de \emph{Snakes}. Os valores apresentados na Tabela \ref{complexidade} denotam apenas o estado atual da implementação. Enfatiza-se a necessidade de refatorações futuras para a melhora de desempenho e qualidade. Os valores apresentados acima foram obtidos no \emph{software} MATLAB versão 7.8.0 com o método \textit{tic/toc}, em execução sobre 
+uma máquina virtual de sistema operacional Linux Ubuntu 64 \emph{Bits}, versão 10.04 LTS, com a seguinte arquitetura: 60Gb de capacidade de armazenamento, 4Gb de memória \emph{RAM}, virtualizada com Oracle\textregistered$~$Virtual Box, versão 4.1.6, em uma máquina hospedeira de sistema operacional Windows 64 \emph{Bits}, versão 7, com processador Intel\textregistered$~$Core\texttrademark$~$i7 2.93GHz e memória \emph{RAM} de 8Gb.

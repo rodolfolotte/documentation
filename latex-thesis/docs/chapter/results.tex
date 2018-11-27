@@ -8,7 +8,6 @@ As mentioned in Section \ref{training-set}, 20\% of annotated images from each d
 \subsection{CNN performance}
 As a supervised methodology, the DL requires reference images\footnote{Referenced also as annotation, labels or ground-truth images.}. Which means the methodology is extensible for images of any kind, but it will always require their respective reference. On the other hand, the same neural model could fit to any other detection issue, for instance, in the segmentation of specific tree species in a vast forest image, as soon as a sufficient amount of training samples are presented.
 
-%In this section it is shown how the neural model behaves according to the dataset and hardware specifications. 
 All the source-code regarding DL procedures was prepared to support GPU processing. Unfortunately, the server used during all the experiments was not equipped with such technology, increasing training time significantly (Table \ref{dataset-params}).
 
 \begin{table}[!htp]
@@ -49,17 +48,6 @@ In the Figure \ref{training-result} is shown the neural network training results
 The evaluation is performed repeatedly, according to a certain number of iterations, where partial inferences (prediction) is obtained and the measures are calculated by comparing the result against the ground-truth (references). These metrics are commonly adopted in the literature about classification using neural models.  
 
 A similar behavior for all training dataset is observed, except for the weight-loss. The weight-loss decay is strongly related to the image dimension, which of course requires more iterations to learn the features. The demand for the learning of all features (generalization) is greater and varies among them. Accuracy and cross-entropy, on the other hand, had progressed mostly from 0 to 10k iterations, stabilizing near 90\% and 0.1 thereafter, respectively. 30k iterations were sufficient to reach similar results for all datasets (as shown later in the visual inspection). However, RueMonge2014, ENPC, and Graz still had high error rates, which means that not all classes could be detected or clearly delineated, even with 50k iterations.
-
-%[colocar imagem da evolução da segmentacao] - 10k, 30k e 50k
-% \begin{figure}[!htp]
-%     \centering    
-%     \caption{Accuracy evolution according to the number of iterations. Example using a image from eTRIMS dataset.}
-%     \vspace{6mm}
-%     \includegraphics[width=1\textwidth]{\dropbox/phd/pics/evolution/evolution.pdf}       
-% 	\legenda{}
-%     \label{training-evolution}
-%     \FONTE{Author's production.}
-% \end{figure}
 
 \subsection{Inference over the online datasets (Experiment 1 - Table \ref{training-explained})}
 In this section, each of the online facade sets will be evaluated in detail, according to the Experiment 1 in Table \ref{training-explained}. In this evaluation was adopted the same metric used during the training (accuracy) with the addition of the F1-score, also described in Section \ref{evaluation-section}.

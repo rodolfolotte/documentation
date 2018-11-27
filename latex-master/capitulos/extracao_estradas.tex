@@ -1,0 +1,608 @@
+\chapter{EXTRAÇÃO DE FEIÇÕES LINEARES}
+
+%---------------------------Proposta
+
+% A geração e atualização de mapas usando operadores automáticos ou semi-automáticos por meio do imageamento por radar constitui uma 
+% importante área de pesquisa. Uma vez que as imagens são obtidas, torna-se possível a segmentação e extração de feições lineares, 
+% tais como: estradas, ruas, cercas, pistas de aeroporto etc \cite{gamba2}. A deteção de estradas contribui em aplicações como cartografia e estudos geomorfológicos. 
+% Esses segmentos podem possuir formas diversas na imagem, sendo que as formas curvilíneas exigem operadores mais robustos devido é 
+% necessidade de identificação de intersecções e curvas. Porém a maioria das feições encontradas em imagens é formada por segmentos 
+% retos.
+% 
+% As imagens \emph{SAR} que serão utilizadas neste trabalho recobrem a região de Paragominas no estado do Pará, 
+% com resoluções radiométricas de 8 e 16 \emph{bits} e espacial de 2,5 metros nas banda P e X. As imagens foram adquiridas com o sensor
+% OrbiSAR no período de aerolevantamento entre 11 de fevereiro de 2007 e 13 de março de 2007, com altitude de $11$ km (Figura \ref{figure1}).
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.48\textwidth]{figs/paragominas_P_8Bits.png}
+%     \hspace{0.2cm}
+%     \includegraphics[width=0.48\textwidth]{figs/paragominas_X_8Bits.png}
+%     \caption{Imagens \emph{SAR} do satélite OrbiSAR da região de Paragominas-PA: (a) Banda P; (b) Banda X.}
+%     \FONTE{Orbisat (\citeyear{orbisat}).}
+%     \label{figure1}   
+% \end{figure}
+% 
+% As feições lineares presentes na imagem da região de Paragominas correspondem a estradas pavimentadas e não-pavimentadas, caminhos, 
+% cercas e pista do aeroporto local. Em produtos cartográficos de escala cadastral a serem produzidos a partir da imagem, algumas dessas 
+% feições poderão ser representadas por linhas simples, como estradas não-pavimentadas, caminhos e cercas. Por outro lado, estradas 
+% pavimentadas, que possuem maior largura, e a pista do aeroporto serão normalmente definidas por linhas duplas no mapeamento.
+% 
+% No trabalho de Chen (\citeyear{chen2}), é apresentado um método para a deteção de estradas dividido em duas etapas. Inicialmente, usa-se 
+% um operador para a deteção de bordas, o filtro de \emph{Canny} \cite{canny}, que calcula a intensidade da vizinhança do \emph{pixel}
+% em questão. A segunda etapa é caracterizada por métodos globais sobre o conhecimento prévio da estrutura de grande escala, a qual é
+% utilizada para construir uma estrutura de grande extensão linear com os segmentos calculados na etapa anterior. Segundo Cheng e Ye 
+% (\citeyear{cheng}), este método possui certas desvantagens, como a deteção de falsos segmentos de reta, justamente pela presença 
+% do ruído \emph{speckle}. Desta forma, conclui-se que há a necessidade da utilização de filtros anti-ruído antes de qualquer operação 
+% com imagens \emph{SAR}.
+% 
+% %O operador a ser desenvolvido neste trabalho será aplicado exclusivamente às imagens mencionadas. Tratando-se de um caso específico, serão 
+% %realizados testes somente nas bandas em que a imagem foi adquirida, ou seja, as bandas \emph{P} e \emph{X}.
+% 
+% O processo de extração será dividido em três etapas: pré-processamento, extrator de feições lineares e pós-processamento 
+% (Figura \ref{figura3}).
+% 
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.35\textwidth]{figs/diagrama1.jpg}    
+%     \caption{Esboão preliminar do processo de extração das feições lineares.}
+%     \label{figura3}   
+% \end{figure}
+% 
+% \section{Pré-Processamento}
+% 
+% A fase de pré-processamento é caracterizada pela preparação da imagem para uma determinada aplicação. No caso do extrator de feições
+% lineares, é necessário que a imagem seja a menos ruidosa possível. Desta forma, a imagem necessita submeter-se a operações que 
+% diminuam interferências indesejáveis, as quais são geralmente desenvolvidas para a eliminação de ruído do tipo \emph{speckle}, como 
+% os filtros de \emph{Lee}, \emph{Frost} e outros. %No entanto, para a extração de feições lineares, há outros obstáculos a serem 
+% %considerados: veículos, passarelas, pontes e demais alvos afins. Estes obstáculos muitas vezes não permitem a identificação eficiente 
+% %do segmento, e são necessários métodos que os eliminem. 
+% 
+% As duas principais causas de distorções radiométricas que prejudicam a interpretação das imagens de radar são: o ruído \emph{speckle} 
+% e o efeito do padrão da antena. O ruído \emph{speckle} é um dos principais fatores que degradam a qualidade das imagens \emph{SAR}. 
+% Trata-se de um ruído multiplicativo resultante da radiação coerente usada para gerar as imagens, o qual é proporcional é intensidade 
+% do sinal recebido, sendo mais intenso onde o sinal é forte e menos intenso onde o sinal é fraco, proporcionando um aspecto granuloso que 
+% muitas vezes dificulta a interpretação dos alvos. Existem duas formas para a eliminação ou minimização deste ruído: a filtragem 
+% e o processamento \emph{multilook}. %\cite{canada} 
+% 
+% \subsection{Filtragem}
+% 
+% Os filtros são importantes ferramentas de processamento das imagens \emph{SAR}, permitindo diminuir os efeitos 
+% causados por diversos ruídos, suavizando e realçando detalhes da imagem sem alterar seu nível médio de cinza. Existem muitas 
+% alternativas de filtros para a minimização de ruídos em imagens óticas ou de radar. A técnica de aplicação envolvendo cada tipo de 
+% filtro é semelhante, e o que os diferem são suas lógicas matemáticas. Um exemplo são os filtros de média (Figura \ref{figura4}) e 
+% mediana, que utilizam métricas estatésticas distintas para a mudança dos valores de cada \emph{pixel}.
+% 
+% Os filtros podem ser categorizados como lineares ou não-lineares e são definidos como:
+% 
+% \begin{itemize}
+%  \item \textit{Filtros lineares}: Os filtros lineares são aplicados aos sinais recebidos, a fim de eliminar as frequências indesejadas
+%  ou até mesmo para selecionar um sinal específico. Entre os filtros lineares existentes, podem ser citados como os mais usados: filtro
+%  passa-baixa, filtro passa-alta e filtro passa-faixa ou passa-banda. O primeiro permite a passagem somente de componentes abaixo de certo
+%  limiar de frequência. O filtro passa-alta somente acima de certo limiar de frequência. E por fim, o passa-faixa permite a passagem de 
+%  somente uma faixa de frequência. Os filtros citados podem também ser processados no domínio da frequência.
+% 
+%  \item \textit{Filtros não-lineares}: Os filtros não-lineares aplicam transformações sem o compromisso de manter o núvel médio de 
+%  cinza da imagem original. Alguns dos filtros não-lineares são: filtro de mediana, morfológicos e os estatésticos de ordem. Entre
+%  estes, um dos mais importantes filtros é o filtro de mediana, que consiste em substituir o valor de um \emph{pixel} ($i,j$), 
+%  centralizado em uma determinada vizinhança, pelo valor mediano dos \emph{pixels} desta vizinhança. O filtro da mediana é um poderoso
+%  filtro na eliminação de ruídos do tipo ``sal e pimenta`` \cite{woods}. Os operadores morfológicos descrevem quantitativamente 
+%  as estruturas geométricas existentes na imagem, cujo objetivo é revelar os objetos nela formados.
+% \end{itemize}
+% 
+% A filtragem pode ser realizada no domínio do espaço ou da frequência. A filtragem espacial é constituída por dois componentes básicos,
+% uma vizinhança de \emph{pixels}. E por uma operação pré-definida, que atualiza os \emph{pixels} desta vizinhança. As transformações na 
+% filtragem espacial são realizadas diretamente na imagem, ao contrário da filtragem no domínio da frequência. Existem dois tipos de 
+% filtragem no domínio espacial, por convolução ou correlação.
+% 
+% \begin{itemize} 
+% \item \textit{Filtragem por Convolução}: O processo de filtragem por convolução consiste em determinar um centro na máscara de filtragem 
+% em uma posição ($i,j$), de modo que a máscara de vizinhos percorra toda a imagem, realizando a soma do produto em cada localização.
+% Considerando uma filtragem espacial linear com máscara de dimensão 3x3, localizada em um ponto ($i,j$) na imagem, onde $i$ é a 
+% coordenada de uma dada linha e $j$ a coordenada de uma dada coluna, e a resposta do filtro, $g(i,j)$, é a soma do produto dos 
+% coificientes da máscara pelos valores dos \emph{pixels} da imagem (Equação \ref{eq3}). A dimensão da máscara com valores ímpares 
+% simplifica a indexação do centro\footnote{É possível também realizar a filtragem com máscara de dimensões pares, no entanto, é 
+% necessário estabelecer um centro para este filtro.}.
+% \begin{align}
+%  \label{eq3}
+%  g(i,j) = \sum_{s=-a}^a \sum_{t=-b}^b w(s,t)f(i+s,j+t)~~, 
+% \end{align}
+% em que $w$ é a máscara, $f$, a imagem, $i$ e $j$ são as coordenadas do \emph{pixel}, que variam de forma que o valor do \emph{pixel} central em
+% $w$, resulte da visitação de todos os \emph{pixels} em $f$ \cite{woods}. A Figura \ref{figura4} ilustra o processo do filtro linear de média. As máscaras 
+% na filtragem espacial podem variar de tamanho; quanto maior a dimensão da máscara, maior será o efeito de suavização. Na Figura 
+% \ref{figura4}, a máscara possui dimensão 11x11 \emph{pixels}.
+% 
+% \item \textit{Filtragem por Correlação}: O mesmo processo efetuado pela filtragem por convolução, é realizado no processo por correlação.
+% Porém, a máscara de coeficientes é rotacionada em 180 graus \cite{woods}.
+% \end{itemize}
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.95\textwidth]{figs/filters.jpg}    
+%     \caption{Processo de filtragem espacial - exemplo de aplicação do filtro de média (11x11 \emph{pixels}).}
+%     \FONTE{Adaptado de Gonzalez e Woods (\citeyear{woods}).}
+%     \label{figura4}   
+% \end{figure}
+% 
+% O processo de filtragem no domínio da frequência é realizado por meio da Transformada de Fourier (TF)\footnote{
+% Processo comumente usado no processamento digital de sinais, que permite realizar transformações no domínio do tempo para o 
+% domínio da frequência e vice-versa, e com isso analisar a interação entre os sinais, avaliar as propriedades numéricas do sinal ou o
+% comportamento de sistemas de comunicação e transmissão de dados. A Transformada de Fourier $F(\omega)$ de uma função $f(t)$ é 
+% definida por $F(\omega)~=~\Im\{f(t)\}~\equiv~\int_{-\infty}^{\infty}f(t)e^{-j\omega t}dt$ em que $e^{-j\omega t}$ é denominado núcleo
+% da Transformada de Fourier. A inversa da transformada é expressa por $f(t)~=~\Im^{-1}\{F(\omega)\}~\equiv~\frac{1}{2\pi}\int_
+% {-\infty}^{\infty}F(\omega)e^{j\omega t}d\omega$.}
+% da imagem original. O processo consiste em realizar a TF na imagem original, que é então obtida no domínio da 
+% frequência, e sobre a qual são executados os processos de filtragem. Posteriormente, é feita a Transformada inversa de Fourier,
+% cujo resultado é a imagem filtrada.
+% 
+% Há também a possibilidade de os filtros assumirem direções de interesse, definidas pelas máscaras, que realçam as bordas segundo essas 
+% direções. Alguns trabalhos, como Dell'Acqua et al. (\citeyear{gamba2}), Hedman et al. (\citeyear{gamba}), Rianto et al. (\citeyear{rianto}) 
+% e Idbraim (\citeyear{idbraim}), fazem uso do filtro direcional como forma de obter realces mais consistentes das estradas contidas nas 
+% imagens. A orientação das feições lineares nas imagens é uma informação desconhecida, desta forma, é difícil definir uma orientação para 
+% o filtro de modo que o realce das feições seja eficiente. Para isso, o filtro direcional é aplicado em oito diferentes direções em cada 
+% subsetor da imagem. O filtro, cuja orientação apresenta a maior resposta naquele subsetor, é escolhido como o ótimo para aquela área. 
+% E assim, são executados para os subsetores restantes.
+% 
+% Os filtros direcionais, como os citados acima, são filtros com grande eficiência na identificação de feições lineares, principalmente
+% em áreas urbanas densas. Sua utilização não só auxilia o processo de extração dessas feições, como também aumenta a porcentagem de 
+% deteção das feições reais (estradas, cercas e ruas), enquanto reduz os segmentos falsos \cite{gamba2}.
+% 
+% Os filtros apresentam variações em relação é imagem aplicada. Determinado filtro pode ser eficiente em um tipo de imagem e ruim em outra.
+% Infelizmente, a informação sobre qual filtro é o mais adequado para utilização não é obtida de imediato. Esta informação 
+% é adquirida por meio de experimentos realizados face ao problema analisado.
+% 
+% \subsection{Processamento \emph{Multilook}}
+% 
+% O processamento \emph{multilook} é a divisão do feixe de visada \emph{A}, em sub-feixes ou \emph{looks}, onde cada sub-feixe prevê uma 
+% visada independente na cena iluminada (Figura \ref{figura7}). Cada um destes \emph{looks} também está sujeito ao ruído \emph{speckle}. 
+% No entanto, com a soma da média de cada \emph{look}, é obtida a imagem final com o ruído reduzido. Este processo, é possível somente 
+% no imageamento por radar, mais precisamente em imagens \emph{SAR}.
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.45\textwidth]{figs/multilook.jpg} 
+%     \caption{Esquema de imageamento \emph{multilook}.}
+%     \FONTE{Adaptado de Oliver e Quegan (\citeyear{oliver}).}
+%     \label{figura7}   
+% \end{figure}
+% 
+% Geralmente, o processamento \emph{multilook} é realizado durante a aquisição dos dados, enquanto a redução de ruído \emph{speckle} por 
+% filtragem espacial é realizada somente sobre os dados finais.
+% 
+% % In Digital Analysis Processing - Page 719
+% \subsection{Filtros identificadores de bordas}
+% 
+% Os filtros detectores de bordas são comumente usados no tratamento de imagens óticas. As bordas em uma imagem resultam de mudanças 
+% bruscas de intensidade, ou pontos de descontinuidades. A maior parte dos métodos para detectar bordas na imagem utilizam operadores 
+% diferenciais de primeira ou segunda ordem. Os operadores diferenciais ressaltam os contornos das bordas, mas também amplificam o ruído 
+% da cena. Sendo assim, é recomendável a aplicação de filtros para a suavização das imagens, antes que os operadores de bordas sejam
+% aplicados.
+% 
+% Entre os operadores de bordas mais utilizados, destacam-se o operador \emph{Sobel} e o de \emph{Canny} \cite{canny}. Ambos permitem obter
+% resultados satisfatórios. No entanto, o filtro de \emph{Canny} apresenta resultados mais satisfatórios e é considerado um filtro ótimo
+% para a deteção de bordas em imagens.
+% 
+% Canny (\citeyear{canny}) estabelece três critérios para uma boa identificação das bordas: baixa probabilidade de marcar uma borda 
+% erroneamente; menor distância possível entre a borda detectada e a verdadeira; evitar a identificação de múltiplas bordas onde existe 
+% apenas uma (retorno simplificado). Canny apresenta uma definição matemática para cada um dos critérios, detalhada no respectivo artigo.
+% 
+% %Desta forma, definiu $f(x)$ sendo a resposta do filtro a uma borda $G(x)$. Assumindo que a borda é centrada em $x=0$. Então a resposta do
+% %filtro para essa borda com centro em $H_G$ é dada por uma integral de convolução:
+% %\begin{align}
+% % H_G&=\int_{-w}^{w} G(-x)f(x)~dx
+% %\end{align}
+% %limitando a resposta do filtro no intervalo $[-w,w]$. A raiz quadrática da resposta respresenta o ruído $n(x)$:
+% %\begin{align}
+% % H_n&=n_0[\int_{-w}^{w} f^2(x)~dx]^{\frac{1}{2}}
+% %\end{align}
+% %onde $n_0^2$ é a amplitude quadrática média do ruído pela unidade de comprimento. Portanto, o primeiro critério pode ser expressa pela 
+% %razão entre os dois retornos:
+% %\begin{align}
+% % SNR&=\frac{|H_G|}{H_n}
+% %\end{align}
+% %Para o segundo critério, Canny utilizou a inversa da distância da raiz quadrada média. A marcação das bordas é realizada com os máximos
+% %locais da resposta do operador $f(x)$, onde a primeira derivada é nula:
+% 
+% Após o processamento de identificação de bordas, alguns dos segmentos apresentam descontinuidades, muitas vezes devido à presença de 
+% ruídos ou até mesmo em função do limiar da área ou parâmetro de escala adotado. Alguns trabalhos, utilizam a morfologia matemática 
+% como método para conexão destes segmentos descontínuos, dando-lhes maior consistência e simplicidade nos resultados, 
+% % Para Gonzalez e Woods (\citeyear{woods}), 
+% % há três abordagens que viabilizam a resolução deste problema: O operador consiste em analisar as características dos \emph{pixels} em 
+% % um vizinhança pequena de um ponto ($i,j$) definido como borda. Todos os pontos que são similares de acordo com o critérios 
+% % pré-estabelecidos são ligados. A segunda abordagem é um operador regional, que consiste em uma aproximação funcional, onde é realizado 
+% % um ajuste de uma curva nos pontos conhecidos a fim de obter uma aproximação. A terceira abordagem refere-se a um operador global 
+% % utilizando Transformada de Hough \cite{hough}, que analisa as propriedades globais da imagem, identificando os subconjuntos de 
+% % \emph{pixels} que fazem parte de segmentos retos.
+% 
+% Neste trabalho, os filtros serão de suma importância para a eliminação do ruído \emph{speckle}, efeito muito presente no imageamento por
+% radar. Serão explorados tanto os filtros que suavizam e eliminam os ruídos, quanto os filtros de realce, importantes para a etapa de 
+% extração.
+%   
+% \section{Extrator de feições lineares} \label{morf}
+% 
+% Muitos métodos para a extração de estradas em imagens óticas têm sido desenvolvidos, como Hu et al. (\citeyear{hu}), Wiedemann e Ebner 
+% (\citeyear{wiedemann}), Niu (\citeyear{xutong}) e Li e Briggs (\citeyear{yan_li}). Ao se trabalhar com a extração de 
+% feições lineares em imagens óticas, alguns obstáculos devem ser considerados, como: sombras causadas por árvores, edificações, 
+% automóveis ou pontes. Estes são causas de mudanças de intensidade nas estradas, fator que dificulta a determinação das áreas 
+% homogêneas ao redor do \emph{pixel}.
+% 
+% Em imagens \emph{SAR}, as feições lineares são caracterizadas por segmentos mais escuros ou mais claros em relação ao fundo 
+% \cite{chanussot}, o que acaba ficando evidente na imagem, pois o ambiente ao redor das estradas, na maioria das vezes apresenta 
+% tonalidades acinzentadas. Os veículos raramente apresentam uma resposta elevada, pois, frequentemente, são alvos em movimento, 
+% e desta forma, há variações no retorno do sinal devido ao intervalo de transmissão, correspondente é abertura sintótica. O retorno 
+% do sinal em relação ao alvo em movimento acaba por se tornar camuflado em meio é superfície escurecida das estradas, logo eles 
+% não constituem grandes obstáculos em imagens \emph{SAR}. As sombras presentes em imagens de radar, resultam da oclusão de alvos 
+% antrópicos ou de relevo (\emph{layover}, \emph{forshortening}), que são tratadas por algoritmos específicos.
+% 
+% %A grande diferença no processamento de imagem de radar é a presença do ruído \emph{speckle}, fazendo com que seja necessário a 
+% %utilização de filtros para minimizar o mesmo.
+% 
+% Segundo Hu et al. (\citeyear{hu}), muitos dos métodos de deteção de estradas são baseados em dois núveis de análise: a análise local, 
+% envolvendo o uso de operadores locais para detectar a direção da estrada em um determinado \emph{pixel}, e uma análise global, que 
+% é aplicada em um núvel mais alto, otimizando o método de extração. Métodos baseados na deteção de bordas estão entre 
+% os mais comuns no auxílio à extração de feições lineares. Sua técnica consiste em selecionar pontos na imagem em que há mudanças bruscas de 
+% intensidade. Entretanto, em cenas complexas, o método de deteção reconhece muitos segmentos que não fazem referência ao segmento de 
+% interesse, ou não reconhece os que deveriam.
+% 
+% A utilização de bons métodos de filtragem pode auxiliar no processo de extração de vias. Independente da técnica de extração utilizada, 
+% o desempenho pode ser otimizado com a escolha de um determinado filtro. São muitas as alternativas para a extração de feições lineares, e  
+% devido é grande quantidade de classes de métodos de extração, serão apresentadas aqui as principais abordagens.
+% 
+% %\subsection{Métodos baseados em morfologia matemática}
+% 
+% %Operadores morfológicos, como o operador morfológico direcional apresentado por Chanussot et al. (\citeyear{chanussot}) ou a utilização 
+% %de \emph{Snakes} como em Gruen e Li (\citeyear{gruen}) e Mayer et al. (\citeyear{mayer}).
+% \textit{\textbf{Operadores Morfológicos}}: Os operadores morfológicos são grandes contribuidores na extração de feições lineares. A morfologia 
+% está ligada em linguística a estruturas das palavras, ou em biologia, é forma de um organismo, ela também está ligada na matemática ao 
+% estudo das estruturas geométricas e por extensão, é teoria dos conjuntos. O estudo morfológico é aplicado no processamento de imagens 
+% digitais, como realce de formas, filtragem, segmentação, esqueletização e outras \cite{woods}. Na extração de feições lineares, os 
+% operadores morfológicos são utilizados a fim de identificar intersecções em vias, conectar ou excluir segmentos descontínuos, provenientes 
+% da má identificação das bordas etc. 
+%  
+% Os operadores morfológicos são utilizados entre muitas coisas, para a remoção de pequenas regiões, buracos e suavização de formas e 
+% contornos. Chanussot et al. (\citeyear{chanussot}), utilizou um operador morfológico direcional para a deteção de estradas em imagens 
+% \emph{SAR}, que consisti em atribuir um padrão para as feições lineares. Inicialmente, é atribuído um padrão para as feições lineares 
+% de interesse, fixando valores de limiares para o comprimento, largura e contraste das feições. Os operadores morfológicos, mais 
+% especificamente os operadores de fechamento por reconstrução, são então utilizados para a remoção de estruturas mais escuras que o 
+% ambiente ao redor delas, correspondente aos vales ou buracos. Após esta operação, são realizadas as operações de remoção de pequenas 
+% montanhas e finalmente a extração das estruturas de interesse. Apesar de ser um processo rápido e interessante, os resultados 
+% apresentados por Chanussot et al. (\citeyear{chanussot}) não foram satisfatórios, devido a deteção de segmentos falsos e por apresentar
+% muitas descontinuidades nos segmentos.
+% 
+% \textit{\textbf{\emph{Snakes}}}: Uma outra abordagem, é a utilização de \emph{snakes} para a obtenção de eixos de simetria de estradas, 
+% o método consiste em um processo 
+% iterativo e adaptativo para a identificação de contornos de objetos. Gruen e Li (\citeyear{gruen}) e Mayer et al. (\citeyear{mayer}), 
+% utilizaram esta abordagem para a extração de estradas em imagens óticas, como solução para obstáculos como sombras causadas por árvores,
+% carros, edificações etc. 
+% 
+% O método desenvolvido inicialmente por Kass et al. (\citeyear{kass}), consiste em uma curva poligonal, inserida no interior do objeto, 
+% que evolui a fim de alinhar-se ao seu contorno (Figura \ref{figura1r}). 
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.45\textwidth]{figs/snake.png} 
+%     \caption{Possíveis deformações no processo \emph{snakes} para a obtenção de contornos.}    
+%     \label{figura1r}   
+% \end{figure}
+% 
+% O modelo inicial é deformado sob a ação de forças internas à curva e forças externas que atraem o modelo em direção ao contorno. 
+% A convergência deste método se dá pela minimização da função de energia que controla o movimento da \emph{snake}. O objetivo é encontrar 
+% mínimos de energia que coincidam com o contorno do objeto. Estes mínimos de energia correspondem aos máximos de intensidade na imagem.
+% 
+% Uma evolução do processo de \emph{snakes} para a extração de estradas, é o método \emph{ribbon-snake}, onde as feições lineares podem 
+% ser extraídas a partir da hipótese de um eixo central identificado nas feições (Figura \ref{figura1t}(a)). Onde, a partir de uma constante 
+% de largura, os contornos são replicados em ambos os lados deste eixo em feições largas (Figura \ref{figura1t}(b)), ou sem constante de
+% largura (Figura \ref{figura1t}(c)), para as demais estradas \cite{mayer}.
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.57\textwidth]{figs/snake1.png} 
+%     \caption{Deformações do processo \emph{ribbon-snakes} para a extração de estradas.}    
+%     \label{figura1t}   
+% \end{figure}
+% 
+% %No trabalho de Mayer et al. (\citeyear{mayer}), foram utilizadas imagens óticas para a aplicação do método. No entanto, 
+% 
+% %\subsection{Métodos Probabilísticos}
+% 
+% \textit{\textbf{Campo Aleatério Markoviano (Markovian Random Field - MRF)}}:
+% %Antes de apresentar o conceito de MRF, é necessário algumas definições. Primeiro, um Campo Aleatório é expresso por um conjunto finito
+% %$S$, por elementos $s$ denominados sítios. E seja $\Lambda$ um conjunto finito chamada espaço de fase. Um campo aleatério sobre $S$ com
+% %fases em $\Lambda$ é uma coleção $X = {X(s)}_{s\in S}$ de variáveis aleatérias $X(s)$ com valores em $\Lambda$. Um sistema de vizinhanças
+% %sobre $S$ é uma família $N={N_s}_{s\in S}$ de subconjuntos de $S$ tais que para que todo $s\in S$, (i) $s\notin N_s$, (ii) $t\in N_s 
+% %\Rightarrow s\in N_t$. O subconjunto $N_s$ chamado vizinhança do sítio $s$. O par ($S,N$) é chamado um grafo, ou topologia. Na interpretação
+% %de grafos, $S$ é o conjunto de vértices e $N$ define as arestas: os sítio $s$ e $t$ são ligados por uma aresta se e somente se eles são 
+% %vizinhos, ou seja, $t\in N_s$.
+% %Um campo aleatério $X$ é chamado MRF, pois é relacionado a um de vizinhança $N$ se para todo sítio $s\in S$ as variáveis aleatérias $X(s)$ 
+% %e $X(S N_s)$ são independentes dado $X(N_s)$. Qualquer conjunto unitário ${s}$ é um clique. Um subconjunto $C\subset S$ com mais de um
+% %elemento é chamado um clique de um grafo ($S,N$) se e somente se quaisquer dois sítios de $C$ são vizinhos.
+% %Para o entendimento destas definições e o uso da MRF na extração de feições lineares, apresenta-se sua aplicação no trabalho de Tupin 
+% A maioria dos trabalhos que abordam o problema da extração de feições lineares, utilizam algum método capaz de identificar as bordas, ou 
+% as estruturas que caracterizam as estradas, ruas e demais segmentos lineares. No entanto, devido a ruídos, muitas vezes a deteção de
+% bordas resulta em segmentos descontínuos. No trabalho realizado por Tupin et al. (\citeyear{tupin}), é abordado um método probabilístico
+% para o agrupamento destes segmentos, denominado Campo Aleatério Markoviano (\emph{Markovian Random Field - MRF}). Tal método, supõe
+% que a conexão dos segmentos descontinuados na imagem sejam feições verdadeiras, e assim é definido um conjunto $S_d'$ de possíveis 
+% conexões e $S_d$ a imagem de segmentos, estabelecendo as seguintes condições de conexão:
+% \begin{enumerate}
+%  \item A conexão é realizada por dois extremos de dois diferentes segmentos;
+%  \item Os dois extremos são pertos o suficiente (dado um limiar de distância $D_{max}$);
+%  \item O alinhamento dos dois segmentos é aceitável;
+% \end{enumerate}
+% De modo que, é construído um novo conjunto $S$ de segmentos com a união dos conjuntos $S_d$ e $S_d'$.
+% 
+% \textit{\textbf{Teoria Bayesiana}}:
+% %A Teoria Bayesiana recai também sobre a teoria dos grafos, que representa um conjunto de variáveis randômicas e as dependências 
+% %condicionais delas, seguindo um grafo direcionado acíclico, ou um grafo que não contêm ciclos simples. Os nós deste grafo representa
+% %as variáveis randômicas e podem ser observadas como parâmetros ocultos, hipóteses ou variáveis latentes. As bordas representam as
+% %dependências condicionais e o nós não conectados representam variáveis que são condicionalmente independentes umas das outras. Cada
+% %nó é representado por uma função de probabilidade que toma como entrada um conjunto particular de valores para as variáveis do nó pai 
+% %e dá a probabilidade da variável representada pelo nó. Por exemplo, se os pais são $m$ variáveis \emph{booleanas} então a função de 
+% %probabilidade pode ser representada por uma tabela de $2^m$ de entradas, uma entrada para cada uma das combinações possíveis de $2^m$ 
+% %de seus pais serem verdadeiras ou falsas.
+% Outro método probabilístico usado na extração de feições lineares é o Teorema Bayesiano de Decisão (TBD), que também recai na teoria dos 
+% grafos. O TBD representa um conjunto de variáveis randômicas e de dependências condicionais relacionadas a cada uma delas, seguindo um 
+% grafo direcionado acíclico, i.e., um grafo que tem no mínimo uma aresta entre quaisquer dois vértices. Os nós deste grafo representam as 
+% variáveis randômicas e podem ser observadas como parâmetros ocultos, hipóteses ou variáveis latentes. As bordas representam as 
+% dependências condicionais e os nós não conectados representam variáveis que são condicionalmente independentes umas das outras.
+% 
+% Em Hu et al. (\citeyear{hu}), é apresentado o uso da TBD como método de poda em uma árvore de vértices. Esses vértices são obtidos 
+% por meio da análise de cada \emph{pixel} da imagem, baseando-se em alguns critérios. Estes \emph{pixels} são marcados como candidatos 
+% ao trecho da área de interesse. Sendo assim, é natural que alguns pontos sejam incorretamente marcados. Cada ponto é relacionado como sendo
+% um vértice da árvore. O método de deteção de estradas consiste então em identificar quais vértices pertence à estrada, agregando é
+% variável binária randômica $w$, 1 se o vértice pertencer ou 0 caso contrário. O algoritmo de poda é baseado na comparação da distribuição 
+% da probabilidade condicional de $w$ dada a observação $p(w|d)$, onde $d$ é o valor da relação área/Perímetro que cada vértice possui de 
+% acordo com a estrada em que se encontra. Desta forma, a TBD é aplicada nos valores de $w$ seguindo a fórmula de Bayes, dada pela 
+% Equação \ref{eq4}, onde é decidido que $w=1$ se $p(1|d) > p(0|d)$ e $0$ para outros casos. 
+% \begin{align}
+%  p(w|d) = \frac{p(d|w)P(w)}{p(d)}
+% \end{align}\label{eq4}
+% A Figura \ref{figura9} ilustra o procedimento de poda descrito.
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.34\textwidth]{figs/hu1.png} \hspace{0.3cm}
+%     \includegraphics[width=0.24\textwidth]{figs/hu2.png} \hspace{0.3cm}
+%     \includegraphics[width=0.34\textwidth]{figs/hu.png}
+%     \caption{Algoritmo de poda da árvore de vértices, utilizando a regra de decisão Bayesiana.}
+%     \FONTE{Adaptado de Hu et al. (\citeyear{hu}).}
+%     \label{figura9}   
+% \end{figure}
+% 
+% %\subsection{Métodos não-paramâtricos}
+% 
+% %\textit{\textbf{Redes Neurais Artificiais}}:
+% 
+% %\textit{\textbf{Lógica \emph{Fuzzy}}}:
+% 
+% %\subsection{Métodos geométricos}
+% 
+% %\textit{\textbf{Eixo de simetria}}: 
+% 
+% % In Digital Analysis Processing - Page 733
+% %\subsection{Métodos baseados em Transformadas}
+% 
+% \textit{\textbf{Transformada de Hough}}: No trabalho de Rianto et al. (\citeyear{rianto}), é abordado o uso da Transformada de Hough (TH) 
+% como algoritmo de validação global a partir dos segmentos detectados na etapa de pré-processamento, utilizando o filtro de Canny e o 
+% filtro direcional, que analisa a possibilidade de determinado \emph{pixel} pertencer a uma estrada. 
+% 
+% A TH é um operador matemático capaz de detectar formas geométricas em imagens digitais. Desenvolvida em 1962 por Paul Hough \cite{hough}, 
+% tornou-se uma contribuição relevante na área de visão computacional. O método consiste em aplicar na imagem original uma transformação, 
+% tal que todos os pontos pertencentes a um mesmo segmento sejam mapeados em um único ponto no domínio da TH. O método é aplicado na 
+% maioria das vezes após um pré-processamento da imagem, já submetida a operadores identificadores de bordas e que esteja 
+% transformada em uma imagem binária.
+% 
+% Tal transformação permite detectar formas geométricas, como linhas retas, círculos e elipses. Concentrando-se no propósito deste estudo, 
+% serão abordadas as técnicas para a deteção de linhas. A equação da reta que define a transformação para o domínio da TH é 
+% expressa por:
+% \begin{align}
+%  \rho &= x~cos \theta + y~sin \theta ~~,
+% \end{align}
+% em que $\rho$ representa a distância entre a reta e a origem no plano-$xy$ e $\theta$ é o ângulo entre o eixo $x$ e a reta entre a origem e o ponto 
+% mais préximo (Figura \ref{figura8}).
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.36\textwidth]{figs/th_graf.jpg}
+%     \caption{Parametrização de ($\rho$, $\theta$) no plano-$xy$.}
+%     \FONTE{Adaptado de Gonzalez e Woods (\citeyear{woods}).}
+%     \label{figura8}   
+% \end{figure}
+% 
+% Analisando a imagem no domínio da TH, os pontos máximos encontrados no acumulador de senóides correspondem a linhas retas no plano-$xy$. 
+% No entanto, muitos ruídos são confundidos com segmentos retos. Para evitar que o operador selecione pontos que não se referem exatamente 
+% a uma reta, é recomendável definir um limiar que limite a escolha de máximos. A Figura \ref{figura5} mostra a transformação de uma imagem 
+% que é formada por uma reta e um ponto apenas. A TH dessa imagem gera então uma senóide única referente ao ponto, e um conjunto de senóides 
+% referente a cada ponto da reta. As intersecções destas senóides, ou seja, o ponto máximo visto no domínio da TH refere-se é reta da 
+% imagem original.
+% \begin{figure}[htb]
+%     \centering	   
+%     %\includegraphics[width=0.45\textwidth]{figs/hough0_2.png}
+%     %\includegraphics[width=0.45\textwidth]{figs/hough1_2.png} \\ \hspace{0.3cm}
+%     \includegraphics[width=0.46\textwidth]{figs/hough0.png} \hspace{0.3cm}
+%     \includegraphics[width=0.46\textwidth]{figs/hough1.png} 
+%     \caption{Esquematização da Transformada de \emph{Hough} e pontos máximos referentes às linhas retas.}
+%     \FONTE{Adaptado de Hough (\citeyear{hough}).}
+%     \label{figura5}   
+% \end{figure}
+% 
+% %A extração de estradas baseando-se na TH é utilizada em trabalhos envolvendo tanto imagens óticas quanto imagens \emph{SAR}. Em alguns 
+% %deles, foram realizadas modificações no método de Hough, tanto para obter a localização exata dos retas detectadas na imagem como em 
+% %Wang et al. (\citeyear{wang}), como para identificar os segmentos de forma mais eficiente, como proposto por Dell'Acqua et al. (\citeyear{gamba3}).
+% 
+% Existem ainda outras abordagens na extração de feições lineares, a maior parte dos métodos são baseados na análise em dois núveis, onde 
+% é feita uma análise local envolvendo o uso de operadores locais, muitas vezes, para detectar a direção da estrada no \emph{pixel}, e
+% uma segunda análise de agrupamento dos segmentos, denominada análise global, que melhora o desempenho da primeira análise \cite{hu}.
+% 
+% As técnicas para a extração de feições lineares, incluem também a utilização de métodos não-paramétricos, como os abordados por 
+% Dell'Acqua et al. (\citeyear{gamba4}), Doucette et al. (\citeyear{peter}), utilizando lógica \emph{fuzzy} e Redes Neurais Artificiais 
+% (RNA), respectivamente. 
+%  
+% %Os métodos geométricos são também importantes na validação...tais como, os extratores de eixo de simetria, abordados por %\cite{mayer}...
+% 
+% %\textit{\textbf{Transformada de Hough Modificada}}: A Tansformada de Hough Modificada (THM) é uma extenção ao método de Hough, 
+% %apresentado por Dell'Acqua et al. (\citeyear{gamba3}).
+% 
+% %\subsection{Métodos hábridos}
+% 
+% %A combinação de métodos para a resolução de um problema em comum é caracterizado por um método hábrido.
+% 
+% \section{Pós-Processamento}
+% 
+% Uma vez obtida a imagem segmentada, ela encontra-se enfim representada e descrita de forma mais adequada para posteriores processamentos
+% \cite{woods}. A fase de pós-processamento ou fase de representação e descrição da imagem constitui uma etapa importante em qualquer 
+% processamento.
+% 
+% A imagem obtida na etapa de extração de feições lineares muitas vezes possui deficiências e, consequentemente, necessita de algoritmos que otimizem o 
+% método de extração, fazendo com que os segmentos detectados submetam-se a uma varredura, para inspeção de possíveis falhas causadas 
+% por ruídos e outros objetos que não fazem parte do conjunto de estradas e outras feições lineares.
+% 
+% Nesta fase, são realizadas operações como: a identificação dos segmentos inválidos reconhecidos pelo extrator e
+% posterior exclusão dos mesmos, ou então, a ligação com outros segmentos, como em Dell'Acqua e Gamba (\citeyear{gamba2}), o processo de 
+% esqueletização da imagem e a vetorização do resultado.
+% 
+% % In Digital Analysis Processing - Page 812
+% \subsection{Esqueletização}
+% 
+% Trata-se de um operador morfológico que consiste em obter uma estrutura simplificada de um objeto em um processo de afinamento. A versão 
+% simplificada mantêm as formas do objeto original e é denominada de esqueleto da estrutura. A esqueletização é útil na extração de formas
+% geométricas, como linhas retas, curvilíneas, em que o afinamento obtém um esqueleto que representa claramente o objeto \cite{woods}. 
+% 
+% Há inúmeros métodos para a obtenção do esqueleto das formas, entre os quais se destaca o trabalho de Blum (\citeyear{blum}), que apresenta
+% a definição da Transformada do Eixo Médio ou Eixo de Simetria (\emph{Medial Axis Function} - \emph{MAF}). Considerando uma forma qualquer 
+% $R$ com bordas $B$, para cada ponto $p_i$ em $R$ são identificados os vizinhos mais préximos de $p_i$ em $B$. Se $p_i$ possuir mais que 
+% um vizinho, este é considerado como pertencente à linha de simetria de $R$ (Figura \ref{figura6}).
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.35\textwidth]{figs/esquel.jpg}  
+%     \caption{Exemplo de um processo de esqueletização de formas.}
+%     \FONTE{Adaptado de Blum (\citeyear{blum}).}
+%     \label{figura6}   
+% \end{figure}
+% 
+% Embora seja um método muito eficiente para a esqueletização, o processo descrito por Blum exige muito processamento computacional, 
+% uma vez que é necessário calcular a distância de todos os pontos internos de $R$ em relação a todos os pontos da sua borda $B$. H
+% algoritmos que utilizam métodos iterativos morfológicos, que se baseiam na remoção de \emph{pixels}, tratando as bordas do objeto como 
+% ponto de partida. Respeitando critérios, é iniciada a exclusão de ambos os lados do objeto no sentido central, até que a mesma não seja mais 
+% possível, obtendo-se a forma simplificada do mesmo \cite{woods}.
+% 
+% \subsection{Vetorização}
+% 
+% Uma imagem vetorial é gerada a partir de descrições geométricas, sendo diferente das imagens comuns, chamadas
+% mapas de \emph{bits}, que são formadas a partir de pontos (denominados \emph{pixels}) diferenciados por suas cores. As imagens vetoriais
+% possuem alguns aspectos que as tornam mais vantajosas sobre outros tipos de imagens. Uma dessas vantagens é a possibilidade de ampliação 
+% em qualquer escala sem a perda da qualidade. As imagens vetoriais, devido à sua constituição por vetores, ocupam menos espaço de armazenamento.
+% 
+% Na etapa de vetorização, são realizadas as transformações finais na imagem. A partir do resultado da esqueletização, executa-se
+% um processo para se obter uma imagem vetorizada dos segmentos detectados, de forma que, para cada esqueleto da estrada, constrói-se
+% uma forma vetorizada com larguras conforme o segmento.
+
+%---------------------------Artigo
+
+Na primeira parte deste capítulo, serão abordados os principais trabalhos que possuem como tema principal a extração de estradas, tanto em 
+imagens óticas como de radar. A seguir, serão apresentadas 
+
+\subsection{Histórico}
+
+Há inúmeras técnicas disponúveis atualmente para extração de estradas. Com a grande disponibilidade de artigos abordando o problema, nota-se 
+um intenso avanão no desenvolvimento de novos métodos nas últimas décadas \cite{tupin,pete2,gruen}, tanto em imagens óticas como de radar. 
+Alguns dos trabalhos anteriores consagrados estão organizados a seguir, de acordo com os respectivos métodos de extração. Em vista do grande 
+escopo de métodos disponúveis, este trabalho busca mostrar as principais contribuições.
+
+\begin{enumerate}
+ \item Semeação automática \emph{(Automatic Seeding)}: O método de semeação automática é utilizado em alguns trabalhos como predecessor 
+ao algoritmo de extração, ou seja, não se trata de um processo de extração, mas sim de um auxiliador propriamente dito neste processo. A 
+técnica consiste em identificar pontos na imagem, cuja localização caracterize o centro de uma estrada. Alguns métodos necessitam de 
+pontos iniciais como ponto de partida para o algoritmo, a exemplo do roteamento de estradas (\emph{road trackers}) e modelos de contornos 
+ativos (\emph{snakes}). Harvey \cite{harvey} destaca a importância da qualidade dos pontos iniciais para o desempenho do algoritmo de 
+extração. Doucette et al. \cite{pete2} apresentaram o método de semeação automática utilizando o algoritmo de deteção de bordas paralelas 
+(\emph{Anti-parallel Centerline Extraction - ACE}), a fim de estabelecer pontos iniciais para posteriormente iniciar o processo de roteamento 
+de estradas. O método ACE é a abordagem mais popular para a semeação automática, geralmente executado após o processo de deteção de borda 
+na imagem. Hu et al. \cite{hu} utilizaram o mesmo processo para o roteamento de estradas.
+
+ \item Classificação: O processo de classificação consiste em categorizar os dados presentes nas imagens em diferentes classes de padrões,
+de forma que seja atribuída uma identidade ou valores de probabilidade para os dados analisados. Os valores de probabilidade indicam a 
+probabilidade de aquele dado pertencer a uma determinada classe de padrão. Embora os classificadores sejam utilizados para categorizar os 
+dados, no imageamento por radar eles são utilizados como classificadores: espectrais, texturais, geométricos, contextuais e geradores 
+automático de classes de padrões \cite{haupt}. Doucette et al. \cite{pete3} utilizaram dois típicos classificadores para a classificação de 
+imagens digitais; são eles os métodos K-médias e os Mapas Auto-Organizáveis (\emph{Self-Organizing Maps - SOM}). Neste trabalho, os autores
+utilizam a imagem classificada como produto de entrada na aquisição dos eixos centrais das vias por meio do algoritmo SORM 
+(\emph{Self-Organizing Road Map}).
+
+ \item Transformada de Hough: A Transformada de Hough (TH) é um operador matemático capaz de detectar formas geométricas em imagens digitais, 
+tais como linhas retas, círculos e elipses. Desenvolvida em 1962 por Paul Hough \cite{hough}, tornou-se uma contribuição relevante na área 
+de visão computacional. O método consiste em aplicar na imagem original uma transformação, tal que todos os pontos pertencentes a um mesmo 
+segmento sejam mapeados em um único ponto no domínio da TH. O método é aplicado sobre uma imagem binária, geralmente após o processamento 
+de identificadores de bordas. A transformação para o domínio da TH é expressa por $\rho = x~cos \theta + y~sin \theta$ em que $\rho$ 
+representa a distância entre um determinado ponto da reta e a origem no plano-$xy$ (reta imaginária). $\theta$ é o ângulo entre o eixo 
+$y$ e a reta imaginária. Na Figura \ref{figura1}, vemos que a transformação é realizada, tal que cada ponto no plano-$xy$ é convertido 
+em uma senóide no plano da TH, e desta forma, o segmento reto presente na imagem poderá ser interpretado pelos máximos presentes no domínio
+da TH, ou seja, nas interseções das senóides de cada ponto da reta.\\
+\begin{figure}[htb]
+    \centering
+    \subfigure[]{\includegraphics[width=0.23\textwidth]{figs/th_graf3.jpg}} \hspace{0.3cm}
+    \subfigure[]{\includegraphics[width=0.23\textwidth]{figs/th_graf2.jpg}}
+    \caption{Parametrização de ($\rho$, $\theta$): (a) No plano-$xy$ (plano da imagem). (b) No domínio da TH.}
+    Fonte: Adaptado de Gonzalez e Woods \cite{woods}.
+    \label{figura1}   
+\end{figure}
+
+Por ser um operador muito eficiente na deteção de linhas, a TH é muito utilizada na resolução do problema da extração de feições lineares
+em imagens de radar. Dell'Acqua et al. \cite{gamba4} apresentaram uma variação do algoritmo, de forma a serem consideradas diferentes 
+larguras para as feições. Além de reduzir o tempo de processamento, o algoritmo fornece melhores resultados, detectando os pontos de início 
+e término dos segmentos retos ao invés de linhas completas. A utilização da TH pode ser aplicada também na deteção de curvas com baixo
+grau de curvatura. Amberg et al. \cite{amberg} utilizaram, a princípio, a Programação Dinâmica para a extração dos eixos centrais das vias,
+e posteriormente, a TH é utilizada para a conexão dos pontos descontínuos provenientes da extração.
+
+ \item Morfologia matemática: A morfologia matemática é utilizada há muito tempo no processamento de imagens digitais, e as aplicações 
+realizadas com operadores morfológicos remetem à Teoria dos Conjuntos. Processos como \emph{união} e \emph{interseção} podem ser 
+aplicados às imagens e são comumente utilizados como filtros nas etapas de pré e pós-processamento. Operações mais complexas envolvem 
+efeitos de manipulação dos objetos presentes na cena, tais como dilatação, erosão e outras. A primeira permite aumentar o tamanho do 
+objeto, e o processo de erosão, o efeito contrário. Desta forma, os operadores são utilizados, entre muitas coisas, para a remoção de 
+pequenas regiões, buracos e suavização de formas e contornos. Idbraim et al. \cite{idbraim} utilizaram operadores morfológicos para a 
+união dos resultados obtidos em um filtro direcional. Chanussot et al. \cite{chanussot} utilizaram esta abordagem como forma de remoção de 
+trechos espúrios na imagem, utilizando, por exemplo, a operação morfológica de abertura como eliminadora de estruturas mais escuras em 
+relação ao seu entorno, simplificando a deteção. 
+
+ \item Roteamento de estradas: O processo de roteamento de estradas consiste em traçar retas entre os pontos que representam a localização
+dos segmentos de interesse. O algoritmo possui duas etapas fundamentais: primeiro, uma função que determina a posição do ponto seguinte, e,
+na sequência, uma segunda função de refinamento. Ao fim do processo, obtém-se a rede completa de estradas, e as linhas conectadas representam então o eixo
+central das feições. Hu et al. \cite{hu} utilizaram o processo de roteamento de estradas baseado na classificação dos \textquotedblleft 
+rastros\textquotedblright$~$da estrada. O processo é iniciado sobre os pontos identificados através da semeação automática, e em cada ponto 
+é determinado o \textquotedblleft rastro\textquotedblright. Ele é então analisado, a fim de determinar se sua forma é consistente em relação 
+à forma de uma estrada ideal. Wiedemann e Ebner \cite{wiedemann} utilizaram fatores de distância e hipóteses para a conexão de segmentos descontínuos.
+
+ \item Segmentação: O processo de segmentação em imagens digitais é o processo de agrupamento de dados dentro de subconjuntos, com o
+objetivo de simplificar a representação da imagem e, consequentemente, facilitar o seu processo de análise. O resultado gerado a partir 
+deste processo consiste em um conjunto de regiões ou conjunto de contornos. Os \emph{pixels} pertencentes ao mesmo conjunto possuem 
+características similares, e cada conjunto difere significativamente de seus vizinhos. A segmentação tem um papel importante no processamento
+de imagens de radar. Alguns trabalhos a utilizam como principal técnica na extração de estradas \cite{zhang, mena}.
+
+ \item Modelo de contorno ativo (\emph{Snakes}): Trata-se de um processo iterativo e adaptativo para a identificação de contornos de 
+objetos. O método, desenvolvido inicialmente por Kass et al. \cite{kass}, consiste em uma curva poligonal inserida no interior do objeto, 
+a qual evolui a fim de se alinhar ao seu contorno. \emph{Snakes} são utilizadas na extração de estradas e na identificação do eixo 
+central das vias presentes nas imagens. Gruen e Li \cite{gruen} utilizaram uma extensão ao método, cuja abordagem permite extrair os eixos 
+centrais das vias em imagens óticas, eliminando obstáculos que muitas vezes dificultam tal extração, tais como sombras causadas por árvores, 
+veículos, edificações etc. A abordagem original possui muitas variações, entre as quais destaca-se o método \emph{ribbon-snakes}. 
+Mayer et al. \cite{mayer} utilizaram este processo em imagens óticas de alta resolução para a aquisição das bordas paralelas ao eixo 
+central, de acordo com uma constante de largura pré-definida. As bordas representam a fronteira entre as estradas e o segundo plano.
+
+\end{enumerate}
+
+O propósito deste trabalho é abordar o método de Semeação Automótica para a identificação de pontos que caracterizam a presença de uma 
+estrada em uma imagem \emph{SAR}, utilizando para isto os Mapas Auto-Organizáveis. Harvey \cite{harvey} destaca a importância da 
+qualidade dos pontos para um bom desempenho do método de extração. Serão abordadas duas formas de varredura da imagem, e cada uma 
+apresenta uma precisão distinta de identificação. Porém, é necessário avaliar os parâmetros da rede em cada utilização, buscando 
+minimizar os erros de comissão e omissão na identificação de pontos destes modelos.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

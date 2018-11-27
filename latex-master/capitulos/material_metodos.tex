@@ -1,0 +1,672 @@
+\chapter{CONCEITOS E TECNOLOGIA}\label{conceitosTec}
+Neste capítulo, são apresentados conceitos envolvendo a implementação do método de extração de estradas. A princípio, são apresentados os fundamentos do imageamento por radar, em que são mostrados os conceitos básicos envolvendo a aquisição de uma imagem SAR. Em seguida, são apresentadas as características matemáticas da estrada, objeto a ser extraído na imagem. Por fim, descreve-se o procedimento para a extração de estradas utilizando os métodos de Semeação e Modelo de Contorno Ativo.
+
+\section{Fundamentos do imageamento por radar}
+A geometria básica da formação de uma imagem \emph{SAR} aerotransportada pode ser ilustrada pela Figura \ref{figura2}, em que $V$ determina a velocidade segundo a qual a plataforma se move em uma determinada direção, conhecida também por direção de azimute. O parâmetro $H$ representa a altitude em que ela se encontra. Esta plataforma transporta uma antena com observação lateral, que ilumina a superfície em estudo com pulsos de radiação eletromagnética. A distância da plataforma até a área iluminada é conhecida como \emph{slant range} $R_0$, e a distância da superfície da Terra sobre a qual se encontra a plataforma (nadir) até a área iluminada é conhecida como \emph{ground range}, expresso por $R_g$ na Figura \ref{figura2} \cite{oliver}.
+\begin{figure}[htb]
+    \centering	   
+    \includegraphics[width=0.53\textwidth]{figs/plane2.jpg}\\
+    \caption{Geometria de imageamento de radares aerotransportados de visada lateral.}    
+    \FONTE{Adaptado de Oliver e Quegan (\citeyear{oliver}).}
+    \label{figura2}   
+\end{figure}
+
+Os sistemas de radar são formados por um transmissor, receptor, antena, processador de sinais e uma unidade de visualização. Uma sequência de pulsos é emitida em intervalos de tempos regulares, sendo que esses sinais se propagam em uma área iluminada pela antena. O objeto iluminado absorve uma fração da energia incidente e espalha o restante de acordo com os parâmetros do sistema e as propriedades físicas do objeto. Parte da energia espalhada é retornada para o sensor, caracterizando o sinal recebido \cite{carrara}.
+
+Os sensores a bordo de aeronaves permitem obter imagens com maior resolução (1 a 20 metros) quando comparados aos sensores a bordo de satélites, porém sua área iluminada é menor. Os satélites podem visualizar uma área maior da superfície da Terra. Estando continuamente em órbita terrestre, é relativamente fácil coletar imagens da mesma área de modo sistemático, a fim de monitorar mudanças na biosfera.
+
+As imagens de radar são geradas a partir da emissão de pulsos de largura $T_p$ em intervalos de $T$ segundos. Utilizando o modelo de ponto fixo $P$, mostrado na Figura \ref{figura2}, o sistema de imageamento \emph{SAR} possui um intervalo de tempo ($t_s - t_e$), onde $t_e$ representa o ponto onde é iniciado a transmissão dos pulsos pelo sensor, e $t_s$ o ponto final da transmissão. Neste intervalo, o radar envia $N$ pulsos e coleta $N$ pulsos resultantes do retorno do ponto $P$. As amostras recebidas são retidas na memória. Durante este intervalo, a plataforma se desloca ($t_s - t_e$) metros com velocidade $V$. Este intervalo é conhecido como comprimento de abertura sintética. Os pulsos recebidos sofrem variações de frequência em virtude da velocidade, consistindo no efeito \emph{Doppler} \cite{oliver}.
+
+Os sensores de radar operam na faixa de micro-ondas, na qual são estabelecidas as bandas para cada intervalo de comprimento de onda e frequência, como mostrado na Tabela \ref{ban}. Em vista da frequência e do comprimento de onda de cada banda, o comportamento do sinal em relação ao objeto pode variar consideravelmente. Quanto maior a frequência do radar, maior o nível de potência requerida e maior sua penetração na superfície da Terra, o que influencia sobremaneira na formação da imagem final. Alguns dos parâmetros do sistema que influenciam no retroespalhamento são: frequência, polarização, ângulo de incidência e resolução. A frequência é o número de períodos ou ciclos completos por segundo, cada ciclo completo em um segundo é denominado um \emph{Hertz} (Hz). A polarização de uma onda eletromagnética, em geral, é definida pela figura geométrica que o vetor campo elétrico descreve no espaço. Os parâmetros do alvo são fatores que podem também influenciar no retroespalhamento do sinal, tais como: rugosidade, constante dielétrica e geometria.
+\begin{table}[ht]
+\renewcommand{\baselinestretch}{1.2}
+    \small
+    \centering
+    \caption{Principais bandas do espectro de frequência em micro-ondas.}    
+    \begin{tabular}{c||c|c}    
+    \hline                   
+    \textbf{Banda} & \textbf{Frequência(GHz)} & \textbf{Comprimento de onda(cm)}\\ \hline \hline
+    P & $0,3$< & $100$ a $90$\\
+    L & $0,3$ a $1,5$ & $90$ a $25$\\
+    S & $1,5$ a $3,9$ & $24$ a $9$\\
+    C & $4$ a $6$ & $9$ a $3,75$\\
+    X & $6$ a $11$ & $3,75$ a $2,5$ \\
+    K & $11$ a $32$ & $2,5$ a $0,8$\\
+    \hline \hline    
+    \end{tabular}
+    \vspace{0.2cm}
+    \\Fonte: Adaptado de Curlander e McDonough (\citeyear{curlander}).
+    \label{ban}       
+\end{table}
+
+Com o fim de apresentar um método de extração de estradas em imagens de radar, cuja solução aborde o método de semeação semiautomático e Modelo de Contorno Ativo (\emph{Snakes}), é necessário que se definam, a princípio, as características dos objetos a serem identificados no processo de extração. Suas dimensões, comprimento e níveis de intensidade são requeridas na fase de treinamento da rede neural artificial (ver seção \ref{semeacao}). 
+
+\section{Definições de Estrada em uma Imagem Digital}\label{definicaoEstradas}
+Segundo \citeonline{gruen}, para a construção de um método de extração de estradas é necessário que se defina a \emph{priori} um modelo genérico de estrada, na qual descreva matematicamente sua aparência em uma imagem digital. Considerando $\zeta$ uma curva em uma imagem digital e uma estrada no espaço objeto, são definidas as seguintes propriedades de uma estrada genérica:
+\begin{itemize}
+ \item A curva $\zeta$ pode ser representada por uma função vetor $f(s)$, em que mapeia o comprimento de arco $s$ para os pontos ($x,y$) na imagem.
+ \item A curva $\zeta$ possui derivadas contínuas, e um vetor unitário $n(s)$ é normal a $\zeta$.
+ \item A imagem digital pré-processada é representada por uma função bidimensional $G(x,y)$, mensurável, de energia finita e derivada contínua.
+\end{itemize}
+As propriedades genéricas de estrada são apresentadas acima como sendo suposições, baseando-se apenas no conhecimento sobre o objeto estrada. As formulações matemáticas equivalentes são apresentadas a seguir. 
+\begin{itemize}
+ \item As estradas são identificadas por regiões estreitas e contínuas de alta intensidade e entorno de baixa intensidade. A equação que descreve estas características é dada por:
+       \begin{align}
+	  E_p = \int{[G(f(s))]^2} ds \Rightarrow max~,
+       \end{align}
+       em que $E_p$ denota o quadrado da soma dos níveis de cinza ao longo de uma curva $\zeta$, que deverá ser máximo, ou seja, uma estrada de perfil claro, o que nem sempre ocorre no imageamento por radar, uma vez que as estradas deste tipo podem apresentar tonalidades mais escuras que seu entorno. 
+ \item Os valores de níveis de cinza ao longo da estrada devem permanecer constantes em curtas distâncias, o que equivale à:
+       \begin{align}
+	  E_z = \sum_i{\int{\varDelta_{si}[G(f(s)) - G_m(\varDelta_{si})]^2} ds} \Rightarrow min~,
+       \end{align}
+       em que $i$ é o índice de um determinado ponto na curva, $\varDelta_{si}$ é um pequeno trecho da curva $\zeta$, e $G_m(\varDelta_{si})$ é o valor médio de $G$ em $\varDelta_{si}$, expresso por:
+       \begin{align}
+	  G_m(\varDelta_{si}) = \frac{\int_{\varDelta_{si}}{G(f(s))}ds}{|\varDelta_{si}|}~,
+       \end{align}
+       em que $|.|$ corresponde ao tamanho do trecho $\varDelta_{si}$.
+ \item As propriedades apresentadas acima descrevem as estradas como feições lineares claras. Tais propriedades podem ser generalizadas em uma única equação $E_{pz}$, dada por:
+       \begin{align}
+	  E_{pz} = \int{w(d(s))[G(f(s) + d(s)n(s))]^2} ds \Rightarrow max~,
+       \end{align}
+       em que $d(s)$ é a distância entre o ponto $s$ em $\zeta$ e a feição linear próxima a ela; $w(d(s))$ é uma função de pesagem gaussiana que decresce quando a distância $d(s)$ aumenta. 
+ \item A maioria das estradas consistem de segmentos de retas conectadas com curvas suaves, representadas por:
+       \begin{align}
+	  E_{g} = \int{|f''(s)|^2} ds \Rightarrow min~,
+       \end{align}
+       em que $|.|$ representa o tamanho do vetor normal $f''(s)$ no ponto $s$ em $\zeta$, cuja variação, $E_g$, ao longo desta, seja mínima. Isto implica que os vetores tangente ($f'(s)$) e normal ($f''(s)$), são contínuos em $\zeta$. Sendo assim, $\zeta$ pode ser representada por uma \emph{spline} cúbica.
+ \item A curvatura em um ponto $s$ de uma estrada deve possuir limite superior, ou a mudança local de direção ascendentemente limitada. Que significa dizer que o vetor normal em um determinado ponto deverá permanecer abaixo de uma limiar:
+       \begin{align}
+	  C_{g} = |f''(s)| < T_1~,
+       \end{align}
+       em que $T_1$ é o limiar que especifica o valor máximo de curvatura permitido para um determinado ponto $s$ de $\zeta$.
+  \item A largura da estrada não se altera consideravelmente. Portanto, não é dada uma representação matemática para esta propriedade.
+\end{itemize}
+Na Figura \ref{estradasReprMatematica} são ilustradas algumas das propriedades matemáticas apresentadas acima, tal que a curva $\zeta$ representa a curva inicial sobre a estrada, adquirida com a interpolação de seus vértices, ilustrados na imagem como pontos pretos sobre a curva.
+\begin{figure}[htb]
+    \centering
+    \subfigure{\includegraphics[width=0.63\textwidth]{figs/repreMatematica.jpg}}
+    \caption{Ilustração da curva $\zeta$ sobre estrada em uma imagem digital, segundo propriedades matemáticas definidas por \citeonline{gruen}.}
+    \label{estradasReprMatematica}
+\end{figure}
+% Embora este tipo de imageamento possa trazer muitos benefícios, há ainda a necessidade de técnicas que minimizem o efeito do ruído \emph{speckle}, comum a esse tipo de imagem e talvez o maior empecilho no reconhecimento dos padrões. As próximas seções apresentam o processo de treinamento de uma RNA do tipo Kohonen, onde são apresentados os fundamentos da técnica e as heurísticas utilizadas para o aprimoramento dos resultados. 
+
+\section{Metodologia}
+A sequência de apresentação desta seção segue a lógica de processamento do método de extração de estradas apresentado. Cada um dos conceitos utilizados são dispostos em quatro seções, detalhadas de acordo com o fluxograma na Figura \ref{fluxo2}. Primeiramente, emprega-se o método de Semeação; na segunda seção, o método de poda de pontos espúrios e, na sequência, \emph{Snakes}. Por fim, na seção Métricas de Qualidade são apresentadas as medidas utilizadas para a avaliação dos resultados.
+\begin{figure}[htb]
+    \centering
+    \subfigure{\includegraphics[width=0.96\textwidth]{figs/fluxograma.jpg}}
+    \caption{Fluxograma do método de extração de estradas.}
+    \label{fluxo2}
+\end{figure}
+
+\subsection{Semeação}\label{semeacao}
+O método de semeação tem um papel importante no processo de extração de estradas. O procedimento consiste basicamente em identificar pontos que caracterizam a passagem de uma estrada na imagem. Como foi mencionado na seção anterior, o método de semeação não é um método de extração de estradas por si só, embora sua utilização tenha uma parcela importante no processo. Os pontos-sementes identificados nesta etapa interferem diretamente no método \emph{Snakes}, pois uma vez que os pontos identificados estejam próximos à feição de interesse, o método de \emph{Snakes} tende a convergir rapidamente e eficientemente.
+
+% Geralmente, a semeação é categorizada como manual, semiautomática e 
+% automática. A primeira, e mais comum entre elas, necessita que um operador humano forneça os pontos-sementes ao método. Esta abordagem não possui
+% qualquer ligação com os recursos computacionais. A semeação semiautomática possibilita ao operador humano alguns ajustes durante o processo 
+% de identificação, além claro, do recurso computacional de detecção. E por último, o processo de semeação automático é realizado de forma que 
+% não haja quaisquer interferências humanas, sendo esta a mais complexa entre elas, justamente pela sua autonomia na identificação.
+
+% É necessário que se defina as características das estradas a serem 
+% identificadas no processo, considerando suas dimensões, comprimento, propriedades espectrais, entre outros parâmetros da RNA (ver Seção 
+% \ref{semeacaoSemi}). Tais propriedades a serem definidas previamente, faz com que o conceito se enquadre em um processo semiautomático. 
+% Sendo assim, esse trabalho tem como objetivo apresentar um método de extração de estradas em imagens de radar, cuja solução aborde o 
+% método de Semeação semiautomático e Modelo de Contorno Ativo (\emph{Snakes}).
+% A primeira parte da próxima seção é destinada ao detalhamento destes parâmetros. Em seguida, será apresentada a teoria envolvendo o método 
+% semiautomático, seu funcionamento e suas aplicações.
+
+Para que a semeação tenha autonomia na identificação das estradas, é necessário atribuir a ela heurísticas ou modelos que reconheçam na imagem as características de sua forma. Para tanto, será utilizado um método de reconhecimento de padrões utilizando métodos em Inteligência Computacional, caracterizadas por simular, computacionalmente, os comportamentos e a aprendizagem humana. 
+
+O processo de reconhecimento das formas presentes na imagem inicia-se apresentando-se à rede neural artificial todas os padrões a serem reconhecidos, além daqueles que não caracterizam as feições de interesse. Neste trabalho, os padrões de treinamento são definidos a partir da observação de perfis ideais de estrada em uma imagem SAR, em que são adquiridos os níveis de intensidade de diferentes perfis. Após a extração dos parâmetros referentes ao conjunto de padrões, é iniciada a etapa de treinamento da rede, processo detalhado na próxima seção.
+
+\subsubsection{\emph{Self-Organizing Maps - SOM}}\label{SecaoTreinamento}
+Um dos primeiros modelos matemáticos a simular a aprendizagem humana foi desenvolvido em 1943 por Warren McCulloch e Walter Pitts \cite{pitts}. Constituía-se de um conjunto de unidades processadoras de informação, denominados neurônios ou nós, interligados entre si, simulando uma rede neural. Mais tarde, em 1958, tal modelo foi estendido por Rosenblatt \cite{rosenblatt,rosenblatt2} e chamado de rede Perceptron, constituída por duas camadas de neurônios, uma camada de entrada e outra de saída, de forma que cada neurônio de uma camada era interligado com os da outra. Devido a esta estrutura, sua utilização era limitada a resolver apenas problemas linearmente separáveis. Diante de tais limitações, fez necessário a criação de uma nova rede Perceptron com uma ou mais camadas intermediárias de neurônios, o que possibilitaria a resolução de problemas mais complexos. A rede foi chamada de Perceptron de múltiplas camadas, ou simplesmente rede MLP (\emph{Mult-Layer Perceptron}). Este modelo possibilitou a resolução de problemas mais complexos.
+
+Mais tarde, em 1982, surgiram os Mapas Auto-Organizáveis (\emph{Self-Organizing Maps - SOM}), baseados no aprendizado não supervisionado, em que não é necessário apresentar à rede uma entrada e saída desejada para que ocorra o aprendizado. A ativação dos neurônios é realizada em um processo de \textquotedblleft competição\textquotedblright$~$entre os mesmos, cujo lema é \textquotedblleft o vencedor leva tudo\textquotedblright, de modo que o neurônio com menor estímulo a uma determinada entrada é nomeado vencedor, tendo como recompensa o ajuste de seus pesos. 
+
+As redes SOM são também chamadas de Mapas de Kohonen, em referência ao seu criador Teuvo Kohonen \cite{kohonen}. Sua arquitetura é constituída por apenas uma camada de entrada e uma de saída, sendo que esta última representa o mapa de neurônios (Figura \ref{arquiteturaSOM}). A ideia do Mapa de Kohonen remete ao funcionamento do cérebro humano, onde cada região é responsável por sentidos específicos do corpo humano. Da mesma forma, os Mapas Auto-Organizáveis são caracterizados pela formação de um mapa topográfico de padrões de entrada, em que a localização espacial do neurônio na grade corresponde às características intrínsecas dos padrões de entrada, justificando, assim, o nome do método 
+\cite{haykin}.
+\begin{figure}[htb]
+   \centering	       
+    \subfigure{\includegraphics[width=0.17\textwidth]{figs/kohonen.jpg}}
+    \caption{Exemplo de arquitetura de uma rede SOM, com mapa de saída bidimensional de dimensão 3$\times$3 neurônios e camada 
+    de entrada com dois neurônios ($x_1$ e $x_2$).}
+    \label{arquiteturaSOM}
+\end{figure}
+
+Segundo \citeonline{haykin}, o processo de aprendizagem da rede SOM pode ser categorizada em três etapas essenciais: competitivo, cooperativo e adaptativo. O primeiro diz respeito ao processo que define o neurônio vencedor ou a determinação do neurônio que apresentou maior semelhança em relação ao vetor de entrada. No processo cooperativo, são definidos quais neurônios, além do vencedor, terão seus pesos ajustados. Uma função de vizinhança topológica é definida, de modo que satisfaça a simetria entre o ponto máximo definido pelo neurônio vencedor, sendo que a variável de correção, deve decair conforme aumenta a distância do ponto central. As funções comumente utilizadas são a Chapéu Mexicano e a Gaussiana. Por fim, o processo adaptativo consiste no ajuste dos pesos em relação as entradas apresentadas. Estes três processos compõem o princípio básico do treinamento da rede SOM. Neste trabalho, adotou-se o processo cooperativo de aprendizagem, cuja função Gaussiana é utilizada para a determinação dos neurônios vizinhos e posterior ajuste.
+
+A eficiência dos resultados na etapa de semeação reflete diretamente no resultado do método \emph{Snakes}. Sendo assim, o processo de treinamento da RNA é considerado o mais importante nesta etapa, pois a partir dos valores obtidos aqui são gerados os pontos-sementes ao final da etapa. Os pontos devem ser marcados, pelo menos, próximos às feições que devem ser extraídas. No treinamento da RNA, são agregadas todas as formas que a rede deverá reconhecer, conforme as definições de estradas apresentadas na Seção \ref{definicaoEstradas}. Em cada padrão de treinamento são agregadas as características específicas das estradas a serem reconhecidas, tais como largura, comprimento e níveis de intensidade. 
+
+Na definição dos padrões de treinamento todas as informações dos objetos a serem identificados devem ser levados em consideração, tais como as características de largura, orientação da estrada, níveis de intensidade e comprimentos. Essas definições são importantes justamente pelas estradas aparecerem em diferentes formas na imagem. Levando em conta que o reconhecimento é aplicado sobre uma imagem de radar, as características que diferem uma estrada de um caminho devem ser levadas em conta, uma vez que tanto estradas como caminhos podem apresentar tonalidades claras ou escuras. Sendo assim, neste trabalho, adotou-se o total de oito padrões de treinamento; sendo quatro deles tipos específicos de estradas, em que são consideradas duas larguras a serem reconhecidas: três \emph{pixels} e quinze \emph{pixels}, além de outros padrões, idênticos aos anteriores, porém em níveis de intensidade opostos, como forma de representação das estradas com tonalidades escuras. Os quatro últimos padrões representam o que não é estrada na imagem, ou seja, padrões nulos, utilizados para a classificação das amostras inválidas no reconhecimento (processo detalhado na Seção \ref{classif}).
+
+% Como os padrões de treinamento foram definidos como perfis de estradas, a característica de orientação não foi considerada no treinamento. 
+% Ao realizar o treinamento por perfil de estrada (21 valores) ao invés de um padrão cheio (21x21 valores),
+% reduziu-se o número de nós de entrada necessários para o treinamento da RNA, pois sendo o perfil de estrada constituído de 21 \emph{pixels} 
+% (vetor de valores), é necessário uma rede com 21 nós de entrada. Caso fosse utilizado um padrão cheio como padrão de treinamento, seriam 
+% necessários não 21 nós de entrada, mas sim 441 nós (matriz 21x21). Contudo, é necessário que seja levado em conta a orientação da estrada no 
+% reconhecimento. Caso ela não seja definida durante o treinamento, ela deverá então ser definida na fase de reconhecimento. A Seção 
+% \ref{leituraAmostras} apresenta como este processo é tratado.
+
+Como mencionado anteriormente, as RNAs do tipo Kohonen geralmente possuem somente uma camada de entrada e uma camada de saída, esta última podendo ser unidimensional, bidimensional ou até mesmo tridimensional. Neste trabalho, a camada de saída foi definida como um mapa bidimensional, onde cada elemento do mapa é conectado com os elementos de entrada $X_p$, em que $p$ é o índice do padrão de treinamento. Cada uma dessas conexões são representadas por um valor de pesagem, de forma que, cada elemento do padrão de treinamento $X_p$ possua sua matriz de pesos $W$ correspondente. Desta forma, $W$ é uma matriz tridimensional $W_e$, tal que a dimensão de $W_e$ é determinada pelo usuário. Na Figura \ref{esquemaRedeSOM} são ilustrados a arquitetura da rede SOM e suas respectivas variáveis.
+\begin{figure}[htb]
+    \centering	   
+    \includegraphics[width=0.8\textwidth]{figs/esquemaRedeSOM.jpg}
+    \caption{Arquitetura da rede SOM empregada no trabalho, em que $e$ é igual a 21, $n$ igual a 6 e $p$ igual a 8.}
+    \label{esquemaRedeSOM}
+\end{figure}
+
+Após carregar os padrões de treinamento, a matriz de pesos $W$ é então iniciada. Geralmente, os valores de conexões $W$ são iniciados aleatoriamente. É definido um valor máximo de iterações, em que, a cada ciclo, os valores de $W$ são ajustados para que o mapa não seja formatado com uma tendência inicial de se organizar. Esse processo de ajuste é denominado treinamento, em que, a cada ciclo de iteração, é obtida a localização do neurônio de saída com menor distância euclidiana em relação à entrada apresentada. O cálculo dessa distância é dado pela equação: 
+\begin{align}
+\label{eq1}
+ i(X) = arg_{(j,k)}~min||W_{(j,k)} - X_p||~,~~~~
+ \begin{cases}
+    ~~~j = 1,2,...,n\\
+    ~~~k = 1,2,...,n\\
+ \end{cases}
+\end{align}
+em que $||.||$ denota a norma euclidiana entre os valores de entrada $X_p$ e $W_{(j,k)}$, correspondentes aos pesos de cada neurônio $(j,k)$. $i(X)$ descreve a posição do neurônio vencedor no mapa, dado por $arg_{(j,k)}$, e $n$ a raiz quadrada do número de neurônios na camada de saída \cite{haykin}. Após obter a localização do neurônio vencedor, ou seja, o neurônio que entre todos mais se assemelhou à entrada apresentada, são realizadas as correções da matriz de pesos $W_{(j,k)}$. Nesta etapa são corrigidos os valores do neurônio vencedor e seus vizinhos. 
+
+Por meio da Equação \ref{eq2} são realizadas as correções dos pesos, em que $\eta(t)$ é a taxa de aprendizagem da rede, a qual decai a cada iteração ($t$). A variável $\sigma$ denota a influência do neurônio $(j,k)$ analisado, em relação ao vencedor, obedecendo um determinado raio de vizinhança. Na Figura \ref{figura3a} é ilustrado o mapa de neurônios, na qual o círculo envolvendo os neurônios vizinhos ao neurônio vencedor, representa a vizinhança pela qual ocorrerão os ajustes. Da mesma forma, na Figura \ref{figura3b} são demonstrados como seriam os valores de $\sigma$ para os neurônios vizinhos, determinando a magnitude da correção dos neurônios vizinhos; quanto maior o valor, maior a proximidade. Se o neurônio não estiver próximo o suficiente do neurônio vencedor, sua influência será nula, e consequentemente, não será aplicado o ajuste. 
+\begin{align}
+\label{eq2}
+ W(t+1)_{(j,k)} = W(t)_{(j,k)} + \eta(t) * \sigma_{(j,k)} * [X_p - W(t)_{(j,k)}]~.
+\end{align} 
+
+Os valores de $\sigma$ para um determinado neurônio $(j,k)$ é dado pela propriedade gaussiana: 
+\begin{align} 
+ \label{eq3}
+ \sigma_{(j,k)} = e^{-(\frac{dist}{2*raio^2})}~,
+\end{align}
+em que $dist$ representa a distância euclidiana entre o neurônio vencedor e o neurônio em questão, e $raio$, o raio de vizinhança. 
+
+A taxa de aprendizagem decai a cada ciclo do treinamento. A função que descreve o seu decaimento é dada por:
+\begin{align}
+ \eta(t) = \eta_0[e^{-(\frac{t}{T})}]~,
+\end{align}
+em que $\eta_0$ é a taxa de aprendizagem inicial, e $T$ é o número máximo de iterações. 
+\begin{figure}[htb]
+    \centering	   
+    \subfigure[]{\label{figura3a}\includegraphics[width=0.29\textwidth]{figs/kohonen2.jpg}} \hspace{0.5cm}
+    \subfigure[]{\label{figura3b}\includegraphics[width=0.46\textwidth]{figs/kohonen3.jpg}}
+    \caption{Rede SOM: (a) Raio de vizinhança de um neurônio vencedor. (b) Valores de $\sigma$ dos neurônios vizinhos.}
+    \FONTE{Adaptado de \citeonline{haykin}.}
+    \label{figuraRedeKohonen}
+\end{figure}
+
+O processo de treinamento se encerra quando são concluídas todas as iterações $T$. Todo o processo de ajuste dos pesos de conexões faz com que o mapa de Kohonen crie regiões ou aglomerados (\emph{clusters}), sensíveis a padrões específicos, por meio das quais o treinamento foi realizado. Isto significa que o centro de cada uma dessas regiões é sensível a um tipo específico de informação, que diz respeito ao padrão exato que foi apresentado. Sendo assim, seu entorno representa as formas que se assemelham a esse padrão. 
+
+Como exemplo, considere o círculo tracejado na Figura \ref{figura5ds} como sendo o aglomerado que corresponde a um padrão de treinamento de perfil claro e entorno escuro, e largura aproximada de 6 \emph{pixels}. Ao apresentar à rede SOM amostras cujo valores se assemelhem com o respectivo padrão de treinamento, o neurônio vencedor tende a se localizar dentro desse círculo, quanto maior a semelhança, maior a proximidade do vencedor em relação ao centro do aglomerado.
+\begin{figure}[htb]
+   \centering   
+   \includegraphics[width=0.77\textwidth]{figs/mapa_padroes_raio.jpg}
+   \caption{Processo de classificação das estradas.}   
+   \label{figura5ds}
+\end{figure}
+
+No domínio de Kohonen podem existir áreas pouco desenvolvidas no processo de treinamento, principalmente quando a dimensão do mapa for relativamente grande. Neste caso, não há garantias de que o vencedor irá se localizar dentro de um determinado aglomerado Desta forma, é aconselhável que a dimensão do mapa de Kohonen seja definida como a menor possível, evitando a geração de regiões de incertezas.
+
+O mapa com as regiões é dado pelos valores da matriz $W$, de forma que seus valores são unificados, caracterizando-se na Matriz Unificada ou Matriz U, representada por $W\_norm$. O cálculo para a obtenção de $W\_norm$ é dado pela norma euclidiana de cada um dos pontos $W_{(j,k)}$ em relação a cada elemento de entrada $e$ de um padrão de treinamento $p$. A Equação \ref{normEq} expressa o cálculo de $W\_norm$, em que $E$ é o número total de elementos de um determinado padrão de treinamento. 
+\begin{align}\label{normEq}
+ W\_norm = \sqrt{\sum_{e=1}^E{(W_{e})^2}}~.
+\end{align}
+
+A Figura \ref{normFig} ilustra esse processo, no qual obtém-se ao final o mapa da norma dos pesos (Matriz U). 
+\begin{figure}[htb]
+    \centering	       
+    \subfigure{\includegraphics[width=0.66\textwidth]{figs/norma.jpg}}
+    \caption{Pesos utilizados no cálculo da norma para a montagem da Matriz U.}    
+    \label{normFig}
+\end{figure}
+
+Após o treinamento da rede SOM, o usuário seleciona a área de estudo a serem extraídas as estradas. Nessa área, é realizado o processo de leitura das amostras, processo detalhado na próxima seção. Nesse etapa, o usuário pré-determina o tamanho do salto da janela de leitura, sua dimensão, e a quantidade de perfis a serem lidos em cada uma das amostras. 
+
+\subsubsection{Leitura das Amostras}\label{leituraAmostras}
+O processo de leitura das amostras consiste em varrer a imagem em saltos pré-estabelecidos, de forma que, a cada salto uma janela de dimensão fixa especifica o conjunto de \emph{pixels} que correspondem à respectiva amostra. A dimensão da janela é fixada de acordo com os perfis de treinamento apresentados anteriormente à rede SOM. Neste caso, os perfis de treinamento possuem 21 elementos, consequentemente a dimensão da janela é de 
+21$\times$21 \emph{pixels}. A cada salto, são lidos os valores de diferentes orientações, como ilustrado na Figura \ref{orientacaoEstradas}. Em cada uma dessas orientações, são obtidos os perfis (vetor de valores), que, posteriormente, são utilizados na classificação ou identificação das estradas. 
+\begin{figure}[htb]
+   \centering	   
+    \subfigure{\includegraphics[width=0.66\textwidth]{figs/orientacoes3.jpg}} 
+    \caption{Varredura da imagem para a leitura do conjunto $f$ de amostras, em que cada amostra, são obtidos $k$ perfis de estradas 
+	    (Na ilustração, 8 perfis).}
+    \label{orientacaoEstradas}
+\end{figure}
+
+Para a leitura das diferentes orientações na amostra, é necessário uma heurística para a determinação dos \emph{pixels} em determinadas inclinações de reta. O algoritmo do Ponto Médio, conhecido também por algoritmo de Bresenham (\citeyear{bresenham}), determina justamente quais \emph{pixels} são renderizados, a fim de formar uma aproximação de uma linha reta entre dois pontos.
+
+O algoritmo desenvolvido em 1965 por Jack E. Bresenham \cite{bresenham}, consiste em um método simples para a obtenção de uma reta em um dispositivo matricial, tal como televisores e monitores. Dados dois pontos, ($x_0,y_0$) e ($x_1,y_1$), o primeiro representa o par de coordenadas do ponto inicial, e o segundo, o ponto final. O algoritmo se inicia a partir da determinação da projeção da reta, verificando especificamente as diferenças entre as linhas final e inicial ($x_1 - x_0$), e colunas ($y_1 - y_0$), e com isso, determinar a inclinação da reta. Para melhor compreensão, na Figura \ref{bresenhamFig2}, é ilustrado o resultado da execução do método, em que em cada coluna entre $x_0$ e $x_1$ há exatamente um \emph{pixel} computado, enquanto que para cada linha entre $y_0$ e $y_1$ pode haver múltiplos \emph{pixels}. 
+\begin{figure}[htb]
+   \centering	   
+    \subfigure{\includegraphics[width=0.39\textwidth]{figs/bresenham1.jpg}} 
+    \caption{Exemplo da determinação dos \emph{pixels} entre dois pontos em um dispositivo matricial (Algoritmo de Bresenham).}
+    \label{bresenhamFig2}
+\end{figure}
+O algoritmo de Bresenham é utilizado neste trabalho para a leitura dos perfis em diferentes orientações (Figura \ref{orientacaoEstradas}), 
+aumentando a chance de identificar a passagem de uma estrada, bem como a sua orientação na imagem.
+
+O vetor de valores de cada uma das orientações possui, obrigatoriamente, a mesma quantidade de elementos que foram apresentados à rede. Para que a RNA aponte uma amostra como sendo uma estrada, pelo menos uma das orientações esteja próxima o suficiente de algum centro que corresponde a uma estrada. Isto é, pelo menos uma orientação deve estar no raio de algum dos aglomerados que representam o padrão de estrada. Se pelo menos uma das orientações satisfizer essa condição, a amostra é identificada como sendo uma estrada. O cálculo para a obtenção da orientação com menor valor é representado por:
+\begin{align}\label{eq4}
+ c(X) = arg_{orient}~min||W_{(j,k)} - X_{orient}||~,~~~~
+ \begin{cases}
+    ~~~orient &= 1,...,l\\
+    ~~~j &= 1,2,...,n\\
+    ~~~k &= 1,2,...,n\\
+ \end{cases}
+\end{align}
+em que $X$ representa o conjunto dos valores para cada orientação, $orient$ é o índice da orientação, e $c(X)$ é o índice do vetor correspondente à orientação que mais se aproximou de um padrão de estrada, e portanto, a orientação escolhida para a determinação do ponto semente no processo de classificação. 
+
+A seção seguinte apresenta o método de decisão aplicado no reconhecimento das estradas, utilizando, essencialmente, a matriz de pesos obtida na etapa de treinamento, ou seja, as amostras lidas nessa etapa são apresentadas à RNA já treinada, que, por sua vez, determina ou não a presença de estradas em seu conteúdo.
+
+\subsubsection{Classificação e Identificação}\label{classif}
+Considerando que o treinamento da RNA tenha sido realizado adequadamente e as amostras da imagem lidas, o processo de reconhecimento ou identificação das estradas pode então ser realizado. Cada amostra é apresentada à RNA treinada, para que esta faça o reconhecimento daquelas estradas que apresentarem padrões semelhantes aos utilizados no treinamento. Como exposto na seção anterior, ao apresentar uma determinada amostra para reconhecimento, seus valores são associados a uma posição no mapa de neurônios, o que caracteriza o neurônio vencedor para esse vetor de dados.
+
+No treinamento da rede SOM neste trabalho, foram utilizados oito padrões de treinamento. Os dois primeiros padrões correspondem ao perfil de estrada larga (15 \emph{pixels}), sendo que o primeiro representa a estrada clara e entorno escuro, e o segundo, o inverso. Os dois padrões seguintes correspondem a um perfil mais estreito de estrada (3 \emph{pixels}) e, assim como no caso dos dois primeiros padrões, também são definidos com intensidades inversas. Por fim, os últimos quatro padrões representam alvos que não correspondem a estradas.
+
+A determinação de uma amostra possuir ou não a passagem de uma estrada é dada pela apresentação de $c(X)$ (Equação \ref{eq4}) à rede SOM, em que é adquirido um neurônio vencedor para a respectiva entrada. Caso esta esteja presente em um dos quatro aglomerados que dizem respeito ao padrão estrada, a amostra é considerada como ponto-semente, caso contrário, ignorada. Os índices das amostras que forem selecionadas pelo método de semeação são armazenados. Tais índices são utilizados posteriormente em um processo de fragmentação, em que são selecionados os pontos-sementes pertencentes a um mesmo segmento de reta. Ao final do processo, é obtido uma matriz, tal que cada linha dessa corresponde aos índices das amostras pertencentes a um mesmo segmento de reta. A Figura \ref{indicesAmostras} ilustra as amostras identificadas como estrada no processo de classificação. 
+\begin{figure}[htb]
+   \centering	   
+    \subfigure{\includegraphics[width=0.69\textwidth]{figs/pontos-sementes.jpg}}     
+    \caption{Exemplo do conjunto de amostras selecionadas pelo método de semeação.}    
+    \label{indicesAmostras}
+\end{figure} 
+O vetor não fragmentado armazena sequencialmente os índices de cada amostra. Ao fragmentar este vetor, os índices ficam dispostos em uma matriz, de forma que cada linha caracteriza um conjunto de pontos-sementes pertencentes a um mesmo segmento de reta. Desta forma, o vetor fragmentado correspondente a Figura \ref{indicesAmostras} é dado por:
+\begin{center} 
+$
+pontos =
+\begin{bmatrix}
+   9 & 10 & 11 & 12 & 0 & 0 & 0 \\
+   17 & 18 & 19 & 20 & 21 & 22 & 23\\
+   45 & 46 & 47 & 48 & 0 & 0 & 0
+\end{bmatrix}
+$
+\end{center}
+
+Na Seção \ref{pruning} são apresentados os detalhes do processo de fragmentação e poda dos pontos-sementes.
+% Desta forma, conclui-se que quatro dos oito padrões apresentados à RNA caracterizam o que é estrada de fato. A utilização dos padrões 
+% que não caracterizam estradas são úteis, pois com eles são criados as áreas de \textquotedblleft escape\textquotedblright$~$no próprio mapa de 
+% neurônios. Assim, ao analisar uma amostra que possua características muito distantes dos padrões que representam estradas, o neurônio 
+% vencedor tenderá a se localizar nessas áreas. Isso significa que a determinação de uma amostra possuir ou não a passagem de uma estrada 
+% fica mais flexível, uma vez que é obtida por meio da análise de sua localização no domínio de Kohonen.
+
+\subsection{Processo de poda dos pontos-sementes}\label{pruning}
+Muitos dos pontos-sementes são marcados incorretamente, grande parte, em função do ruído presente na imagem. Como estratégia para a eliminação destes pontos-sementes incorretos, foi desenvolvido um algoritmo de poda com o objetivo de separar todos os pontos que formam segmentos retos e contínuos, obedecendo algumas regras. Portanto, um conjunto de pontos-sementes é considerado como pertencente a um segmento de reta se as seguintes inequações se
+verificam:
+\begin{itemize} 
+ \item \small $(f+1)~-~(f)~\leq$ \textbf{LMD}.
+ \item \small \textbf{QPC} $\geq$ \textbf{LMC}.
+\end{itemize}
+Em que $f$ representa o índice das amostras identificadas, representando o ponto-semente propriamente dito. E os limiares LMC, LMD e QPC representam respectivamente:
+\begin{itemize} 
+ \item \small \textbf{Limite Mínimo de Continuidade}: Limiar que define a quantidade mínima de pontos-sementes subsequentes para que sejam considerados como pertencentes a um mesmo segmento de reta.
+ \item \small \textbf{Limite Máximo de Descontinuidade}: Limiar que define a quantidade máxima de descontinuidade entre os pontos-sementes para que sejam considerados como pertencentes a um mesmo segmento de reta.
+ \item \small \textbf{Quantidade de Pontos Contínuos}: Índice com o qual se verifica a continuidade dos pontos-sementes, caso este valor seja menor que LMC, a sequência é ignorada.
+\end{itemize}
+A Figura \ref{vetorFrag} ilustra um conjunto de pontos-sementes sobre uma estrada. Os pontos tracejados correspondem aos pontos-sementes não identificados na classificação, gerando as descontinuidades. Considerando o fator LMC igual a 4 e LMD igual a 2, somente os pontos: 6, 7, 8, 10 e 11 pertencem a um mesmo e único segmento de reta, pois entre os pontos 8 e 10 há somente um ponto de descontinuidade, o que satisfaz a primeira condição, e o total de pontos-sementes é igual a 5 (QPC), o que satisfaz a segunda condição. Portanto, o conjunto de pontos-sementes é considerado como sendo um segmento de reta presente na imagem. Os pontos-sementes 1 e 2 satisfazem a primeira inequação, mas não a segunda, excluindo-se da classificação.
+\begin{figure}[htb]
+   \centering	   
+    \subfigure{\includegraphics[width=0.75\textwidth]{figs/pruningProcess.jpg}} 
+    \caption{Descontinuidades da classificação dos pontos-sementes.}
+    \label{vetorFrag}
+\end{figure} 
+
+Após este processo, tanto os pontos isolados apontados como uma estrada pelo método quanto os segmentos de reta pequenos, são excluídos da identificação.
+
+Nesta etapa do processo, os pontos-sementes estão separados em grupos de segmentos de reta, dispostos em uma matriz. Nesta matriz, cada linha caracteriza um segmento de reta, e cada coluna dessas linhas, o índice da amostra (Figura \ref{vetorFrag}). Assim, para cada linha é aplicado o método \emph{Snakes}, de forma que todos os elementos da linha são interpolados e aplicados ao método. Ao término das linhas, é obtido então a rede de estradas.
+
+A semeação realizada neste trabalho foi aplicada sobre a imagem de radar sem pré-processamento, justamente para que se analisasse o comportamento do método com a presença do ruído (imagem original), apresentada no Capítulo \ref{capResultados}.
+
+Nesta seção \ref{semeacao}, foi apresentado como o processo de semeação é realizado, sua fundamentação e importância para o método de extração de estradas. Na próxima seção, serão apresentados detalhes do processo de obtenção do eixo de simetria das estradas pelo método \emph{Snakes}.
+
+\subsection{Modelo de Contorno Ativo (\emph{Snakes})}\label{snakes}
+Embora a técnica tenha sido empregada no final da década de 1980 por \citeonline{kass}, o termo Modelos Deformáveis surgiu em 1998 em um trabalho apresentado por \citeonline{terzopoulos}. A técnica consiste em obter formas (ou contornos) dos objetos presentes em uma imagem digital, permitindo 
+que um contorno inicial se deforme e evolua para as bordas do objeto. Evolução esta que pára sob determinadas condições de conversão, pré-estabelecidas no modelo, e assim, sejam identificados os objetos presentes na imagem. 
+
+Os modelos deformáveis são, em geral, considerados robustos pela sua capacidade em adaptar-se e identificar os objetos em cena com eficiência representando, portanto, uma contribuição considerável para a Visão Computacional. Após o surgimento da técnica, foram realizados diversos trabalhos que exploraram a maneira como os objetos eram reconhecidos \cite{cohen, osher, cootes, staib}. Basicamente, as soluções apresentadas estendiam a maneira como a curva evoluía em direção ao objeto, e essa evolução pode ser traduzida como a minimização do funcional de energia da curva. Muitas soluções se diferenciaram do método variacional de Euler-Lagrange, apresentado por \citeonline{kass} para a minimização da energia, e apresentaram técnicas igualmente boas, como, por exemplo, a utilização da Programação Dinâmica, apresentada por \citeonline{amini}, para a extração de estradas utilizando \emph{Snakes}, ou o método de Fluxo do Vetor Gradiente (\emph{Gradient Vector Flow - GVF}) \cite{xu}, que, embora utilize o mesmo termo 
+variacional, apresenta uma melhora considerável nos resultados quando as curvas iniciais são apresentadas distantes das feições a serem extraídas, 
+o que é uma desvantagem no modelo tradicional.
+
+A fim de que a curva venha a convergir para o contorno do objeto de maneira eficaz, é necessário que sua localização se encontre próxima à feição de interesse. Por este fato, na maioria das vezes, o método compreende um pré-processamento manual, no qual um operador humano fornece pontos que se localizam próximos à feição a ser extraída. Esses pontos são então interpolados, obtendo-se uma curva inicial. Após a obtenção da curva inicial, essa é submetida a um processo iterativo para o cálculo de sua nova localização. Ao longo dessas iterações, a curva se comporta de maneira semelhante a uma cobra (\emph{snake}), o que explica a razão do nome \cite{kass}.
+
+Ao longo dos tempos, foram criadas diferentes variações do método \emph{Snakes}. \citeonline{silvestre} relacionam as principais delas, tais como o método \emph{Level Set}, que consiste em um modelo não-paramétrico, cujo processo de identificar o contorno dos objetos não necessita de parametrização da curva \cite{osher}. Outra extensão frequentemente abordada em trabalhos de reconhecimento de formas é o método \emph{Balloon Snake} \cite{cohen}, no qual a curva evolui a partir do centro do objeto de interesse, imitando o comportamento de um balão de ar, ao contrário do que acontece no método convencional, onde a curva inicial é formada ao redor do objeto.
+
+Na Figura \ref{fluxo2} é ilustrada a metodologia usada na extração de estradas em imagens digitais. A partir de um conjunto de pontos provenientes do processo de Semeação, os pontos-sementes, e a fragmentação desses em segmentos de reta, aplica-se o método \emph{Snakes} para que seja realizada a extração da estrada, de forma que os pontos de um determinado segmento de reta são interpolados, obtendo-se, então, uma curva inicial $\zeta$, tal como exemplificado na Figura \ref{estradasReprMatematica}.
+
+Na seção seguinte, é apresentada a fundamentação matemática da Teoria de \emph{Snakes}. As definições e equações apresentadas a seguir, são baseadas na teoria tradicional do método, apresentada por \citeonline{kass}. Todas as adaptações realizadas para a extração de estradas, são citadas juntamente com suas definições.
+
+\subsubsection{Energia da \emph{Snake}}\label{energiaSnake}
+Conforme exposto anteriormente, o problema do método \emph{Snakes} se resume ao processo de minimização de um funcional de energia. O modelo pode ser considerado como sendo uma \emph{spline} cúbica, controlada sobre a influência de suas energias interna e externa.
+
+A curva $\zeta$ pode ser representada parametricamente por $v(s)=(x(s),y(s))$, em que $s$ é relacionado ao comprimento de arco, com valores crescentes ao longo da curva, $s\in[0,1]$, que se move no domínio espacial da imagem. O contorno ativo funciona pela minimização da energia total da curva, $E_{snake}$, que é composta pela soma das energias interna, $E_{int}$, da imagem, $E_{image}$ e a energia $E_{con}$, imposta pelo usuário (Equação \ref{energiaTotal}). 
+\begin{align}\label{energiaTotal}
+ E_{snake} &= \int_0^1{E_{snake}(v(s))ds} \notag \\
+ &= \int_0^1{[E_{int}(v(s)) + E_{ext}(v(s))]ds} \notag \\
+ &= \int_0^1{[E_{int}(v(s)) + E_{image}(v(s)) + E_{con}(v(s))]ds}~.
+\end{align}
+Cada energia possui uma responsabilidade específica no método e, sendo assim, as seções que se seguem destinam-se à apresentação das funções e definições de cada uma delas, exemplificando sua importância em cada etapa da iteração.
+
+\subsubsection{Energia Interna}\label{energiaInternaCap}
+A força interna é responsável por manter a relação de suavidade da curva, enquanto que a energia externa a impulsiona na direção de linhas,
+bordas e contornos subjetivos \cite{kass}. A energia interna pode ser descrita por:
+\begin{align}\label{energiaInterna}
+%  E_{int}=\frac{1}{2}\int_0^1{\alpha(s)|v_s(s)|^2 + \beta(s)|v_{ss}(s)|^2 ds}~,
+ E_{int} = \frac{1}{2} \int_0^1 \alpha(s) \left|\frac{\partial v(s)}{\partial s}\right|^2 + \beta(s)\left|\frac{\partial^2v(s)}{\partial s^2}\right|^2 ds~,
+\end{align}
+a qual é composta por dois termos: o termo de primeira ordem $\partial v(s)/\partial s$, controlado por $\alpha(s)$; e de segunda ordem 
+$\partial^2 v(s)/\partial s^2$, controlado por $\beta(s)$. O termo de primeira ordem faz com que a curva se comporte como uma membrana, 
+representando sua elasticidade. O segundo termo diz respeito à rigidez, agindo como uma placa fina, permitindo que, durante 
+o processo de minimização da energia, ela não se dobre \cite{kass}. As variáveis $\alpha$ e $\beta$ podem ser consideradas como constantes, 
+que funcionam como um fator de ponderação, possibilitando o ajuste de acordo com as características da forma a ser identificada. Seus valores são essenciais 
+para a eficiência do método, ao passo que variações pequenas podem mudar significantemente o resultado \cite{bentabet}. \citeonline{agouris} 
+mencionam que a escolha dos parâmetros $\alpha$ e $\beta$ pode ser realizada empiricamente, definindo-os de acordo com as características 
+da imagem ou feições a serem extraídas. \citeonline{bentabet} utilizaram valores de $\beta$ estimados automaticamente, em que inicialmente 
+são verificadas as características predominantes das feições por meio de uma base de dados com a verdade terrestre das mesmas, e então, 
+obtém-se o valor médio da curvatura dessas feições. A partir dessa informação, estima-se o valor de $\beta$. 
+
+% A Figura \ref{snake1} ilustra o resultado final da \emph{snake} para diferentes valores de $\alpha$.
+% \begin{figure}[htb]
+%     \centering	   
+%     \subfigure[]{\label{snake1a}\includegraphics[width=0.28\textwidth]{figs/snake1a.jpg}} \hspace{0.3cm}    
+%     \subfigure[]{\label{snake1b}\includegraphics[width=0.28\textwidth]{figs/snake1b.jpg}} \hspace{0.3cm}
+%     \subfigure[]{\label{snake1c}\includegraphics[width=0.28\textwidth]{figs/snake1c.jpg}} \\
+%     \caption{Exemplo da evolução da \emph{snake} para diferentes valores de $\alpha$: (a) Valor alto. (b) Valor mediano. (c) Valor baixo.}
+%     \FONTE{Chris Bregler and Malcolm Slaney \citeyear{bregler}}
+%     \label{snake1}
+% \end{figure}
+% A constante $\beta$ especifica a rigidez do contorno. Desta forma, valores baixos de $\beta$ faz com que a curva desenvolva pontos de descontinuidade 
+% na identificação.
+
+As funções $\partial v(s)/\partial s$ e $\partial^2 v(s)/\partial s^2$, que compõem cada um dos termos, são as derivadas de primeira e segunda 
+ordem de $v(s)$, respectivamente. A primeira fornece o coeficiente angular tangente à curva no ponto $s$, e a segunda, o vetor normal a este 
+ponto. A Equação \ref{energiaInterna} não admite qualquer solução analítica, fazendo com que seja requerido um processo iterativo para 
+resolvê-la. O mais comum dos processos é o método de Euler-Lagrange, em que a Equação \ref{energiaInterna} é reescrita na equação de Euler, 
+correspondendo assim a uma equação de equilíbrio ou de minimização \cite{bentabet}. O processo de minimização é apresentado na Seção 
+\ref{minizacaoEnergia}.
+
+\subsubsection{Energia externa}\label{energiaImagemCap}
+A soma das energias $E_{image}$ e $E_{con}$ é denominada energia externa $E_{ext}$. A energia da imagem, $E_{image}$, é composta pela soma do produto de três outras energias.
+\begin{align}\label{energiaImagem}
+  E_{image} = w_{line}E_{line} + w_{edge}E_{edge} + w_{term}E_{term}~.
+\end{align}
+Os valores de $w_{line}$, $w_{edge}$ e $w_{term}$ são constantes que funcionam como ajustes para suas respectivas energias. $E_{line}$ especifica as características do contorno quanto aos níveis de intensidade da forma, ou seja, dependendo do valor de $w_{line}$, a curva será atraída por linhas claras ou escuras. Tal energia refere-se simplesmente aos níveis de intensidade da imagem. Na abordagem original apresentada por \citeonline{kass}, são apresentadas duas representações do funcional de linha. Na Equação \ref{energiaLine1}, a primeira apresentada pelos autores, a curva é atraída por contornos com gradientes altos de imagem, em que a curva tende a convergir na borda do objeto.
+\begin{align}\label{energiaLine1}
+ E_{line} = I(x,y)~.
+\end{align}
+A segunda representação é dada por:
+\begin{align}\label{energiaLine2}
+ E_{line} = -(G_{\sigma}*\nabla^2I)^2~,
+\end{align}
+em que $G_{\sigma}$ representa uma Gaussiana de desvio padrão $\sigma$, e $\nabla^2I$ o gradiente de segunda ordem da imagem. Ambas permitem adquirir o contorno do objeto sendo que, a segunda representação se difere pelo comportamento da curva em ser atraída à regiões de passagem-por-zero (\emph{zero-crossing}), isto é, regiões com mudanças bruscas de intensidade.
+
+O funcional de borda, $E_{edge}$, pode ser interpretado também como um operador para a identificação de bordas na imagem, e é dado por:
+\begin{align}\label{energiaEdge}
+ E_{edge} = -|\nabla I|^2~,
+\end{align}
+em que $\nabla I$ é o gradiente da imagem $I$ e, $E_{term}$ é definido por \citeonline{kass} como o funcional de limite que, tem como responsabilidade de encontrar terminações e cantos dos segmentos de reta. Para tanto, utiliza-se o nível de curvatura das linhas da imagem após suavização, dada por um filtro gaussiano: 
+\begin{align}
+C(x,y)=G_{\sigma}(x,y)*I(x,y)~, 
+\end{align}
+O nível de curvatura pode ser obtido pelo cálculo da variação do ângulo gradiente em relação ao vetor perpendicular ao gradiente:
+\begin{align}
+ E_{term} &= \frac{\partial\theta}{\partial n_{\bot}} \\ 
+ &= \frac{\partial^2C / \partial n_{\bot}^2}{\partial C / \partial n} \\
+\label{energiaTerm3}
+ &= \frac{C_{yy}C_x^2-2C_{xy}C_xC_y+C_{xx}C_y^2}{(C_x^2+C_y^2)^{\frac{3}{2}}}~,
+\end{align}
+em que $\theta=tan^{-1}(C_y/C_x)$ é o ângulo do gradiente, $n = (cos\theta,sen\theta)$ e $n_{\bot}=(-sen\theta,cos\theta)$ são vetores unitários na direção do gradiente e perpendicular a este, respectivamente. A Equação \ref{energiaTerm3} representa a solução discreta do cálculo dos níveis de curvatura das linhas na imagem, que em termos práticos, $C_x$, $C_y$ e $C_{xy}$ representam as diferenças discretas avançadas de primeira ordem da imagem suavizada $C(x,y)$ em relação aos respectivos eixos $x$ e $y$, que caracterizam-se em uma imagem com realces de borda do tipo degrau com orientação em $x$, do tipo degrau com orientação em $y$ e do tipo degrau com orientação nos dois eixos, respectivamente. Os termos $C_{xx}$ e $C_{yy}$ correspondem às diferenças discretas avançadas de segunda ordem, obtendo uma imagem com realces de borda do tipo cartola (\emph{top-hat}) com orientação em $x$ e $y$, respectivamente \cite{hoffman}. A combinação do funcional de terminação $E_{term}$, com o funcional de borda $E_{edge}$, faz com que a curva evolua não só para os contornos do objeto, como também para regiões onde não há contornos reais, mas sim fictícios. Na Figura \ref{snake2}, é ilustrado a evolução da curva para as bordas do objeto, que, apesar de não existirem de fato, são reconhecidas pelo método.
+\begin{figure}[htb]
+    \centering	     
+    \subfigure[]{\label{snake2a}\includegraphics[width=0.21\textwidth]{figs/snake1process.jpg}} \hspace{0.1cm}        
+    \subfigure[]{\label{snake2b}\includegraphics[width=0.21\textwidth]{figs/snake2process.jpg}} \hspace{0.1cm}  
+    \subfigure[]{\label{snake2c}\includegraphics[width=0.21\textwidth]{figs/snake3process.jpg}} \hspace{0.1cm}
+    \subfigure[]{\label{snake2d}\includegraphics[width=0.21\textwidth]{figs/snake4process.jpg}} \\
+    \caption{Exemplo da obtenção de contornos criados pela \emph{Snakes}: (a) Imagem original. (b) Curva inicial. 
+	     (c) Evolução intermediária da curva. (d) Curva final.}
+    \FONTE{Adaptado de \citeonline{kass}.}
+    \label{snake2}
+\end{figure}
+
+Por fim, o parâmetro $E_{con}$, na Equação \ref{energiaTotal}, é definido como sendo uma energia de restrição imposta pelo usuário. Muitas vezes, esse termo não é utilizado no processo de extração de estradas, como apresentado em \citeonline{bentabet, agouris} e \citeonline{youn}. Assim como a energia de restrição $E_{con}$, outros trabalhos negligenciam o uso das energias $E_{edge}$ e $E_{term}$ justamente por não serem úteis, face às características do objeto a ser extraído. A aplicação de \emph{Snakes} apresentada neste trabalho dispensa o uso dos termos $E_{con}$, $E_{term}$ e $E_{edge}$. O último termo é desprezado, uma vez que o objetivo é obter o centro das vias e não suas bordas. Portanto, a Equação \ref{energiaTotal} é reescrita:
+\begin{align}
+E_{snake} &= E_{int} + E_{image} \notag \\
+&= E_{int} + w_{line}E_{line}
+\end{align}
+
+O processo de obtenção dos eixos de simetria das vias é definido como sendo um procedimento de minimização da energia total da curva (Equação 
+\ref{energiaTotal}). Existem diferentes maneiras de se minimizar tal energia. Na seção seguinte, serão apresentadas as principais técnicas 
+utilizadas para a resolução deste problema.
+
+\subsubsection{Minimização da Energia Total}\label{minizacaoEnergia}
+Nas seções anteriores, foram apresentadas as características gerais da curva, entre as quais a representação no 
+domínio espacial, definida como uma curva parametrizada por um conjunto de pontos no plano ($x,y$) da imagem, denotada por $v(s)$. 
+De forma que a obtenção do contorno de um determinado objeto é dado pela minimização de $v(s)$, que corresponde à busca do mínimo
+local da soma de suas energias, representada pela Equação \ref{energiaSnake}, a qual não admite solução analítica, o que equivale 
+dizer que, para o problema da minimização da curva, a equação anterior deve ser reescrita de forma que num esquema iterativo 
+possa-se encontrar soluções para ela.
+
+Segundo \citeonline{bentabet}, métodos como Algoritmos Gananciosos (\emph{Greeding Algorithm}) e Otimização por Arrefecimento Simulado 
+(\emph{Simulated Anealing}) são tipos requeridos para a solução do problema de minimização. Esses algoritmos são utilizados na busca de 
+mínimos globais que representam pontos de estabilidades ou de equilíbrio em um determinado problema de otimização, tal como a minimização 
+do funcional de energia, $E_{snake}$. A Programação Dinâmica \cite{bellman} é outra alternativa para a obtenção do mínimo de $E_{snake}$ 
+\cite{amini, gruen, liThesis, dalpoz3}.
+
+O método mais comum de minimização do funcional de energia, é reescrito como uma equação de \emph{Euler-Lagrange}, correspondendo à uma 
+função de equilíbrio \cite{kass,bentabet,laptev,haupt}, tal que a minimização do funcional de energia na Equação \ref{energiaInterna} dê 
+origem a duas novas equações de Euler independentes.
+\begin{align}
+ \label{euler1}
+ \alpha(s) \frac{\partial^2 x(s)}{\partial s^2} + \beta(s) \frac{\partial^4 x(s)}{\partial s^4} + \frac{\partial E_{ext}}{\partial x} &= 0~, \\ 
+ \label{euler2}
+ \alpha(s) \frac{\partial^2 y(s)}{\partial s^2} + \beta(s) \frac{\partial^4 y(s)}{\partial s^4} + \frac{\partial E_{ext}}{\partial y} &= 0~,
+\end{align}
+
+Para \citeonline{laptev}, os equilíbrios entre a energia interna e a energia da imagem são importantes no processo de minimização. Se uma delas tiver domínio sobre a outra, anulará a relação de suavidade da curva ou a forçará a ignorar a energia da imagem, sendo que ambos efeitos são indesejados. Desde que a energia interna possa ser controlada, o equilíbrio pode ser alcançado com o ajuste preciso de $\alpha(s)$ e $\beta(s)$. Sendo assim, \citeonline{laptev} utilizaram a idéia apresentada por \citeonline{fua}, os quais criaram uma maneira de automatizar a definição dos valores de $\alpha(s)$ e $\beta(s)$, em que se substituem as funções por uma constante $\lambda$.
+
+Resolver as Equações \ref{euler1} e \ref{euler2} computacionalmente implica dizer que a evolução da curva pode ser realizada somente em período discreto de tempo. Assim, é necessária a discretização da representação da \emph{snake} a fim de aproximar sua posição e derivadas \cite{laptev}. Uma abordagem que oferece a discretização precisa de derivadas é dada pelo método de diferenças finitas \cite{bentabet}. Na resolução apresentada por \citeonline{kass}, aproximando-as pelo método de diferenças finitas, considera-se:
+\begin{align}
+ v_i=(x_i,y_i)=(x_i(s,t),y_i(s,t))~,~~~~i = 1,...,n~;    
+ \end{align}
+em que $s$ denota o parâmetro do comprimento de arco, $t$, a variável temporal e $i$ o índice do ponto na curva. Neste caso, a expansão da energia interna do \emph{i}-ésimo vértice é dada por: 
+\begin{align}
+ E_{int}(i) = \frac{\alpha_i|v_i - v_{i-1}|^2}{2s^2} + \frac{\beta_i|v_{i-1}-2v_i + v_{i+1}|^2}{2s^4}~.
+\end{align}
+Considerando as derivadas parciais da energia externa em relação a $x$, $f_x(i) = \partial E_{ext} / \partial x_i$, e em relação a $y$, $f_y(i) = \partial E_{ext} / \partial y_i$, em cada vértice $v_i$, as equações de Euler Lagrange, de acordo com o cálculo variacional \cite{courant}, podem ser assim apresentadas, já considerando o método de diferenças finitas:
+\begin{align}\label{discrEuler}
+ \alpha_i(v_i - v_{i-1}) - &\alpha_{i+1}(v_{i+1} - v_i) \notag \\
+			   &+ \beta_{i-1}[v_{i-2} - 2v_{i-1} + v_i] \notag \\
+			   &- 2\beta_i[v_{i-1}-2v_i + v_{i+1}] \notag \\
+			   &+ \beta_{i+1}[v_i - 2v_{i+1} + v_{i+2}] \notag \\
+			   &+ (f_x(i),f_y(i)) = 0~.
+\end{align}
+A Equação \ref{discrEuler} pode ser reescrita na forma matricial:
+\begin{align}
+ Ax + f_x(x,y) &= 0~,\\
+ Ay + f_y(x,y) &= 0~,
+\end{align}
+em que $A$ é uma matriz penta-diagonal simétrica $n\times n$, dada pelos coeficientes da Equação \ref{discrEuler}. Devido as derivadas parciais da energia externa utilizada, são necessárias mudanças em $A$ a cada iteração. Por simplicidade, admita-se que $f_x$ e $f_y$ são constantes durante um intervalo de tempo, o que origina o método explícito de Euler em relação à energia externa. A energia interna, entretanto, é especificada pela matriz $A$, assim, é possível validar a derivada temporal no tempo $t$, ao invés de $t-1$ e, consequentemente, obter um passo implícito de Euler para as energias internas, resultando em:
+\begin{align} 
+ \label{eq15}
+ Ax^{(t)} + f_x(x^{(t-1)}, y^{(t-1)}) = -\gamma(x^{(t)} - x^{(t-1)})~,\\
+ \label{eq16}
+ Ay^{(t)} + f_y(x^{(t-1)}, y^{(t-1)}) = -\gamma(y^{(t)} - y^{(t-1)})~,
+\end{align}
+em que $\gamma$ é o tamanho do passo, $x^{(t)}$ e $y^{(t)}$ são vetores colunas $n\times1$, correspondendo às localizações dos pontos $v$ no tempo $t$ e o termo $f(.)$ denota as derivadas parciais dos pontos no tempo $t-1$ que, por sua vez, corresponde também a um vetor coluna $n\times1$. Isolando-se as variáveis $x$ e $y$ tem-se:
+\begin{align} 
+ x^{(t)} = (A + \gamma I)^{-1} (\gamma x^{(t-1)} - f_x(x^{(t-1)}, y^{(t-1)})~,\\
+ y^{(t)} = (A + \gamma I)^{-1} (\gamma y^{(t-1)} - f_y(x^{(t-1)}, y^{(t-1)})~,
+\end{align}
+em que $I$ é uma matriz identidade $n\times n$, assim, a matriz $A + \gamma I$ é uma matriz penta-diagonal, podendo simplesmente ser invertida pelo método de decomposição \emph{LU}.
+
+\subsubsection{Representação Aberta da Curva \emph{Snake}}\label{curvaAberta}
+Existem duas importantes configurações da curva a serem consideradas: as de caráter fechado e as de caráter aberto. Até então, foram apresentadas as definições para a curva fechada (laço), assim como a definição em sua base original. Tratando-se da extração de feições lineares, fica evidente que a configuração da curva necessita ser aberta. Seria impraticável utilizar a base tradicional do método, que apresenta as definições para a curva fechada, como um extrator de estradas, e ainda, obter um bom resultado. Encontram-se na literatura muitos trabalhos abordando a extração de estradas com o uso da curva aberta, porém, o grande obstáculo é identificar como esse tipo de configuração é executado em relação à reparametrização da curva.
+
+A princípio, o método desenvolvido por \citeonline{kass}, visava à obtenção de contornos em objetos presentes em imagens ópticas. Baseando-se nessa implementação tradicional, foram identificados duas possíveis modificações no método para o problema de extração de estradas. A primeira delas foi a adequação do método para a representação da curva aberta. Os trabalhos que aplicam a curva aberta simplesmente ignoram a necessidade de eventuais alterações, para que este tipo de curva se comporte adequadamente como em sua representação fechada. Após a pesquisa sobre como executar a extração de estradas utilizando a curva aberta, surgiram as alternativas de, por um lado, se fixar os pontos extremos e aplicar o processo somente nos demais pontos da curva; e, por outro, de se agregar conceitos de forma a permitir que os extremos sejam atraídos pelos contornos, expandindo-se e possibilitando que, a curva se estique ao longo do objeto. Devido à complexidade de implementação da segunda alternativa, adotou-se a opção de se fixar os extremos de uma determinada curva e aplicar o processamento de minimização sobre os pontos internos. A Figura \ref{procSnakes} ilustra o avanço da curva conforme o processo de minimização sobre esses pontos, em que a cada iteração é obtido uma nova localização somente para os 
+pontos internos.
+\begin{figure}[htb]
+    \centering	   
+    \subfigure[]{\includegraphics[width=0.44\textwidth]{figs/proc1.jpg}} \hspace{0.3cm}        
+    \subfigure[]{\includegraphics[width=0.44\textwidth]{figs/proc2.jpg}} \\
+    \subfigure[]{\includegraphics[width=0.44\textwidth]{figs/proc3.jpg}} \hspace{0.3cm} 
+    \subfigure[]{\label{procSnakes4}\includegraphics[width=0.44\textwidth]{figs/proc4.jpg}} 
+    \caption{Avanço da \emph{snake} com os pontos extremos fixos:(a) Curva inicial. (b) e (c) Avanços intermediários da curva. (d) Curva final.}
+    \label{procSnakes}
+\end{figure}
+
+Em alguns casos, os pontos extremos da curva pode localizar-se distantes da região de interesse, ocasionando o efeito ilustrado na Figura \ref{procSnakes4}, em que o posicionamento da aresta entre os vértices extremo e o interno mais próximo pode tornar-se incoerente com a real posição da estrada. Desta forma, após a aplicação do método, optou-se por excluir as arestas de ligação com os extremos fixados no processo \emph{Snakes} (Figura \ref{verticeAresta}).
+\begin{figure}[htb]
+    \centering	   
+    \subfigure[]{\includegraphics[width=0.64\textwidth]{figs/snakes.jpg}} \hspace{0.3cm}        
+    \caption{Exclusão da aresta de ligação entre o extremo fixado e o vértice interno.}
+    \label{verticeAresta}
+\end{figure}
+
+Na representação tradicional, a curva tende a ser atraída para o contorno das formas, conforme as energias $E_{edge}$ e $E_{term}$. Sabendo-se que o operador deve obter os eixos de simetria, essas energias são inutilizadas, assim como o termo imposto pelo usuário $E_{con}$. Desta forma, o termo de energia externa $E_{ext}$, composta pelos fatores $E_{line}$, $E_{edge}$, $E_{term}$ e $E_{con}$, passa a ser composto somente pelo termo $E_{line}$, que consiste do produto entre a imagem suavizada e o fator de ponderação $w_{line}$, o qual dependendo do sinal, definirá a atração da curva: negativo para perfis claros, e positivo para perfis escuros. Nessa definição, a curva será atraída não para as fronteiras da estrada, mas sim para o seu centro.
+
+Por ser uma imagem de radar, as estradas podem aparecer tanto em níveis de cinza claros como escuros, e assim, o operador de extração deve ser capaz de reconhecer as duas características de tonalidade. O termo $E_{line}$, especifica qual característica que a curva deverá ser atraída, ou seja, dependendo da sua sinalização, negativo ou positivo, a curva será atraída para feições escuras ou claras, respectivamente. 
+
+Na Figura \ref{termoEnergiaExt}, são apresentados exemplos da aplicação do operador de extração em um recorte na imagem de Paragominas-PA (ver Seção \ref{secaoRadar}), cujas estradas aparecem em ambas representações, clara e escura. Na Figura \ref{termoEnergiaExt1} o termo de energia $E_{ext}$ possui sinal positivo, enquanto que na Figura \ref{termoEnergiaExt2}, o resultado apresentado possui o termo com sinal negativo. 
+\begin{figure}[ht]\label{termoEnergiaExt}
+    \centering	   
+    \subfigure[]{\label{termoEnergiaExt1}\includegraphics[width=0.42\textwidth]{figs/eExtPositivo.png}} \hspace{0.5cm}
+    \subfigure[]{\label{termoEnergiaExt2}\includegraphics[width=0.42\textwidth]{figs/eExtNegativo.png}}     
+    \caption{Resultados da extração para diferentes perfis de tonalidades: (a) Resultados obtidos com o termo de energia externa positivo e
+    (b) Resultados obtidos com o termo de energia externa negativo.}    
+\end{figure}
+
+Nesta seção, foram apresentados os conceitos envolvendo a utilização do Modelo de Contorno Ativo na extração de estradas em imagens digitais. Com o objetivo de avaliar a eficiência do método, serão apresentadas na seção seguinte a métrica de validação utilizada em muitos dos trabalhos envolvendo a extração de estradas.
+
+\subsection{Métricas de Qualidade}\label{metricas}
+É essencial que, após as etapas de processamento e aquisição dos resultados, seja medida a qualidade do método aplicado. Isto permite visualizar se realmente o método apresentado atingiu as expectativas para a resolução do problema. Geralmente, esta quantificação se baseia na comparação entre o conjunto de estradas extraídas pelo método e o conjunto-referência (verdade terrestre). A qualidade dos resultados é medida, respondendo-se a duas indagações: (i) Quão completa é a rede de estradas extraídas?; e (ii) Quão correta ela é? \cite{wiedemann2}. 
+
+As medidas de qualidade não são destinadas a avaliar a extração e os resultados correspondentes de uma forma absoluta. Em vez disso, elas são utilizadas para comparar os resultados dos diferentes algoritmos \cite{heipke}. \citeonline{harvey}, \citeonline{wiedemann2}, \citeonline{heipke} e \citeonline{haupt} aplicaram técnicas semelhantes para a análise das feições extraídas pelo método em questão. O conceito no qual se basearam é apresentado a seguir. 
+
+Essencialmente, são definidos quatro fatores que representam cada resultado possível que o extrator de estrada pode alcançar:
+\begin{itemize}
+ \item \textbf{TP (\emph{True Positive}):} O verdadeiro positivo representa as regiões de estradas extraídas pelo método que, por sua vez, 
+					   pertence ao conjunto-referência.
+ \item \textbf{TN (\emph{True Negative}):} O verdadeiro negativo representa as regiões de não-estrada não extraídas pelo método, que, 
+					   por sua vez, pertence ao conjunto-referência.
+ \item \textbf{FP (\emph{False Positive}):} O falso positivo representa as regiões de estradas extraídas pelo método que, por sua vez, não 
+					    pertence ao conjunto-referência.
+ \item \textbf{FN (\emph{False Negative}):} Por fim, o falso negativo representa as regiões de estradas não extraídas pelo método e que 
+					   pertence ao conjunto-referência.
+\end{itemize}
+
+Com esses quatro fatores definidos, índices como correção, perfeição, qualidade e redundância, podem ser obtidos e, com
+% diferença RMS (\emph{Root Mean Square}), 
+isso, pode-se analisar a eficiência do método. A seguir, descreve-se cada um desses índices e como são obtidos por meio dos fatores 
+listados anteriormente.
+\begin{itemize}
+ \item Correção (\emph{Correctness}): O índice de correção representa a porcentagem de estradas extraídas corretamente, ou seja, a porcentagem de estradas que condiz com o conjunto-referência. \citeonline{wiedemann2} consideram um desvio-padrão quando esses resultados são comparados. A Figura \ref{matchingPrinciple} ilustra esse princípio. 	
+				      \begin{figure}[htb]
+					  \centering	   
+					  \subfigure[]{\includegraphics[width=0.47\textwidth]{figs/match1.jpg}} \hspace{0.1cm}        
+					  \subfigure[]{\includegraphics[width=0.47\textwidth]{figs/match2.jpg}} \\
+					  \caption{Comparação dos resultados extraídos considerando um desvio-padrão de erro: (a) Verdadeiro positivo. (b) Falso negativo.}\hspace{0.1cm}
+					  \FONTE{Adaptado de \citeonline{wiedemann2}.}
+					  \label{matchingPrinciple}
+				      \end{figure}
+				      A Equação \ref{correctnessEq} expressa o índice de correção.
+				      \begin{align}\label{correctnessEq}
+					corr &=\frac{exC}{ex}~, \notag \\
+					corr &\approx \frac{TP}{TP+FP}~, \notag \\ 
+					corr &\in [0;1]~, 
+				      \end{align}
+				      em que $exC$ é comprimento total dos segmentos extraídos que coincidiram com a referência, e $ex$ é o comprimento total dos segmentos extraídos. O valor ótimo para o índice de correção é 1.
+ \item Perfeição (\emph{Completeness}): O índice de perfeição representa a porcentagem em que os dados de referência coincidem com os dados de estradas extraídos. Dado pela equação:
+				      \begin{align}\label{completenessEq}
+					perf &= \frac{rC}{r}~,\notag \\ 
+					perf &\approx \frac{TP}{TP+FN}~, \notag \\ 
+					perf &\in [0;1]~,
+				      \end{align}	
+				      em que $rC$ denota o comprimento total dos segmentos de referência que coincidiram com a extração, e $r$ o comprimento total dos segmentos de referência. O valor ótimo para o índice de perfeição é 1.
+ \item Qualidade: A qualidade leva em conta tanto o índice de perfeição dos dados extraídos, como o índice de correção. É a medida mais geral entre todas elas e é expressa por: 
+		  \begin{align}\label{qualityEq}
+		    qualidade &= \frac{rC}{qq}~, \notag \\
+		    qualidade &\approx \frac{TP}{TP+FP+FN}~, \notag \\ 
+		    qualidade &\in [0;1]~,
+		  \end{align}	
+		  em que $qq$ denota a soma entre o comprimento total dos segmentos extraídos que coincidiram com a referência e o comprimento total dos segmentos de referência que não coincidiram com a extração. O valor ótimo para o índice de qualidade é 1.
+ \item Redundância: A redundância representa a porcentagem em que foram extraídos segmentos de reta redundantemente. A equação que calcula fator de redundância é dada:
+		       \begin{align}\label{RedundancyEq}
+			 Redundancia &= \frac{rr}{ex}~, \notag \\ 
+% 			 Redundancia &\approx \frac{TP + FN - ref}{TP}~,\notag \\ 
+			 Redundancia &\in [0;+\infty]~, 
+		       \end{align}
+			em que $rr$ denota a diferença entre o comprimento total dos segmentos extraídos que coincidiram com a referência e o comprimento total dos segmentos de referência que coincidiram com a extração. %E $ref$, o tamanho do conjunto referência. 
+			O valor ótimo para o fator de redundância é 0.
+%   \item Diferença RMS: A diferença RMS representa a distância média entre as feições extraídas pelo método e as feições presentes no 
+% 		       conjunto referência. Quando é considerado um valor de desvio, como apresentado por Wiedemann et al. \citeonline{wiedemann2}),
+% 		       a diferença RMS dependerá exclusivamente deste valor. A equação que calcula a diferença RMS é dada por:
+% 		       \begin{align}\label{differenceRMSEq}
+% 			 RMS &= \sqrt{\frac{\sum^l_{i=1}(d(extr_i;ref)^2)}{l}} \\ \notag
+% 			 RMS &\in [0;desvio] 
+% 		       \end{align}	
+% 		       em que $l$ é o número de segmentos de reta extraídos que coincidirem com o conjunto referência. $d(extr_i;ref)$ é a menor distância entre o 
+% 		       iésimo segmento de reta em relação ao iésimo segmento de reta correspondente no conjunto referência. O valor ótimo para 
+% 		       o índice da diferença RMS é 0.
+\end{itemize}
+
+% Assim como \citeonline{wiedemann2} consideraram o desvio tanto para o conjunto referência como para o conjunto extraído, ilustrado na Figura \ref{matchingPrinciple}, sendo 
+% este desvio um valor fixo para ambos. O desvio utilizado por \citeonline{wiedemann2} não é adotado na validação do método de extração deste trabalho. Ao invés disso, 
+% o desvio no conjunto referência fica sendo a própria largura da estrada em questão, em que a largura de cada segmento de reta é definida na imagem 
+% referência, utilizada para a validação do resultado. Por outro lado, o segmento de reta extraído é caracterizado por uma linha de largura de 1 \emph{pixel}, correspondendo 
+% ao eixo de simetria da estrada, que, ao ser extraída, é a única característica conhecida. No entanto, na validação dos resultados é essencial que os segmentos de reta 
+% extraídos possuam o mesmo desvio agregado aos respectivos segmentos de reta no conjunto referência. Como a largura da estrada no conjunto extraído é desconhecida, o desvio 
+% agregado ao conjunto extraído é a largura predominante das estradas presentes na cena, informação fornecida pelo usuário.
+ 
+Assim como \citeonline{wiedemann2} consideraram o desvio tanto para o conjunto referência como para o conjunto extraído, ilustrado na Figura \ref{matchingPrinciple}, sendo este desvio um valor fixo para ambos. O desvio utilizado por \citeonline{wiedemann2} não é adotado na validação do método de extração deste trabalho. Ao invés disso, o conjunto referência utilizado constitui-se dos eixos centrais de largura de 1 \emph{pixel}, construídos a partir da referência cartográfica. Tais eixos são dilatados de acordo com a largura de estrada predominante na cena. O segmento de reta extraído, por sua vez, é também caracterizado por uma linha de largura de 1 \emph{pixel}, 
+correspondendo ao eixo de simetria da estrada, que, ao ser extraída, é a única característica conhecida. No entanto, na validação dos resultados é essencial que os segmentos de reta extraídos possuam o mesmo desvio agregado aos respectivos segmentos de reta no conjunto referência. Como a largura da estrada no conjunto extraído é desconhecida, o desvio agregado ao conjunto extraído é a largura predominante das estradas presentes na cena, a mesma agregada na dilatação do conjunto referência.
+
+% Uma outra alternativa para a visualização dos índices de qualidade, e talvez uma maneira mais nítida de análise, é a plotagem da Curva de Características de Operação do Receptor (\emph{Receiver Operating Characteristic - ROC}) para a visualização da sensibilidade dos resultados, que implica no cruzamento das taxas TP e FP. A seção seguinte detalha como a curva é obtida a partir destes valores.
+
+% \subsection{Curva de Características de Operação do Receptor (\emph{Receiver Operating Characteristic - ROC})}\label{ROCsection}
+% A Curva de Características de Operação do Receptor, em inglês \emph{Receiver Operating Characteristic}, ou simplesmente curva ROC, foi 
+% desenvolvida inicialmente no campo de decisão estatística e, posteriormente, utilizada para a análise de sinais de radares durante a Segunda 
+% Guerra Mundial \cite{collison}. Tinha como principal objetivo avaliar a relação entre o sinal e o ruído proveniente de radares aéreos, até então 
+% chamados de operadores de recepção (\emph{receiver operator}). Sua utilização tornava possível a distinção entre alvos inimigos, aliados e 
+% ruídos de transmissão. 
+% 
+% Para \citeonline{fawcett}, a curva ROC é uma técnica para a visualização, organização e de seleção de classificadores baseando-se em seu desempenho, cuja
+% técnica têm sido muito utilizada na teoria de detecção de sinais para descrever o equilíbrio entre taxas de falso alarme de classificadores. Na comunidade 
+% médica científica, há uma literatura extensa envolvendo o uso de gráficos ROC para testes de diagnósticos. Na biomedicina, a técnica é extensivamente 
+% utilizada para avaliar a eficácia de diagnósticos entre indivíduos saudáveis e doentes \cite{metz}. O conceito se estendeu para a análise de métodos 
+% de extração de estradas como forma de mensurar o desempenho dos mesmos. 
+% \begin{figure}[htb]
+%     \centering	   
+%     \subfigure[]{\includegraphics[width=0.44\textwidth]{figs/curvaROC.jpg}} \hspace{0.1cm}        
+%     \caption{Exemplo de plotagem da curva ROC para quatro experimentos (A, B, C e D).}
+%     \label{curvaROC}
+% \end{figure}
+% 
+% A curva é representada basicamente pelas taxas de verdadeiros positivos (TP) e falsos positivos (FP), associadas no gráfico a seus 
+% respectivos níveis. A Figura \ref{curvaROC} ilustra um exemplo de como seria a curva ROC para alguns exemplos de TP em relação a FP. 
+% A linha descontínua no centro do gráfico denota o indicador de baixa efetividade, pois uma vez que o resultado tenha apresentado um alto 
+% índice de acerto (eixo TP), apresentou também um alto índice de erros (eixo FP). Sendo assim, fica evidente que, no caso de bons resultados, 
+% serão plotadas curvas acima desse indicador. O ponto \textbf{A} identifica a curva confeccionada pelos valores da primeira linha na Tabela 
+% \ref{tabela1}, representando neste caso o experimento com o melhor resultado, tendo em vista o elevado índice de acerto (TP) em contraposição 
+% com à baixa taxa de erros (FP). O ponto \textbf{B} ainda pode ser considerado como um resultado satisfatório, pois apresentou uma taxa de 
+% erro menor que $0,6$, além, de ter apresentado um valor satisfatório de acertos. Já os pontos \textbf{C} e \textbf{D} não são considerados 
+% como bons resultados. Embora \textbf{C} tenha se comportado acima do indicador de baixa efetividade, a curva apresentou-se próxima a ele, o que indica
+% um resultado incerto. Por fim, fica evidente que a curva \textbf{D} apresentou má qualidade em vista de se situar abaixo do indicador de 
+% efetividade. Desta maneira, analisar quão eficiente determinado experimento se mostrou em relação aos demais torna-se uma tarefa 
+% simples.
+% \begin{table}[!ht]
+% \begin{center}
+% \caption{Resultados demonstrativos para diferentes experimentos de extração.}
+% \begin{tabular}{l||c|c}\label{tabela1}
+% Experimentos & TP & FP\\ \hline \hline
+% \textbf{A} & $0,88$ & $0,26$\\
+% \textbf{B} & $0,75$ & $0,43$\\
+% \textbf{C} & $0,87$ & $0,84$\\
+% \textbf{D} & $0,23$ & $0,82$
+% \end{tabular}
+% \end{center} 
+% \end{table}
+% 
+% Assim como as métricas de qualidade apresentadas por \citeonline{wiedemann2}, a curva ROC também será utilizada neste trabalho 
+% como ferramenta para a análise do método de extração de estradas. 
+
+Este capítulo apresentou os conceitos e a estratégia envolvendo a solução do problema de extração de estradas em imagens digitais, 
+bem como as medidas de desempenho do método. A validação dos resultados seguem as medidas apresentadas na última seção deste capítulo, tanto
+para dados sintéticos como para imagens SAR.

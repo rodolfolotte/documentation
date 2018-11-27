@@ -1,0 +1,181 @@
+\chapter{IMAGEAMENTO POR RADAR}
+
+% ---------------------------------------Proposta
+
+% \section{Fundamentos}
+
+% A geometria b?sica da formação de uma imagem \emph{SAR} aerotransportada pode ser ilustrada pela Figura \ref{figura2}, em que $V$ determina 
+% a velocidade segundo a qual a plataforma se move em uma determinada direção, conhecida também por direção de azimute. O parâmetro $H$ 
+% representa a altitude em que ela se encontra. Esta plataforma transporta uma antena com observação lateral, que ilumina a superfície em 
+% estudo com pulsos de radiação eletromagnética. A distância da plataforma até a área iluminada ? conhecida como \emph{slant range} $R_0$, e 
+% a distância da superfície da Terra sobre a qual se encontra a plataforma (nadir) até a área iluminada ? conhecida como \emph{ground range}, 
+% expresso por $R_g$ na Figura \ref{figura2} \cite{oliver}.
+% \begin{figure}[htb]
+%     \centering	   
+%     \includegraphics[width=0.83\textwidth]{figs/plane_radar.jpg}\\
+%     \caption{Geometria de imageamento de radares aerotransportados de visada lateral.}    
+%     \FONTE{Adaptado de Oliver e Quegan (\citeyear{oliver}).}
+%     \label{figura2}   
+% \end{figure}
+% 
+% Os radares são importantes sensores, pois podem obter informações da superfície da Terra em qualquer condição de tempo e em qualquer horário, 
+% diurno ou noturno. Suas ondas são capazes de se propagarem através das nuvens e chuva. Os sistemas de radar são formados por um transmissor, 
+% receptor, antena, processador de sinais e uma unidade de visualização. Uma sequência de pulsos é emitida em intervalos de tempos regulares, 
+% sendo que esses sinais se propagam em uma área iluminada pela antena. O objeto iluminado absorve uma fração da energia incidente e espalha 
+% o restante de acordo com os parâmetros do sistema e as propriedades físicas do objeto. Parte da energia espalhada é retornada para o sensor, 
+% caracterizando o sinal recebido \cite{carrara}. %As ondas de radio se propagam na velocidade da luz, e o tempo de envio e recebimento do sinal é então duas 
+% %vezes a distância do radar até o objeto, dividido pela velocidade da luz (aproximadamente $300.000$ km/s) 
+% 
+% O sistema de imageamento por radar possui dois tipos de plataformas: aeronaves ou satélites. A obtenção de imagens \emph{SAR} por 
+% plataformas aerotransportadas permite a aquisição de dados em qualquer momento e em qualquer parte da superfície da Terra, embora 
+% dependam das condições de tempo para o sobrevoo. Os sensores a bordo de aeronaves permitem obter imagens com maior resolução (1 a 20 
+% metros) quando comparados aos sensores a bordo de satélites, porém sua faixa imageada é geralmente menor. Os satélites podem visualizar uma área maior da 
+% superfície da Terra. Estando continuamente em órbita terrestre, é relativamente fácil coletar imagens da mesma área de modo sistemático, 
+% a fim de monitorar mudanças na biosfera.
+% 
+% As imagens de radar são geradas a partir da emissão de pulsos de largura $T_p$ em intervalos de $T$ segundos. Utilizando o modelo de ponto
+% fixo $P$, mostrado na Figura \ref{figura2}, o sistema de imageamento \emph{SAR} possui um intervalo de tempo ($t_s - t_e$), onde $t_e$ 
+% representa o ponto onde é iniciado a transmissão dos pulsos pelo sensor, e $t_s$ o ponto final da transmissão. Neste intervalo, o radar 
+% envia $N$ pulsos e coleta $N$ pulsos resultantes do retorno do ponto $P$. As amostras recebidas são retidas na memória. Durante este 
+% intervalo, a plataforma se desloca ($t_s - t_e$) metros com velocidade $V$. Este intervalo é conhecido como comprimento de abertura 
+% sintética. Os pulsos recebidos sofrem variações de frequência em virtude da velocidade, e isto é conhecido como efeito \emph{Doppler}
+% \cite{oliver}.
+% 
+% \section{Informação \emph{SAR}}
+% 
+% % Uma onda eletromagnética quando incide em um ponto ($x,y$) da superfície da Terra, as propriedades físicas desta superfície casa mudanças
+% % na fase, $\phi$($x,y$), e amplitude, A($x,y$), da onda.
+% 
+% Os sensores de radar operam na faixa de micro-ondas, na qual são estabelecidas as bandas para cada intervalo de comprimento de onda e frequência, 
+% como mostrado na Tabela \ref{ban}.
+% \begin{table}[ht]
+% \renewcommand{\baselinestretch}{1.2}
+%     \small
+%     \centering
+%     \caption{Principais bandas do espectro de frequência em micro-ondas.}    
+%     \begin{tabular}{c||c|c}    
+%     \hline                   
+%     \textbf{Banda} & \textbf{Frequência(GHz)} & \textbf{Comprimento de onda(cm)}\\ \hline \hline
+%     P & $0,3$< & $100$ a $90$\\
+%     L & $0,3$ a $1,5$ & $90$ a $25$\\
+%     S & $1,5$ a $3,9$ & $24$ a $9$\\
+%     C & $4$ a $6$ & $9$ a $3,75$\\
+%     X & $6$ a $11$ & $3,75$ a $2,5$ \\
+%     K & $11$ a $32$ & $2,5$ a $0,8$\\
+%     \hline \hline    
+%     \end{tabular}
+%     \vspace{0.2cm}
+%     \\Fonte: Adaptado de Curlander e McDonough (\citeyear{curlander}).
+%     \label{ban}       
+% \end{table}
+% Em vista da frequência e do comprimento de onda de cada banda, o comportamento do sinal em relação ao objeto pode variar consideravelmente.
+% Quanto maior a frequência do radar, maior o nível de potência requerida e maior sua penetração na superfície da Terra, o que influencia 
+% sobremaneira na formação da imagem final. Alguns dos parâmetros do sistema que influenciam no retroespalhamento são: frequência, polarização, 
+% ângulo de incidência e resolução. A frequência é o número de períodos ou ciclos completos por segundo, cada ciclo completo em um segundo 
+% é denominado um \emph{Hertz} (Hz). A polarização de uma onda eletromagnética, em geral, é definida pela figura geométrica que o vetor 
+% campo elétrico descreve no espaço. Os parâmetros do alvo são fatores que podem também influenciar no retroespalhamento do sinal, tais como: 
+% rugosidade, constante dielétrica e geometria. A Tabela \ref{iter} mostra o tipo de retorno para cada propriedade física do alvo.
+% \begin{table}[ht]
+% \renewcommand{\baselinestretch}{1.2}
+%     \small
+%     \centering
+%     \label{iter}
+%     \caption{Interação das micro-ondas com o objeto.}
+%     \begin{tabular}{c|c|c}    
+%     \hline
+%     \textbf{Espalhamento} & \textbf{Característica do alvo} & \textbf{Retorno} \\ \hline \hline
+%     Reflexão Especular & Superfície lisa & Muito Baixo \\
+%     Reflexão Mista & Superfície moderadamente rugosa & Baixo \\
+%     Reflexão Difusa & Superfície Rugosa & Alto \\
+%     Refletor de Canto & Objetos diedros e triedros & Muito Alta \\
+%     \multirow{2}{2cm}{\renewcommand{\baselinestretch}{0.5}\small Volumétrico} & Vegetação de pequeno e grande \\& porte (Interação com a estrutura) & Médio\\
+%     \hline \hline
+%     \end{tabular}     
+% \end{table}
+% 
+% \section{Aplicações}
+% 
+% O imageamento por radar permite auxiliar inúmeras áreas, entre estas a geologia, na análise de fendas, foliações geológicas, no estudo do relevo, 
+% na prospeção do solo para a identificação de áreas com recursos minerais etc. Na hidrologia, são tratados problemas como o 
+% gerenciamento dos recursos hídricos, a detecão de umidade do solo, pontos de alagamento. Na oceanografia, no monitoramento do mar, 
+% poluição marinha causada por derramamentos de óleo, detecão de navegações em áreas de pesca ilegal, apoio para o estabelecimento 
+% de rotas marítimas e identificação de ondas internas. 
+% 
+% Na geologia, o imageamento \emph{SAR} contribui não só em áreas recobertas por vegetação ou assentamentos urbanos, como pode também ser 
+% utilizado em mapeamentos de subsuperfícies, a exemplo de desertos, onde o clima é extremamente árido, resultando em uma superfície 
+% isenta de vegetação. A subsuperfície é composta de areia, formando, em média, uma camada de aproximadamente 2m de profundidade, a qual
+% é sucedida por uma segunda camada rochosa. O espalhamento nesta segunda camada produz um conjunto de feições não evidentes em imagens de 
+% comprimento de onda visível. A técnica de mapeamento de subsuperfície permite a identificação de fósseis em determinadas regiões, bem 
+% como a localização de fontes de água \cite{curlander}.
+% 
+% Além das contribuições citadas acima, existem outras que vão além do escopo deste trabalho. A extração de feições lineares utilizando 
+% o imageamento por radar é ainda uma questão científica em aberto, e as aplicações existentes, exprimem soluções diferenciadas. A extração de feições lineares pode ser aplicada em áreas 
+% como o mapeamento cartográfico, na correção automática ou atualização em sistemas de informação geográfica (\emph{Geographic Information 
+% Systems - GIS}) e outras.
+
+% ---------------------------------------Artigo
+
+\section{Fundamentos}
+
+A geometria básica da formação de uma imagem \emph{SAR} aerotransportada pode ser ilustrada pela Figura \ref{figura2}, em que $V$ determina 
+a velocidade segundo a qual a plataforma se move em uma determinada direção, conhecida também por direção de azimute. O parâmetro $H$ 
+representa a altitude em que ela se encontra. Esta plataforma transporta uma antena com observação lateral, que ilumina a superfície em 
+estudo com pulsos de radiação eletromagnética. A distância da plataforma até a área iluminada é conhecida como \emph{slant range} $R_0$, e 
+a distância da superfície da Terra sobre a qual se encontra a plataforma (nadir) até a área iluminada é conhecida como \emph{ground range}, 
+expresso por $R_g$ na Figura \ref{figura2} \cite{oliver}.
+\begin{figure}[htb]
+    \centering	   
+    \includegraphics[width=0.715\textwidth]{figs/plane_radar.jpg}\\
+    \caption{Geometria de imageamento de radares aerotransportados de visada lateral.}   
+    Fonte: Adaptado de Oliver e Quegan \cite{oliver}.
+    \label{figura2}   
+\end{figure}
+
+Tipicamente, os sistemas de imageamento por radar possuem dois tipos de plataformas: aeronaves ou satélites. A obtenção de imagens 
+\emph{SAR} por plataformas aerotransportadas permite a aquisição de dados em qualquer momento e em qualquer parte da superfície da Terra, 
+embora dependam das condições de tempo para o sobrevoo. Os satélites podem visualizar uma área maior da superfície da Terra. Por estarem
+continuamente em órbita terrestre, é relativamente fácil coletar imagens da mesma área de modo sistemático, a fim de monitorar 
+mudanças na biosfera.
+
+As imagens de radar são geradas a partir da emissão de pulsos de largura $T_p$ em intervalos de $T$ segundos. Utilizando o modelo de ponto
+fixo $P$, mostrado na Figura \ref{figura2}, o sistema de imageamento \emph{SAR} possui um intervalo de tempo ($t_s - t_e$), em que $t_e$ 
+representa o ponto onde é iniciada a transmissão dos pulsos pelo sensor, e $t_s$, o ponto final da transmissão. Neste intervalo, o radar 
+envia $N$ pulsos e coleta $N$ pulsos resultantes do retorno do ponto $P$. As amostras recebidas são retidas na memória. Durante este 
+intervalo, a plataforma se desloca ($t_s - t_e$) metros com velocidade $V$. Este intervalo é conhecido como comprimento de abertura 
+sintética \cite{oliver}.
+
+As imagens obtidas por radar são caracterizadas, na maioria das vezes, pelo \emph{speckle}, ruído decorrente da natureza coerente
+da radiação emitida para a formação das imagens. Tal ruído é modelado como sendo um ruído multiplicativo, variando sua intensidade de acordo
+com a força do sinal. O ruído é caracterizado por um aspecto granuloso nas imagens \emph{SAR}, o que muitas vezes dificulta a interpretação
+dos alvos. Na maioria das vezes, é necessário submeter a imagem a rotinas de filtragem para a minimização do ruído ou realce das vias, 
+fazendo com que se maximize a compreensão das áreas a serem extraídas. Alguns métodos de extração de estradas dispensam a utilização de 
+filtros de suavização \cite{pete3, gruen}; outros, no entanto, ainda necessitam da filtragem \cite{gamba4, idbraim, tupin}.
+
+\section{Aplicações}
+
+O imageamento por radar permite auxiliar inúmeras áreas, entre estas a geologia, na análise de fendas, foliações geológicas, no estudo do relevo, 
+na prospeção do solo para a identificação de áreas com recursos minerais etc. Na hidrologia, são tratados problemas como o 
+gerenciamento dos recursos hídricos, a detecão de umidade do solo, pontos de alagamento. Na oceanografia, no monitoramento do mar, 
+poluição marinha causada por derramamentos de óleo, detecão de navegações em áreas de pesca ilegal, apoio para o estabelecimento 
+de rotas marítimas e identificação de ondas internas. 
+
+Na geologia, o imageamento \emph{SAR} contribui não só em áreas recobertas por vegetação ou assentamentos urbanos, como pode também ser 
+utilizado em mapeamentos de subsuperfícies, a exemplo de desertos, onde o clima é extremamente árido, resultando em uma superfície 
+isenta de vegetação. A subsuperfície é composta de areia, formando, em média, uma camada de aproximadamente 2m de profundidade, a qual
+é sucedida por uma segunda camada rochosa. O espalhamento nesta segunda camada produz um conjunto de feições não evidentes em imagens de 
+comprimento de onda visível. A técnica de mapeamento de subsuperfície permite a identificação de fósseis em determinadas regiões, bem 
+como a localização de fontes de água \cite{curlander}.
+
+Além das contribuições citadas acima, existem outras que vão além do escopo deste trabalho. A extração de feições lineares utilizando 
+o imageamento por radar é ainda uma questão científica em aberto, e as aplicações existentes, exprimem soluções diferenciadas. A extração de feições lineares pode ser aplicada em áreas 
+como o mapeamento cartográfico, na correção automática ou atualização em sistemas de informação geográfica (\emph{Geographic Information 
+Systems - GIS}) e outras.
+
+
+
+
+
+
+
+
+

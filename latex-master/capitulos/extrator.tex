@@ -1,0 +1,127 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CAPÍTULO 3
+
+\chapter{EXTRATOR DE ESTRADAS}
+
+\section{Semeação automática}
+
+Como dito anteriormente, o método de semeação automática não é necessariamente um método de extração, mas sim um grande auxiliador neste
+processo. Ele possibilita identificar os pontos que caracterizam a presença de uma estrada na imagem. Para tanto, será utilizado um  
+método de classificação utilizando métricas em Inteligência Artificial (IA), que são caracterizadas por simular, computacionalmente, 
+os comportamentos e a aprendizagem humana. O método denominado Mapas Auto-Organizáveis será abordado na Seção seguinte.
+
+Um dos primeiros modelos matemáticos a simular a aprendizagem humana foi desenvolvido em 1943 por Warren McCulloch e Walter Pitts 
+\cite{pitts}, e constituía-se de um conjunto de unidades processadoras de informação, denominados neurônios ou nó, interligados entre si, 
+simulando uma rede neural. Mais tarde, em 1958, tal modelo foi estendido por Rosenblatt \cite{rosenblatt,rosenblatt2} e chamado de rede 
+Perceptron. Era constituída por apenas uma camada de entrada e uma de saída. Devido a esta estrutura, sua utilização era limitada a resolver 
+apenas problemas linearmente separáveis. Tais limitações fizeram com que a rede Perceptron ganhasse mais uma camada de neurônios, uma camada 
+intermediária. Desta forma, este modelo possibilitou a resolução de problemas mais complexos (Figura \ref{figura3a}).\\
+
+\subsection{Mapas Auto-Organizáveis}
+
+Mais tarde, em 1982, surgiram os Mapas Auto-Organizáveis, ou simplesmente rede SOM, pressupõem o aprendizado não supervisionado, em que é 
+necessário apresentar à rede os 
+padrões a serem reconhecidos, porém, o treinamento é realizado de forma menos exaustiva comparado às redes MLPs. A ativação dos neurônios, 
+por sua vez, é realizada em um processo de \textquotedblleft competição\textquotedblright$~$entre os mesmos. As redes SOM são também chamadas de 
+Mapas de Kohonen, fazendo referência ao seu criador Teuvo Kohonen \cite{kohonen}. A rede de Kohonen não possui camada intermediária, e sua 
+arquitetura é constituída por apenas uma camada de entrada e uma de saída, sendo que esta última representa o mapa de neurônios, (Figura 
+\ref{figura3a}). A aprendizagem ocorre obtendo-se a localização do neurônio vencedor, isto é, suas coordenadas cartesianas no mapa. Este 
+processo é realizado obtendo-se o neurônio com menor valor, segundo a norma euclidiana (Equação \ref{eq1}).
+\begin{align}
+\label{eq1}
+ i(X) = arg_{j,k}~min||X - W_{j,k}|| ~~~~
+ \begin{cases}
+    ~~~j = 1,2,...,n\\
+    ~~~k = 1,2,...,n\\
+ \end{cases}
+\end{align}
+Em que $||.||$ denota a norma euclidiana entre os valores de entrada $X$, e $W_{j,k}$, correspondentes aos pesos de cada neurônio $(j,k)$. E $i(X)$ descreve
+a posisão do neurônio vencedor no mapa \cite{haykin}. Todos os pesos dos neurônios vizinhos ao neurônio vencedor são atualizados obedecendo o seguinte critério:
+\begin{align}
+\label{eq2}
+ W(t+1)_{j,k} = ~~~ 
+ \begin{cases}
+    ~~~W(t)_{j,k} + \eta(t) * \sigma * [X - W(t)_{j,k}]~,~~& \sigma \neq 0\\
+    ~~~W(t)_{j,k}~,~~&\sigma = 0\\
+ \end{cases}
+\end{align}
+Em que $\eta(t)$ é a taxa de aprendizagem da rede, que decai a cada iteração do treinamento conforme a propriedade $\eta_0[e^{-(\frac{t}{T})}]$, 
+em que $\eta_0$ é a taxa de aprendizagem inicial e $T$ é o número máximo de épocas. A variável $\sigma$ denota a influência do neurônio analisado em relação ao vencedor, 
+obedecendo um determinado raio de vizinhança, (Figura \ref{figura3b}), ou seja, ela identifica o quão perto os nós estão; quanto maior o valor, maior a proximidade. 
+Se o neurônio não estiver próximo o suficiente do neurônio vencedor, sua influência será nula, e consequentemente, não será aplicado o ajuste. É possível agregar tipos distintos de 
+vizinhança entre os nós do mapa. Neste trabalho, o valor de $\sigma$ é obtido por meio da Equação \ref{eq3}, que possui propriedade gaussiana (Figura \ref{figura3c}).
+\begin{align} 
+ \label{eq3}
+ \sigma = e^{-(\frac{dist}{2*diam^2})}
+\end{align}
+Em que $dist$ representa a distância Euclidiana entre o neurônio vencedor e o neurônio em questão, e $diam$ o raio de vizinhança.
+\begin{figure}[htb]
+    \centering	   
+    \subfigure[]{\label{figura3a}\includegraphics[width=0.14\textwidth]{figs/kohonen.jpg}} \hspace{0.5cm}
+    \subfigure[]{\label{figura3b}\includegraphics[width=0.19\textwidth]{figs/kohonen2.jpg}} \hspace{0.3cm}
+    \subfigure[]{\label{figura3c}\includegraphics[width=0.36\textwidth]{figs/kohonen3.jpg}}
+    %\caption{Rede SOM: (a) Exemplo de arquitetura. (b) Raio de vizinhança de um neurônio vencedor. \\(c) Valores de $\sigma$ de alguns neurônios vizinhos.}
+    \\Fonte: Adaptado de Haykin \cite{haykin}.
+\end{figure}
+
+\subsection{Classificação e Identificação}\label{classif}
+
+No processo de classificação e marcação dos pontos na
+imagem, o mapa de pesos finais foi de extrema importância. Ele permitiu determinar quais padrões apresentados eram, de fato, uma possível estrada. Este procedimento foi realizado da
+seguinte forma:
+\begin{itemize}
+ \item Obtenção da norma do mapa de pesos finais de treinamento ou Matriz U (Figura \ref{figura4a}).
+ \item Apresentam-se os padrões iniciais de treinamento é rede para a obtenção dos centros de cada aglomerado.
+ \item Calcula-se o raio de cada aglomerado a partir dos centros obtidos. Este processo é realizado obtendo-se o perfil ao longo da linha em que se encontra o centro analisado. 
+       O mínimo mais próximo deste centro é caracterizado como a fronteira do aglomerado, e consequentemente seu raio (Figuras \ref{figura4c} e \ref{figura4d}).
+\end{itemize}
+\begin{figure}[htb]
+    \centering	   
+    \subfigure[]{\label{figura4a}\includegraphics[width=0.24\textwidth]{figs/mapa_kohonen_centros.jpg}} \hspace{0.8cm}
+    \subfigure[]{\label{figura4c}\includegraphics[width=0.305\textwidth]{figs/mapa_kohonen_perfil.jpg}} \hspace{0.4cm}    
+    \subfigure[]{\label{figura4d}\includegraphics[width=0.27\textwidth]{figs/perfil.jpg}}
+    \caption{Treinamento cooperativo: (a) Exemplo do mapa da norma dos pesos finais (Matriz U). (b) Perfil ao longo da linha do centro analisado.
+    (c) Cálculo do raio por meio do perfil.}
+\end{figure}
+
+Obtendo-se o raio do aglomerado, é possível então refinar o processo de semeação atribuindo um raio de pertinóncia, ou seja, restringindo-se o raio do
+aglomerado. Cada um dos padrões que é apresentado à rede tem um ponto no mapa que o identifica. Esta localização, quanto mais próxima de algum 
+centro, mais similar será daquele centro. Desta forma, restringindo-se a área do aglomerado, saber-se-á que os pontos marcados no processo de 
+semeação terão maior similaridade com os padrões treinados (Figura \ref{figura5ds}). Este processo foi realizado com o objetivo de agregar 
+limiares diferentes para cada aglomerado, pois uma vez que cada um deles possui raios distintos, é necessário que a análise das distâncias 
+euclidianas sejam realizadas proporcionalmente, cabendo ao usuário fornecer apenas a porcentagem de redução referente ao raio do aglomerado.
+\begin{figure}[htb]
+   \centering   
+   \includegraphics[width=0.73\textwidth]{figs/mapa_padroes_raio.jpg}
+   \caption{Processo de classificação das estradas.}
+   \label{figura5ds}
+\end{figure}
+
+De acordo com a Figura \ref{figura4a}, no treinamento da rede SOM deste trabalho, foram utilizados nove padrões de entrada (nove aglomerados). 
+Os oito primeiros padrões correspondem a uma determinada orientação do perfil claro de uma estrada, e um último padrão representa o
+padrão não referente a estradas. A utilização deste último padrão possibilitou a criação de uma área de \textquotedblleft escape\textquotedblright$~$ 
+no próprio mapa de neurônios. Desta forma, os padrões não referentes a estradas sobressaem-se em relação ao conjunto dos outros oito aglomerados, 
+permitindo o cálculo mais apurado dos padrões de interesse. Foram realizados testes não utilizando este último padrão. No entanto, os resultados 
+foram insatisfatórios, justamente pelos pontos no processo de classificação estarem localizados, por muitas vezes, em uma fronteira de decisão entre
+dois ou mais aglomerados.
+
+\section{Dados Utilizados}
+
+Para a realização dos experimentos de ambos os métodos, foi adotado um recorte de uma imagem \emph{SAR} (513x513 \emph{pixels}), 
+que recobre a região de Paragominas no estado do Pará, com resolução radiométrica de 8 \emph{bits} e espacial de 2,5 metros na banda P. A imagem foi 
+adquirida com o sensor OrbiSAR no período de aerolevantamento entre 11 de fevereiro de 2007 e 13 de março de 2007, com altitude de 
+$11.000$ m (Figuras \ref{figura9a} e \ref{figura9b}). Todas as rotinas de implementação, bem como os experimentos, foram realizados no ambiente de 
+desenvolvimento MATLAB versão 7.8.0.347. Os testes foram realizados sobre a imagem original com extensão \emph{tiff}, e os resultados finais 
+mostrados no padrão \emph{jpg}.
+\begin{figure}[htb]
+    \centering	   
+    \subfigure[]{\label{figura9a}\includegraphics[width=0.285\textwidth]{figs/ref2.png}}\hspace{0.5cm}
+    \subfigure[]{\label{figura9b}\includegraphics[width=0.27\textwidth]{figs/ref.png}} \hspace{0.5cm}
+    \subfigure[]{\label{figuraRef}\includegraphics[width=0.29\textwidth]{figs/referencia.jpg}}
+    \caption{Imagem utilizada nos experimentos: (a) Recorte da imagem \emph{SAR} (Banda P). (b) Referência cartográfica.
+    (c) Modelo de referência para a medida de desempenho do método.}
+    Fonte: Orbisat \cite{orbisat}.
+    \label{figura4}   
+\end{figure}
+
+\section{Aplicação}

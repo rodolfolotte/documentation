@@ -1,0 +1,113 @@
+\chapter{PROPOSTA DE MESTRADO}
+
+\section{Proposta}
+
+%De acordo com dados cartográficos da OrbiSat (\citeyear{orbisat}), as estradas imageadas na região de Paragominas, são caracterizadas 
+%por não-pavimentadas e pavimentadas.  . Após a extração das feições lineares, é desejável que se extraia também o eixo de simetria de 
+%cada segmento, de forma que, após a extração seja realizada a vetorização automática de ambas as margens da via. A vetorizão automática 
+%permitirá a aquisição das informações relativo a largura do segmento.
+
+No processo de extração das feições lineares, é desejável que se obtenha o eixo de simetria das mesmas. Assim, no caso das feições 
+de menor largura representadas por linhas simples, o eixo já constituirá o elemento final de mapeamento desses alvos. Para as feições 
+definidas por linhas duplas, o eixo deverá ser replicado simetricamente em ambos os lados a uma distância que equivalha à metade da 
+largura real da feição considerada, largura esta que será, a princípio, auferida a partir da imagem óptica orbital ortorretificada de 
+alta resolução espacial. A extração do eixo de simetria será feita por um método baseado em \emph{snakes}, provavelmente uma adaptação do 
+chamado \emph{ribbon-snakes}. As rotinas de pós-processamento serão aplicadas normalmente para a remoção de inconsistências e trechos 
+espúrios, bem como para a concatenação de vias no caso de cruzamentos de estradas pavimentadas.
+
+O sensor OrbiSAR possibilita a aquisição das imagens somente nas bandas P e X. Devido ao comprimento de onda e frequência, é natural que 
+exista uma variação nas larguras das feições da imagem adquirida na banda P em relação à banda X. As estradas tende a ser mais evidentes 
+na banda P, apresentando largura muita acima daquelas observadas na banda X. Mesmo obtendo as larguras do conjunto de feições lineares, 
+será necessário um algoritmo que as validem. Para isso, será utilizada uma imagem ótica orbital ortorretificada de alta resolução 
+espacial (aproximadamente 50 cm), a fim de estimar a diferença média de largura que cada banda apresenta em relação à largura real 
+observada na imagem ótica. Esses valores servirão como parâmetros para identificar a largura real da feição, independentemente da 
+banda na qual foi realizada a extração.
+
+Dependendo do tipo de região da imagem analisada, como áreas urbanas densas ou não densas, vegetação etc, pode-se necessitar de 
+operadores distintos para a extração dos segmentos \cite{wessel}. Portanto, serão utilizadas variações do operador para áreas 
+urbanas, vegetação, entre outras, onde possam existir feições lineares. A decisão de qual operador executar será automaticamente 
+definida pelo sistema. A segmentação da imagem viabilizará este procedimento, fazendo com que o sistema decida qual operador utilizar.
+
+As alternativas de métodos para a extração de feições lineares, são inúmeras. A princípio, para a etapa de pré-processamento serão 
+adotados o filtro direcional para o realce das vias e o filtro de Canny para detecção de bordas. Após a fase de pré-processamento, 
+devido a presença de ruídos, os segmentos poderão apresentar descontinuidades, e como forma de validação e conexão desses segmentos, 
+será utilizado o método de Hough (\citeyear{hough}).
+
+Apesar da extração de feições lineares ser um problema abordado por muitos trabalhos, este tema constitui um problema científico em 
+aberto, uma vez que produtos de sensoriamento remoto possuem características diferenciadas, os quais demandam soluções igualmente
+diferenciadas. Sendo assim, uma nova abordagem apresentará soluções mais apropriadas para o problema em questão.
+
+%\section{Ferramentas}
+
+%Todas os experimentos relativos ao desenvolvimento do extrator serão implementado inicialmente na plataforma MATLAB, por esta 
+%apresentar uma enorme eficiência em níveis de programação, otimizando o desenvolvimento do operador. Posteriormente, as rotinas 
+%de testes implementadas nesta plataforma serão reimplementadas na linguagem C++.
+
+Inicialmente, não serão consideradas questões, como, desempenho do operador e usabilidade. Serão preservadas somente a aplicabilidade 
+dos métodos a serem desenvolvidos. Após a conclusão deste desafio, serão estudadas formas de otimização e desenvolvimento da
+interface.
+
+%Serão realizados testes preliminares com alguns filtros, afim de identificar o mais apropriado para o problema em questão. 
+
+\section{Cronograma de Atividades}
+
+Para o desenvolvimento da proposta deste trabalho, serão seguidas as seguintes etapas:
+ 
+\begin{table}[ht]
+\renewcommand{\baselinestretch}{1.2}
+\small
+   \label{cronograma}
+   \centering
+   \caption{Cronograma de Atividades}
+   \begin{tabular}{c c c c c c c c c c c c c c}
+   \hline
+   \multirow{2}{1cm}{\renewcommand{\baselinestretch}{0.5}\small Etapa} &
+   \multicolumn{10}{c}{\renewcommand{\baselinestretch}{1.2}\small \centering 2011} &
+   \multicolumn{3}{c}{\renewcommand{\baselinestretch}{1.2}\small \centering 2012}\\*
+   \cline{2-14}
+   & Mar & Abr & Mai & Jun & Jul & Ago & Set & Out & Nov & Dez & Jan & Fev & Mar\\
+   \hline
+   1 & $ \bullet $ & $ \bullet $ & $ \bullet $ & & & & & & & &\\ 
+   2 & & $ \bullet $ & $ \bullet $& $ \bullet $ & & & & & & & \\
+   3 & & & $ \bullet $ & $ \bullet $ & $ \bullet $ & $ \bullet $ & & & & &\\ 
+   4 & & & & & & & $ \bullet $ & $ \bullet $ & & &\\
+   5 & & &  & & & & & & $ \bullet $ & & &\\   
+   6 & & &  & & & & & & & $ \bullet $ & &\\
+   7 & & &  & & &  $ \bullet $ & $ \bullet $ & $ \bullet $ & $ \bullet $ & $ \bullet $ & $ \bullet $ &\\   
+   8 & & &  & & & & & & & & & $ \bullet $ & $ \bullet $\\
+   \hline    
+\end{tabular}
+\label{tabela1}  
+\end{table}
+
+\begin{itemize}
+ \item \textbf{Etapa 1}: Estudo abrangente e aprofundado sobre o processamento de imagens de radar. 
+ \item \textbf{Etapa 2}: Implementação e realização dos experimentos com filtros nas imagens \emph{SAR} de Paragominas-PA.
+ \item \textbf{Etapa 3}: Estudo, modelagem e desenvolvimento das rotinas do método de extração de vias. 
+ \item \textbf{Etapa 4}: Pretende-se, nesta etapa avaliar o desempenho computacional e funcional do método, a fim de determinar 
+		         sua eficiência na solução do problema.
+ \item \textbf{Etapa 5}: Analisar as rotinas de extração por completo, avaliando o produto final obtido. 
+ \item \textbf{Etapa 6}: Possíveis modificações do extrator.
+ \item \textbf{Etapa 7}: Elaboração da dissertação de mestrado.
+ \item \textbf{Etapa 8}: Defesa da dissertação e possíveis correções sugeridas pela banca examinadora.
+\end{itemize}
+
+\section{Conclusão}
+
+Conforme exposto nas seções precedentes, muitos dos trabalhos citados conferem relevância ao pré-processamento, usufruindo de operadores
+eficientes como o filtro de Canny para a identificação de bordas e o filtro direcional para o realce das vias. De acordo com seus 
+resultados, nota-se a importância dos métodos aqui apresentados. Será dada importância a essa etapa de processamento, justamente pelo 
+grande desafio imposto pelo processamento de imagens com a presença de ruídos. A eficiência na redução dos mesmos, consequentemente 
+contribuirá para a execução das etapas seguintes.
+
+Partindo dos conceitos apresentados, o propósito deste trabalho será modelar e desenvolver um operador que identifique automaticamente 
+feições lineares em imagens \emph{SAR} aerotransportadas, operando simultaneamente com as bandas X e P. Este operador não se restringe 
+a uma abordagem metodológica específica, mas poderá comportar uma solução híbrida. Portanto, concomitantemente à obtenção dos resultados do 
+método proposto, serão realizadas análises para possíveis melhorias, não limitando, desta forma, o desenvolvimento do operador.
+
+
+
+
+
+
+
