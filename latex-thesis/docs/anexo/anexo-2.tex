@@ -4,9 +4,13 @@ For validation, reference and prediction images (of the same dimension and color
     \centering    
     \caption{Multiclass confusion matrix and the respective success and error rates.}
     \vspace{6mm}
-    \includegraphics[width=0.8\textwidth]{\dropbox/phd/pics/confusion-matrix.png}       
+    \subfigure[TP]{\includegraphics[width=0.22\textwidth]{\dropbox/phd/pics/cm/tp.png}}
+    \subfigure[FN]{\includegraphics[width=0.24\textwidth]{\dropbox/phd/pics/cm/fn.png}}      
+    \subfigure[FP]{\includegraphics[width=0.205\textwidth]{\dropbox/phd/pics/cm/fp.png}}       
+    \subfigure[TN]{\includegraphics[width=0.215\textwidth]{\dropbox/phd/pics/cm/tn.png}}
 	\legenda{}
     \label{cm-representation}
+    \FONTE{Author's production.}
 \end{figure}
 
 Then, considering $M$ as the confusion matrix, $C$ number of classes, $i$ (predicted) and $j$ (reference) as the axes, the metrics are given by:
@@ -36,3 +40,41 @@ finally:
 \end{align}
 
 The evaluation's source-code described here, is shared and can be found in Github (link available in Table \ref{tools-developed}).
+
+\section{Practical example}
+Using synthetic images (Figure \ref{cm-synthetic}), this practical example demonstrates the influence of boundary delineation over F1-score metric.
+\begin{figure}[H]
+    \centering    
+    \caption{Evaluation over synthetic data. A practical example using (a) reference. (b) object segmented out of the reference boundary (outer). (c) object segmented out of the reference boundary (inner). (d) object partially segmented.}
+    \vspace{6mm}
+    \subfigure[]{\label{cm-synthetica}\includegraphics[width=0.242\textwidth]{\dropbox/phd/pics/cm/reference.png}}
+    \subfigure[]{\label{cm-syntheticb}\includegraphics[width=0.242\textwidth]{\dropbox/phd/pics/cm/image-1.png}}      
+    \subfigure[]{\label{cm-syntheticc}\includegraphics[width=0.242\textwidth]{\dropbox/phd/pics/cm/image-2.png}}       
+    \subfigure[]{\label{cm-syntheticd}\includegraphics[width=0.242\textwidth]{\dropbox/phd/pics/cm/image-3.png}}
+	\legenda{}
+    \label{cm-synthetic}
+    \FONTE{Author's production.}
+\end{figure}
+
+In the Table \ref{cm-synthetic-res} is shown the values for the synthetic evaluation. When test over the same reference image, the accuracy and F1-score seems correct, as there is no changing, but when the predicted object is bigger than in reference, then the recall is high but not the precision, leading to a low F1-score. When the predicted object is smaller it should be, it inverts, recall is lower than precision, also leading to a low F1-score. Finally, a predicted object intersecting only part of the reference, both values are low, equally to F1-score.
+
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.4}
+    \caption{Demonstration of the Accuracy and F1-score changing according to the target boundary and location.}
+    \scriptsize \centering
+    \rowcolors{2}{white}{gray!25}
+    \begin{tabular}{L{2cm}C{2cm}C{2cm}C{2cm}C{2cm}C{2cm}}
+        \toprule
+        \textbf{Reference} & \textbf{Predicted} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score}\\ 
+        \toprule
+        \includegraphics[width=0.1\textwidth]{\dropbox/phd/pics/cm/reference.png} & \includegraphics[width=0.1\textwidth]{\dropbox/phd/pics/cm/reference.png} & 1.0 & 1.0 & 1.0 & 1.0 \\
+        \includegraphics[width=0.1\textwidth]{\dropbox/phd/pics/cm/reference.png} & \includegraphics[width=0.1\textwidth]{\dropbox/phd/pics/cm/image-1.png} & 0.8903 & 0.8101 & 0.9345 & 0.8478 \\      
+        \includegraphics[width=0.1\textwidth]{\dropbox/phd/pics/cm/reference.png} & \includegraphics[width=0.1\textwidth]{\dropbox/phd/pics/cm/image-2.png} & 0.8539 & 0.9252 & 0.5871 & 0.6080 \\      
+        \includegraphics[width=0.1\textwidth]{\dropbox/phd/pics/cm/reference.png} & \includegraphics[width=0.1\textwidth]{\dropbox/phd/pics/cm/image-3.png} & 0.6162 & 0.5134 & 0.5212 & 0.4969 \\      
+        \bottomrule
+    \end{tabular}    
+    \label{cm-synthetic-res}
+    \FONTE{Author's production.}
+\end{table}
+
+

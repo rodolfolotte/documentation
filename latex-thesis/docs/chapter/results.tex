@@ -1,13 +1,19 @@
 \chapter{RESULTS AND DISCUSSION}\label{chapter4}
 
-\section{Performance}
+\section{Image segmentation}
+
+\subsection{CNN inputs}
+As mentioned in Section \ref{training-set}, 20\% of annotated images from each dataset were used to evaluate the model, the other 80\%, for training. The set consists of pairs of original and ground-truth images, which are not used during the training. The experiments carried out in this study were done individually -- where, the quality of the segmentation through the use of CNN for each dataset (following the sequence according to Table \ref{datasets}) was firstly discussed, followed by the impressions on the detection of objects, and in which situations it might have fail or still need attention. Then, the following section present an analysis of the geometry extraction and the quality of the 3D labeled model.
+
+\subsection{CNN performance}
 As a supervised methodology, the DL requires reference images\footnote{Referenced also as annotation, labels or ground-truth images.}. Which means the methodology is extensible for images of any kind, but it will always require their respective reference. On the other hand, the same neural model could fit to any other detection issue, for instance, in the segmentation of specific tree species in a vast forest image, as soon as a sufficient amount of training samples are presented.
 
+%In this section it is shown how the neural model behaves according to the dataset and hardware specifications. 
 All the source-code regarding DL procedures was prepared to support GPU processing. Unfortunately, the server used during all the experiments was not equipped with such technology, increasing training time significantly (Table \ref{dataset-params}).
 
-\begin{table}[H]
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.4}
-    \caption{Training attributes and performance. In bold, the ones which have reached the lowest performance. RueMonge2014 and SJC have larger dimensions and demanded a bit more time processing.}
+    \caption{Training attributes and performance. In bold, values which have reached the lowest performance. RueMonge2014 and SJC have larger dimensions and demanded a bit more time processing.}
     \scriptsize \centering
     \rowcolors{2}{white}{gray!25}
     \begin{tabular}{L{2.5cm}C{2.1cm}C{2.5cm}C{2.8cm}C{2.8cm}}
@@ -27,78 +33,40 @@ All the source-code regarding DL procedures was prepared to support GPU processi
     \FONTE{Author's production.}
 \end{table}
 
-The DL source-code was mainly developed under the Tensorflow\texttrademark~library\footnote{Available at https://www.tensorflow.org/. Accessed \today.} and adjusted to the problem together with other Python libraries. Except for the 3D tasks in Photoscan, the source-code are free available in a public platform, and can be easily extended. For training and inferences, it was used an Intel\textregistered~Xeon\textregistered~CPU E5-2630 v3 @ 2.40GHz. For SfM/MVS and 3D labeling, respect to RueMonge2014 and SJC datasets, it was used an Intel\textregistered~Core\texttrademark~i7-2600 CPU @ 3.40GHz. Both attended our expectations, but it is strongly recommended machines with GPU support or alternatives such as IaaS (Infrastructure as a Service).
+The DL source-code was mainly developed under the Tensorflow\texttrademark~library\footnote{Available at https://www.tensorflow.org/. Accessed \today.} and adjusted to the problem together with other Python libraries. Except for the 3D tasks in Agisoft\textregistered~~Photoscan\texttrademark, the source-code are freely available in a public platform, and can be easily extended. For training and inferences, it was used an Intel\textregistered~Xeon\textregistered~CPU E5-2630 v3 @ 2.40GHz. For SfM/MVS and 3D labeling, respect to RueMonge2014 and SJC datasets, it was used an Intel\textregistered~Core\texttrademark~i7-2600 CPU @ 3.40GHz. Both attended our expectations, but it is strongly recommended machines with GPU support or alternatives such as IaaS (Infrastructure as a Service).
 
-\section{Experiments}
-The experiments in this study were divided in 2D and 3D domains. To mitigate the influences of each dataset, or the influences of the model under each specific architectural style, it was split the 2D experiments in three different CNN trainings. First, all the six online datasets listed in Table \ref{datasets} were trained and inferred independently. Second, each knowledge reached from the respective datasets is used to test under SJC, which has a complete undefined architectural style. Third, all datasets were then put together and a new training was made under SJC (Table \ref{training-explained}). In 3D analysis, the experiments consists of permuting the density in the point cloud, allowing us to know how the number of points affects the 3D labeling, and how many is actually necessary to acquire reliable geometry.
-\begin{table}[H]
-    \renewcommand{\arraystretch}{1.6}  
-    \caption{Experiments performed in this study. The term \textquotedblleft independent\textquotedblright~means the dataset or inference was made using only one dataset for training or prediction.}
-    \scriptsize \centering		
-    \rowcolors{2}{white}{gray!25}
-    \begin{tabular}{L{0.5cm}L{1.1cm}L{2cm}L{1.6cm}L{7.5cm}}    
-        \toprule      
-        \textbf{\#} & \textbf{Domain}  & \textbf{Dataset} & \textbf{Inferences} & \textbf{Goal} \\ 
-        \toprule
-        1 & 2D & Independent & Independent & Evaluate the performance of the neural model according to each dataset\\      
-        2 & 2D & Independent & SJC & Evaluate the performance of the neural model according to SJC dataset, where the inferences are made six times, using each dataset knowledge separately\\
-        3 & 2D & All-together & SJC & Evaluate the performance of the neural model according to the SJC dataset, where only one inference is made, using all-together knowledge\\
-        4 & 3D & RueMonge2014 & - & Evaluate how accurate the 3D labeling is according to the point cloud density, under a known dataset\\      
-        5 & 3D & SJC & - & Evaluate how accurate the 3D labeling is according to the point cloud density (sparse and dense), under a unknown dataset\\ 
-        \bottomrule
-    \end{tabular}
-    \label{training-explained}
-    \FONTE{Author's production.}
-\end{table}
-
-\section{Image segmentation}
-As mentioned in Section \ref{training-set}, 20\% of annotated images from each dataset were used to evaluate the model. The set consists of pairs of original and ground-truth images, which are not used during the training. The experiments carried out in this study were done individually -- where, the quality of the segmentation through the use of CNN for each dataset (following the sequence according to Table \ref{datasets}) was firstly discussed, followed by the impressions on the detection of objects, and in which situations it might have fail or still need attention. Then, the following section is presented an analysis of the geometry extraction and the quality of the 3D labeled model.
-
-\subsection{CNN training and performance}
-In the Figure \ref{training-result} is shown the neural network training results. Each line represent an online dataset, conducted in individual training processes, with 50 thousand (50k) iterations each. Each graph's row represent the metric used to analyze the CNN performance: accuracy, weight-loss and cross-entropy. The accuracy allows to measure how good the segmentation is according to the training progress. While the weight-loss is the CNN's error rate against reference images, and cross-entropy, the objective function defined.
-\begin{figure}[H]
+In the Figure \ref{training-result} is shown the neural network training results. Each line represent an online dataset, conducted in individual training processes, with 50 thousand (50k) iterations each. Each graph's row represents the metric used to analyze the CNN performance: accuracy, weight-loss and cross-entropy. The accuracy allows to measure how good the segmentation is according to the training progress. While the weight-loss is the CNN's error rate against reference images, and cross-entropy, the objective function defined.
+\begin{figure}[!htp]
     \centering    
     \caption{Training performance for all online datasets.}
     \vspace{6mm}
     \includegraphics[width=0.8\textwidth]{\dropbox/phd/results/evaluation/new-evaluation-output.pdf}       
 	\legenda{}
     \label{training-result}
+    \FONTE{Author's production.}
 \end{figure}
 
-The evaluation is performed repeatedly, according to a certain number of iterations, where partial inferences (prediction) is obtained and the measures are calculated by comparing the result against the ground truth (references). These metrics are commonly adopted in the literature about classification using neural models. The accuracy is calculated according to a pixelwise analysis, in which first the success and error rates are measured through values of True Positive (TP), True Negative (TN), False Positive (FP) and False Negative (FN), given by:
-\begin{align}
- Accuracy &= \frac{\sum_{i=1, j=i}^n M_{ij}}{N}~,
-\end{align}
-where $M$ is a confusion matrix\footnote{The confusion matrix is generated according to the same premises of TP, TN, FP and FN (more details in Annex \ref{annexB}). For example, considering the ground truth in $x$ and predicted in $y$, the TP is given by elements in diagonal, TN, sum of all elements except the diagonal, FP, the sum of elements in $x$ minus diagonal and, FN, the sum of elements in $y$ minus diagonal.}, $n$, the number of classes, and $N$, the number of samples used. The numerator consists in the sum of all elements in diagonal.
+The evaluation is performed repeatedly, according to a certain number of iterations, where partial inferences (prediction) is obtained and the measures are calculated by comparing the result against the ground-truth (references). These metrics are commonly adopted in the literature about classification using neural models.  
 
-An optimization problem seeks to minimize a loss-function. The weight-loss consists of the error levels in which the neural network has according to an ideal of prediction that is given by the reference images. This ideal is an optimization problem which aims to be minimal, called then loss-function. In this case, the loss-function is given by the cross-entropy \cite{long2015}, a common and effective way to calculate the distance between multiple predicted and ground-truth classes, also known as multinominal logistic classification, given by:
-\begin{align}
- Loss_{y'}(y) &= -\sum_{i}y_i'~\log~(y_i)~,
-\end{align}
-where $y_i$ is the predicted probability value for class $i$, and $y_i'$ is the ground-truth probability for that class (more about cross-entropy calculation and meaning can be found in Annex \ref{annexA}). 
-
-Analyzing the graph, it is simple to notice a similar behavior for all training dataset, except for the weight-loss. The weight-loss decay is strongly related to the image dimension, which of course requires more iterations to learn the features. The demand for the learning of all features (generalization) is greater and varies among them. Accuracy and cross-entropy, on the other hand, had progressed mostly from 0 to 10k iterations, stabilizing near 90\% and 0.1 thereafter, respectively. 30k iterations were sufficient to reach similar results for all datasets (as shown later in the visual inspection). However, RueMonge2014, ENPC, and Graz still had high error rates, which means that not all classes could be detected or clearly delineated, even with 50k iterations.
+A similar behavior for all training dataset is observed, except for the weight-loss. The weight-loss decay is strongly related to the image dimension, which of course requires more iterations to learn the features. The demand for the learning of all features (generalization) is greater and varies among them. Accuracy and cross-entropy, on the other hand, had progressed mostly from 0 to 10k iterations, stabilizing near 90\% and 0.1 thereafter, respectively. 30k iterations were sufficient to reach similar results for all datasets (as shown later in the visual inspection). However, RueMonge2014, ENPC, and Graz still had high error rates, which means that not all classes could be detected or clearly delineated, even with 50k iterations.
 
 %[colocar imagem da evolução da segmentacao] - 10k, 30k e 50k
-\begin{figure}[H]
-    \centering    
-    \caption{Accuracy evolution according to the number of iterations. Example using a image from eTRIMS dataset.}
-    \vspace{6mm}
-    \includegraphics[width=1\textwidth]{\dropbox/phd/pics/evolution/evolution.pdf}       
-	\legenda{}
-    \label{training-evolution}
-\end{figure}
+% \begin{figure}[!htp]
+%     \centering    
+%     \caption{Accuracy evolution according to the number of iterations. Example using a image from eTRIMS dataset.}
+%     \vspace{6mm}
+%     \includegraphics[width=1\textwidth]{\dropbox/phd/pics/evolution/evolution.pdf}       
+% 	\legenda{}
+%     \label{training-evolution}
+%     \FONTE{Author's production.}
+% \end{figure}
 
-\subsection{Inference over the online datasets (Experiment 1)}
-In this section, each of the online facade sets and SJC will be evaluated in detail. In this evaluation was adopted the same metric used during the training (accuracy) with the addition of the F1-score, which expresses the harmonic mean of precision and recall, given by:
-\begin{align}
- F1 &= 2 * \frac{precision * recall}{precision + recall}~, 
-\end{align}
-where $precision=TP/(TP+FP)$, and $recall=TP/(TP+FN)$. Then, both values reveal how good the segmentation was according to the correct assignment (accuracy) and object delineation (F1-score).
+\subsection{Inference over the online datasets (Experiment 1 - Table \ref{training-explained})}
+In this section, each of the online facade sets will be evaluated in detail, according to the Experiment 1 in Table \ref{training-explained}. In this evaluation was adopted the same metric used during the training (accuracy) with the addition of the F1-score, also described in Section \ref{evaluation-section}.
 
-\subsubsection{RueMonge2014}
-The Figure \ref{overview-result-ruemonge} shows the inferences from RueMonge2014 over the validation set. Instead of showing only a few example results, they were exposed as much as possible to allow the reader to better understand how the neural model behaves according to different situations. Here, it is positively highlighted two aspects. First, the robustness of the neural model in the detection of facade features even under shadow or occluded areas, such as in the presence of pedestrians or cars. This aspect has been one of the most difficult issue to overcome due to the respective obstacles being dynamic and difficult to deal with, especially by the use of pixelwise segmenters. The second aspect is that at 50k, all images presented fine class delineation. Only in a few situations the inferences were not satisfactory. 
-\begin{figure}[H]
+\subsubsection{RueMonge2014 dataset classification results}
+The Figure \ref{overview-result-ruemonge} shows the inferences from RueMonge2014 over the validation set. Instead of showing only a few example results, they were exposed as much as possible to allow the reader to better understand how the neural model behaves according to different situations. Here, it is positively highlighted two aspects. First, the robustness of the neural model in the detection of facade features even under shadow or occluded areas, such as in the presence of pedestrians or cars. This aspect has been one of the most difficult issue to overcome due to the respective obstacles being dynamic and difficult to deal with, especially by the use of pixelwise segmenters. The second aspect is that at 50 thousand (k) iterations, all images presented fine class delineation. Only in a few situations the inferences were not satisfactory. 
+\begin{figure}[!htp]
     \centering	   
     \caption{Results over RueMonge2014 dataset. The rows are splited respectively in original, segmented image, and both. These segmented images are the inferences under evaluation sets only. (a)--(j) Example of RueMonge2014 images, segmented by the neural model presented in Section \ref{neural-model-description}. In the first line, the original image, the second line, the result of the inference (segmentation), and the third and last line, the overlapping images.}
     \vspace{6mm}
@@ -118,10 +86,10 @@ The Figure \ref{overview-result-ruemonge} shows the inferences from RueMonge2014
     \FONTE{Author's production.}
 \end{figure}
 
-During manual annotation production for RueMonge2014, the labels did not cover the entire scene. For example, sky, street intersections or background buildings (adjacent to the main facades), were partially annotated as background, sometimes, completely. This means that when presented to the CNN during training, all those features (sky, street intersection, etc.), are going to be trained as background as well. Therefore, whenever an intersection or sky appears, the neural model treats it as being background. The problem is that only half of the feature will be assign as background, which is not the case with the other half. The same behavior was visible in other classes. For instance, when an facade is fully annotated and appears only partially in the validation set, the neural model will act as it was not presented in the image, only part of it (clear on Figures \ref{overview-result-ruemongef}, \ref{overview-result-ruemongeh}, and \ref{overview-result-ruemongei}). Supervised neural model is strongly related to the context it has been trained. If a feature appears in the image, but only part it is detected, the segmentation will fail because of the incomplete context.
+During manual annotation production for RueMonge2014, the labels did not cover the entire scene. For example, sky, street intersections or background buildings (adjacent to the main facades), were partially annotated as background, sometimes, completely. This means that when presented to the CNN during training, all those features (sky, street intersection, etc.), are going to be trained as background as well. Therefore, whenever an intersection or sky appears, the neural model treats it as being background. The problem is that only half of the feature will be assigned as background, which is not the case with the other half. The same behavior was visible in other classes. For instance, when an facade is fully annotated and appears only partially in the validation set, the neural model will act as it was not presented in the image, only part of it (clear on Figures \ref{overview-result-ruemongef}, \ref{overview-result-ruemongeh}, and \ref{overview-result-ruemongei}). Supervised neural model is strongly related to the context it has been trained. If a feature appears in the image, but only part it is detected, the segmentation will fail because of the incomplete context.
 
-In addition, the confusion matrix over all validation set is presented in Table \ref{cm-ruemonge}. Pretty close to the visual inspection, the RueMonge2014 confusion matrix shows good prediction over all classes, with a tiny confusion between background and wall against the other classes (first and forth columns). It is explained by the fact that the respective classes are the overall classes in the entire prediction, which means it share boundaries with all other classes. As the object delineation is not always clear, the evaluated pixels on the edge is predicted as been background or wall instead the right class. Although it is minimal ($0.8624$ as F1-score), the prediction over edges seems to be the bottleneck of the adopted CNN architecture for all online datasets, as shown in the following sections. The labels in the bottom of the table, express the classes presented in the respective dataset.
-\begin{table}[H]
+The confusion matrix over all validation set is presented in Table \ref{cm-ruemonge}. Pretty close to the visual inspection, the RueMonge2014 confusion matrix shows prediction over 82\% for all classes, with a tiny confusion between background and wall against the other classes (first and forth columns). It is explained by the fact that the respective classes are the overall classes in the entire prediction, which means it shares boundaries with all other classes. As the object delineation is not always clear, the evaluated pixels on the edge is predicted as been background or wall instead the right class. Although it is minimal ($0.8624$ as F1-score), the prediction over edges seems to be the bottleneck of the adopted CNN architecture for all online datasets, as shown in the following sections. The labels in the bottom of the table, express the classes presented in the respective dataset.
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.2}
     \caption{Normalized confusion matrix for RueMonge2014 predictions.}
     \scriptsize \centering		
@@ -147,10 +115,9 @@ In addition, the confusion matrix over all validation set is presented in Table 
     \FONTE{Author's production.}
 \end{table}
 
-\subsubsection{CMP}
-The CMP annotation set present labels beyond those already analyzed in this study. In the original CMP dataset, for example, there are annotations for decoration and pillars, which are sub-elements of the class wall and, for that reason, out of the scope in this study. Even so, still considered as being a single class: wall. For other sub-elements, all the labels not related to this study were equally ignored and had their annotations adapted to the problem. 
-
-\begin{figure}[H]
+\subsubsection{CMP dataset classification results}
+The CMP annotation set present labels beyond those already analyzed in this study. In the original CMP dataset, for example, there are annotations for decoration and pillars, which are sub-elements of the class wall and, for that reason, out of the scope in this study. Even so, still considered as being a single class: wall. For other sub-elements, all the labels not related to this study were equally ignored and had their annotations adapted to the problem.
+\begin{figure}[!htp]
     \centering	       
     \caption{Results over CMP dataset. (a)--(g) Example of CMP images, segmented by the neural model presented in Section \ref{neural-model-description}. The three different rows correspond to the same description as in Figure \ref{overview-result-ruemonge}.}
     \vspace{6mm}
@@ -161,14 +128,13 @@ The CMP annotation set present labels beyond those already analyzed in this stud
     \subfigure[]{\label{overview-result-cmpe}\includegraphics[width=0.147\textwidth]{/data/phd/results/facades-benchmark/cmp/merge1/cmp_b0271.png}}
     \subfigure[]{\label{overview-result-cmpf}\includegraphics[width=0.132\textwidth]{/data/phd/results/facades-benchmark/cmp/merge1/cmp_b0169.png}}
     \subfigure[]{\label{overview-result-cmpg}\includegraphics[width=0.107\textwidth]{/data/phd/results/facades-benchmark/cmp/merge1/cmp_b0031.png}}        
-    \vspace{2mm}
 	\legenda{}
     \label{overview-result-cmp}
+    \FONTE{Author's production.}
 \end{figure}
 
-The Figure \ref{overview-result-cmp} shows results reached at 50k iterations of training for CMP dataset. Once the architectural style has straight lines and facades whose texture is homogeneous, as presented in the CMP, the results of segmentation tend to be better precisely because the disturbance factors are minimal. CMP does not have annotations for background, sky, roof, and shop, and for these classes, therefore, the prediction is replaced by the labels wall, window, balcony or door, for example, in Figure \ref{overview-result-cmpd}, there are stores predicted as wall. As good results, the Figures \ref{overview-result-cmpa}, \ref{overview-result-cmpc}, \ref{overview-result-cmpe} and \ref{overview-result-cmpg} highlight the predictions that did not get much confusion. Facades that share different texture, as in Figure \ref{overview-result-cmpf}, presented a lot of confusion between the classes balcony and wall, specially under building decoration regions.
-
-\begin{table}[H]
+The results presented in Figure \ref{overview-result-cmp}, represent the automatic segmentation reached at 50k iterations of training. Once the architectural style has straight lines and facades whose texture is homogeneous, as presented in the CMP, the results of segmentation tend to be better precise due to the disturbance factors are minimal. CMP does not have annotations for background, sky, roof, and shop, and for these classes, therefore, the prediction is replaced by the labels wall, window, balcony or door, for example, in Figure \ref{overview-result-cmpd}, there are stores predicted as wall. As good results, the Figures \ref{overview-result-cmpa}, \ref{overview-result-cmpc}, \ref{overview-result-cmpe} and \ref{overview-result-cmpg} highlight the predictions that did not get much confusion. Facades that share different texture, as in Figure \ref{overview-result-cmpf}, presented a lot of confusion between the classes balcony and wall, specially under building decoration regions.
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.2}
     \caption{Normalized confusion matrix for CMP predictions.}
     \scriptsize \centering		
@@ -194,13 +160,14 @@ The Figure \ref{overview-result-cmp} shows results reached at 50k iterations of 
     \FONTE{Author's production.}
 \end{table}
 
-Among the four classes, only wall and window got good scores (TP), reaching up accuracy of $0.9357$ for the entire prediction. Balcony and door were often confused with wall, specially around the boundaries of the classes, what also explain the F1-score of $0.7418$.
+Among the four classes, only wall and window got good scores (TP), reaching up accuracy of $0.9357$ for the entire prediction. Balcony and door were often confused with wall, specially around the boundaries of the classes, what also explains the F1-score of $0.7418$.
 
-\subsubsection{eTRIMS}
-As in CMP, eTRIMS had more annotations than the ones adopted in this study. In addition to the classes not approached in this study, there were facade features where the annotation belonged to only one class, e.g. the roof in eTRIMS is annotated as being wall. For that reason, images with roof had it assigned as wall and, consequently, assumed as True Positive (TP). Among the 6 facade features of interest, only three in eTRIMS were considered: window, door and wall. 
+\subsubsection{eTRIMS dataset classification results}
+As in CMP, eTRIMS had more annotations than the ones adopted in this study\footnote{The annotations provide by online datasets might vary on number of labels and colors. If there are more labels (or classes) than is needed, then, it is necessary to adapt to the same colors in Figure \ref{inputs} or reduce the number of classes, such as in eTRIMS.}. In addition to the classes not approached in this study, there were facade features where the annotation belonged to only one class, e.g. the roof in eTRIMS is annotated as being wall. For that reason, images with roof had it assigned as wall and, consequently, assumed as True Positive (TP). Among the 6 facade features of interest, only three in eTRIMS were considered: window, door and wall. 
 
-As can seen in Figure \ref{overview-result-etrims}, the predictions over eTRIMS dataset reached the second best score among the online datasets, good accuracy (object location), $0.9632$, and F1-score (object delineation), $0.8291$. The eTRIMS consist of facade pictures of different styles, \textquotedblleft non-patterned\textquotedblright, non-rectified, and consequently, the closest facade layout to the SJC data. 
-\begin{figure}[H]
+As can be seen in Figure \ref{overview-result-etrims}, the predictions over eTRIMS dataset reached the second best score among the online datasets, good accuracy (object location), $0.9632$, and F1-score (object delineation), $0.8291$. The eTRIMS consist of facade pictures of different styles, \textquotedblleft non-patterned\textquotedblright, non-rectified. 
+
+\begin{figure}[!htp]
     \centering	       
     \caption{Results over eTRIMS dataset. (a)--(h) Example of eTRIMS images, segmented by the neural model presented in Section \ref{neural-model-description}. The three different rows correspond to the same description as in Figure \ref{overview-result-ruemonge}.}
     \vspace{6mm}
@@ -215,11 +182,13 @@ As can seen in Figure \ref{overview-result-etrims}, the predictions over eTRIMS 
 	\vspace{2mm}
     \legenda{}
     \label{overview-result-etrims}
-\end{figure}       
-Considering a system of mapping of walls, windows and doors, the predictions made on this dataset show the ability of the neural network to detect the urban elements accurately (Figure \ref{overview-result-etrimsb}). The eTRIMS was distinguished compare to others because fewer classes were used (neural network learns more), also, the quality of annotations is better. In any case, objects obstructing the facade are ignored, precisely because training data consider these objects as being another class. Here, considered as background and therefore not part of the facade. This lack of information, for example in Figures \ref{overview-result-etrimsc} and \ref{overview-result-etrimsc}, is the best scenario in the detection of features, still, it will need an algorithm to regularize these missing informations.
+    \FONTE{Author's production.}
+\end{figure}  
 
-The confusion matrix of eTRIMS show a tiny confusion between window, door and wall. Once again, the FN rates regarding to this prediction are mainly related to the boundaries between one class and another.
-\begin{table}[H]
+Considering a system of mapping of walls, windows and doors, the predictions made on this dataset show the ability of the neural network to detect the urban elements accurately (Figure \ref{overview-result-etrimsb}). The eTRIMS was distinguished compare to others because fewer classes were used (neural network learns more), also, the quality of annotations is better. In any case, objects obstructing the facade are ignored, precisely because training data consider these objects as being another class. Here, considered as background and therefore not part of the facade. This lack of information, for example in Figures \ref{overview-result-etrimsc}, \ref{overview-result-etrimse} and \ref{overview-result-etrimsf}, is the best scenario in the detection of features, still, it will need an algorithm to regularize these missing informations.
+
+The confusion matrix of eTRIMS shows a tiny confusion between window, door and wall, with only 20\% of pixels . Once again, the FN rates regarding to this prediction are mainly related to the boundaries between one class and another.
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.2}
     \caption{Normalized confusion matrix for eTRIMS predictions.}
     \scriptsize \centering		
@@ -244,33 +213,34 @@ The confusion matrix of eTRIMS show a tiny confusion between window, door and wa
     \label{cm-etrims}
     \FONTE{Author's production.}
 \end{table}
-
-\subsubsection{ENPC}
-The level of accuracy for all sets made the use of CNN the best of all alternatives. However, as well as noticed in eTRIMS, when an object such as trees appear right in front of the facade, they might add disturbances in the training phase. In case it was a tree, it could be annotated as either vegetation or part of the facade itself (for example, note the differences between Figures \ref{overview-result-etrimsb} and \ref{overview-result-enpcb}). 
+\vspace{-1.5cm}
+\subsubsection{ENPC dataset classification results}
+The level of accuracy for all datasets made the use of CNN the best of all alternatives. However, the quality of the annotations is essential to perform a good segmentation. As noticed in eTRIMS, when a tree or car obstruct the facade, they also add disturbances in the training phase. In case of a tree, it could be annotated as either vegetation or part of the facade itself. For example, note the differences between Figures \ref{overview-result-etrimsb} and \ref{overview-result-enpcb}. The tree in eTRIMS is ignored in their annotation, but labeled as being facade in ENPC, which leads to different results. 
 
 It is understood that the lack of information in the first figure is the best inference, and in this case, the neural model is actually right: there is a facade with unknown object in front of it. But in cases such as in Figure \ref{overview-result-enpcb}, the facade inference is noisy or unreadable, which is not the case in Figure \ref{overview-result-enpch}, where the disturbance is minimal. 
-\begin{figure}[H]
+\vspace{-1.0cm}
+\begin{figure}[!htp]
     \centering
     \caption{Results over ENPC dataset. (a)--(k) Example of ENPC images, segmented by the neural model presented in Section \ref{neural-model-description}. The three different rows correspond to the same description as in Figure \ref{overview-result-ruemonge}.}
     \vspace{6mm}
-    \subfigure[]{\label{overview-result-enpca}\includegraphics[width=0.082\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_18.png}}
-    \subfigure[]{\label{overview-result-enpcb}\includegraphics[width=0.082\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_46.png}}
-    \subfigure[]{\label{overview-result-enpcc}\includegraphics[width=0.062\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_53.png}}
-    \subfigure[]{\label{overview-result-enpcd}\includegraphics[width=0.062\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_73.png}}
-    \subfigure[]{\label{overview-result-enpce}\includegraphics[width=0.054\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_54.png}}
-    \subfigure[]{\label{overview-result-enpcf}\includegraphics[width=0.062\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_65.png}}
-    \subfigure[]{\label{overview-result-enpcg}\includegraphics[width=0.062\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_66.png}}
-    \subfigure[]{\label{overview-result-enpch}\includegraphics[width=0.068\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_13.png}}
-    \subfigure[]{\label{overview-result-enpci}\includegraphics[width=0.063\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_28.png}}    
-    \subfigure[]{\label{overview-result-enpcj}\includegraphics[width=0.078\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_71.png}}  
-    \subfigure[]{\label{overview-result-enpcl}\includegraphics[width=0.037\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_12.png}}    
+    \subfigure[]{\label{overview-result-enpca}\includegraphics[width=0.1\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_18.png}}
+    \subfigure[]{\label{overview-result-enpcb}\includegraphics[width=0.101\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_46.png}}
+    \subfigure[]{\label{overview-result-enpcc}\includegraphics[width=0.076\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_53.png}}
+    \subfigure[]{\label{overview-result-enpcd}\includegraphics[width=0.076\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_73.png}}
+    \subfigure[]{\label{overview-result-enpce}\includegraphics[width=0.066\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_54.png}}
+    \subfigure[]{\label{overview-result-enpcf}\includegraphics[width=0.076\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_65.png}}
+    \subfigure[]{\label{overview-result-enpcg}\includegraphics[width=0.076\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_66.png}}
+    \subfigure[]{\label{overview-result-enpch}\includegraphics[width=0.082\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_13.png}}
+    \subfigure[]{\label{overview-result-enpci}\includegraphics[width=0.078\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_28.png}}    
+    \subfigure[]{\label{overview-result-enpcj}\includegraphics[width=0.095\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_71.png}}  
+    \subfigure[]{\label{overview-result-enpcl}\includegraphics[width=0.045\textwidth]{/data/phd/results/facades-benchmark/enpc/merge1/facade_12.png}}    
     \vspace{2mm}
     \legenda{}
     \label{overview-result-enpc}
+    \FONTE{Author's production.}
 \end{figure}
 
-In the confusion matrix for ENPC predictions, it is revealed that all classes has been assigned correctly (accuracy $0.9636$ and F1-score $0.7655$), except for background. Once this dataset only have rectified images (facade covering the entire image), the class background actually should not exist. But once defined, the assignment to this class is splited over other options: wall, balcony, and window (mostly). Roof and door were the classes that got lower rates of TP, frequent confusing with sky and wall classes.
-\begin{table}[H]
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.2}
     \caption{Normalized confusion matrix for ENPC predictions.}
     \scriptsize \centering		
@@ -296,34 +266,36 @@ In the confusion matrix for ENPC predictions, it is revealed that all classes ha
     \FONTE{Author's production.}
 \end{table}
 
-\subsubsection{ECP}
+The confusion matrix for ENPC predictions, revealed that all classes has been assigned correctly (accuracy $0.9636$ and F1-score $0.7655$), except for background. Once this dataset only have rectified images (facade covering the entire image), the class background actually should not exist. Then, the respective class have not so much presence, when predicted as such, it was incorrect. For example, in Figures \ref{overview-result-enpcb} and \ref{overview-result-enpcc}, is visible that the pixels in black actually corresponds to the classes wall (yellow) and roof (blue), respectively. The high accuracy, however, is explained by the fact all classes have been assigned correctly in general, getting 7\% of errors due to the classes boundaries.  
+
+\subsubsection{ECP dataset classification results}
 All online datasets does not have any certificate of quality. When checking the annotated images of some of them, there is a high degree of inconsistency between the annotations. This implies incorrect segmentation (see overlapping images - detail on the roofs) according to the real scenario -- visual inspection, but not to the validation set. It means the validation metrics might present some inconsistency, since they are calculated according to the validation (annotated) images. 
-
-ECP also presented inconsistencies in some of its annotations. The missing roof-parts in Figures \ref{overview-result-ecpa} to \ref{overview-result-ecpf} are expected behaviors since the annotations from the training sets do not consider these objects as being part of the roof. However, the learning happens for most of the features and should not be a problem since the neural model will identify the main content in the image.
-
-\begin{figure}[H]
+\begin{figure}[!htp]
     \centering
     \caption{Results over ECP dataset. (a)--(l) Example of ECP images, segmented by the neural model presented in Section \ref{neural-model-description}. The three different rows correspond to the same description as in Figure \ref{overview-result-ruemonge}.}
     \vspace{6mm}
-    \subfigure[]{\label{overview-result-ecpa}\includegraphics[width=0.056\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_105.png}}
-    \subfigure[]{\label{overview-result-ecpb}\includegraphics[width=0.041\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_12.png}}    
-    \subfigure[]{\label{overview-result-ecpc}\includegraphics[width=0.059\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_72.png}}    
-    \subfigure[]{\label{overview-result-ecpd}\includegraphics[width=0.088\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_24.png}}    
-    \subfigure[]{\label{overview-result-ecpe}\includegraphics[width=0.059\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_68.png}}    
-    \subfigure[]{\label{overview-result-ecpf}\includegraphics[width=0.066\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_53.png}}    
-    \subfigure[]{\label{overview-result-ecpg}\includegraphics[width=0.089\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_29.png}}    
-    \subfigure[]{\label{overview-result-ecph}\includegraphics[width=0.083\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_25.png}}        
-    \subfigure[]{\label{overview-result-ecpi}\includegraphics[width=0.051\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_66.png}}    
-    \subfigure[]{\label{overview-result-ecpj}\includegraphics[width=0.044\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_5.png}}    
-    \subfigure[]{\label{overview-result-ecpl}\includegraphics[width=0.058\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_69.png}}    
-    \subfigure[]{\label{overview-result-ecpm}\includegraphics[width=0.042\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_103.png}} 
+    \subfigure[]{\label{overview-result-ecpa}\includegraphics[width=0.067\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_105.png}}
+    \subfigure[]{\label{overview-result-ecpb}\includegraphics[width=0.049\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_12.png}}    
+    \subfigure[]{\label{overview-result-ecpc}\includegraphics[width=0.071\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_72.png}}    
+    \subfigure[]{\label{overview-result-ecpd}\includegraphics[width=0.105\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_24.png}}    
+    \subfigure[]{\label{overview-result-ecpe}\includegraphics[width=0.07\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_68.png}}    
+    \subfigure[]{\label{overview-result-ecpf}\includegraphics[width=0.079\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_53.png}}    
+    \subfigure[]{\label{overview-result-ecpg}\includegraphics[width=0.106\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_29.png}}    
+    \subfigure[]{\label{overview-result-ecph}\includegraphics[width=0.099\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_25.png}}        
+    \subfigure[]{\label{overview-result-ecpi}\includegraphics[width=0.061\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_66.png}}    
+    \subfigure[]{\label{overview-result-ecpj}\includegraphics[width=0.052\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_5.png}}    
+    \subfigure[]{\label{overview-result-ecpl}\includegraphics[width=0.068\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_69.png}}    
+    \subfigure[]{\label{overview-result-ecpm}\includegraphics[width=0.050\textwidth]{/data/phd/results/facades-benchmark/ecp/merge1/monge_103.png}} 
     \vspace{2mm}
     \legenda{}
+    \FONTE{Author's production.}
     \label{overview-result-ecp}
 \end{figure}
 
-According to the accuracy and F1-Score metrics, ECP got the best scores among the other, with $0.9762$ and $0.8946$, respectively. The lower TP was $0.841$ for class window, which is already considered a good mark since the other classes got better scores. A tiny confusion between balcony, window, and wall, is highlighted, as well as for door and shop.   
-\begin{table}[H]
+ECP also presented inconsistencies in some of its annotations. The missing roof-parts in Figures \ref{overview-result-ecpa} to \ref{overview-result-ecpf} are expected behaviors since the annotations from the training sets do not consider these objects as being part of the roof. However, the learning happens for most of the features and should not be a problem since the neural model will identify the main content in the image.
+
+According to the accuracy and F1-Score metrics, ECP got the best scores among the others, with $0.9762$ and $0.8946$, respectively. The lower TP was $0.841$ for class window, which is already considered a good mark since the other classes got better scores. A tiny confusion between balcony, window, and wall, is highlighted, as well as for door and shop.   
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.2}
     \caption{Normalized confusion matrix for ECP predictions.}
     \scriptsize \centering		
@@ -349,9 +321,9 @@ According to the accuracy and F1-Score metrics, ECP got the best scores among th
     \FONTE{Author's production.}
 \end{table}
 
-\subsubsection{Graz}
-Among the inputs, Graz has the smallest number of images, but the spectral variability is clearly greater when compared to the others. The symmetry between windows, however, was pretty much the same in CMP, ECP, and ENPC. It is noticed, then, that the results for Graz (Figure \ref{overview-result-graz}) did not change much from what was seen in other datasets.
-\begin{figure}[H]
+\subsubsection{Graz dataset classification results}
+Among the inputs, Graz has the smallest number of images (50), but the spectral variability is clearly greater when compared to the others. The symmetry between windows, however, was pretty much the same in CMP, ECP, and ENPC. It is noticed, then, that the results for Graz (Figure \ref{overview-result-graz}) did not change much from what was seen in the other datasets.
+\begin{figure}[!htp]
     \centering
     \caption{Results over Graz dataset. (a)--(h) Example of Graz images, segmented by the neural model presented in Section \ref{neural-model-description}. The three different rows correspond to the same description as in Figure \ref{overview-result-ruemonge}.}
     \vspace{6mm}
@@ -365,11 +337,12 @@ Among the inputs, Graz has the smallest number of images, but the spectral varia
     \subfigure[]{\includegraphics[width=0.107\textwidth]{/data/phd/results/facades-benchmark/graz/merge1/facade_1_0056345_0056536.png}} 
     \vspace{2mm}
     \legenda{}
+    \FONTE{Author's production.}
     \label{overview-result-graz}
 \end{figure}
 
 Even the predictions has reached accuracy of $0.9368$ and F1-score of $0.7698$, a lot of confusion involving the class wall can be notice in Table \ref{cm-graz}, specially for balcony and sky, where the predictions were almost null. 
-\begin{table}[H]
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.2}
     \caption{Normalized confusion matrix for Graz predictions.}
     \scriptsize \centering		
@@ -395,12 +368,12 @@ Even the predictions has reached accuracy of $0.9368$ and F1-score of $0.7698$, 
     \FONTE{Author's production.}
 \end{table}
 
-In Table \ref{training-validation-independent}, it is summarized the accuracies and F1-scores for each online dataset. ECP presented the best results among the datasets, not only the accuracy, but also in precision (F1-score). Datasets which accuracy is high but F1-score inferior, demonstrated an excellent inference in which region the object was found on the image, but not equally efficient regarding its delineation, that was the case of CMP, ENPC and Graz. The predictions on RueMonge2014 and eTRIMS datasets presented better quality in both metrics. 
+In Table \ref{training-validation-independent}, it is summarized the accuracies and F1-scores for each online dataset. ECP presented the best results among the datasets, not only the accuracy, but also in precision (F1-score). Datasets where the accuracy is high but F1-score inferior, demonstrated an excellent inference in which region the object was found on the image, but not equally efficient regarding its delineation, that are the cases of CMP, ENPC and Graz. The predictions on RueMonge2014 and eTRIMS datasets presented better quality in both metrics. 
 
 As the evaluation was performed under multiple validation images, the columns in red and green represent the variance and standard deviation, respectively. None of them have reached significant variations.
-\begin{table}[H]
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.4}
-    \caption{Inference accuracy over the online datasets. Var. (Variance) and StD. (Standard Deviation) stands for the inferences over different images. The values in bold, expose the best datasets according to the Accuracy and F1-Score metrics.}
+    \caption{Inference accuracy over the online datasets. Var. (Variance = $\sigma^2$) and StD. (Standard Deviation = $\sigma$) stands for the inferences over different images. The values in bold, expose the best datasets according to the Accuracy and F1-Score metrics.}
     \scriptsize \centering		
     \begin{tabular}{L{2.8cm}C{2.4cm}C{1.1cm}C{1.1cm}C{2.4cm}C{1.1cm}C{1.1cm}}
         \toprule
@@ -418,9 +391,9 @@ As the evaluation was performed under multiple validation images, the columns in
     \FONTE{Author's production.}
 \end{table}
 
-\subsection{Inference over the SJC dataset (Experiments 2 and 3)}
-The idea behind the usage of the SJC dataset was simple: to observe how the neural network reacts to an unknown architectural style after being trained with different ones. The outcome could then provide insights on how the training set should look like for the detection of facades of any kind. Figure \ref{overview-result-all-together} shows the results after presenting SJC images to a different version of training data (knowledge).    
-\begin{figure}[H]
+\subsection{Inference over the SJC dataset (Experiments 2 and 3 - Table \ref{training-explained})}
+The idea behind the use of SJC dataset was simple: to observe how the neural network reacts to an unknown architectural style after being trained with different ones. The outcome could then provide insights on how the training set should look like for the detection of facades of any kind. Figure \ref{overview-result-all-together} shows the results after presenting SJC images to a different version of training data (knowledge).    
+\begin{figure}[!htp]
     \centering
     \caption{Segmented image from SJC dataset. Inferences between individual training knowledges. (a) Result using RueMonge2014 knowledge, (b) CMP, (c) eTRIMS, (d) ECP, (e) ENPC, (f) and Graz. (g) result using all knowledge.}
     \vspace{6mm}
@@ -437,14 +410,14 @@ The idea behind the usage of the SJC dataset was simple: to observe how the neur
     \FONTE{Author's production.}
 \end{figure}
 
-The Figures \ref{overview-result-all-togethera} to \ref{overview-result-all-togetherf} are the respective results from datasets listed in Table \ref{datasets} (online). When looking at these results as seen in the figures, it is safely concluded that these are incorrect and inaccurate segmentations. The fact is that in environments whose diversity of objects, any other segmentation and classification methods would add a certain imprecision on it. The operation of a CNN is not to perfectly delineate an object, but to provide hints (as close as possible) to where a given object is located in the image. This shows us that in order to extract precise parameters, such as height and area of a feature, a post-processing phase should certainly be conducted on the CNN beforehand.
+The Figures \ref{overview-result-all-togethera} to \ref{overview-result-all-togetherf} are the respective results from datasets listed in Table \ref{datasets} (online). When looking at these results as seen in the figures, it is safely concluded that these are incorrect and inaccurate segmentations (accuracies mostly lower than 24\%). The fact is that in environments whose diversity of objects, any other segmentation and classification methods would add a certain imprecision on it. The operation of a CNN is not to perfectly delineate an object, but to provide hints (as close as possible) to where a given object is located in the image. This shows us that in order to extract precise parameters, such as height and area of a feature, a post-processing phase should certainly be conducted on the CNN beforehand.
 
 Going through one problem at a time, it is noticed that, firstly, there is the need to define a background class in supervised approaches. Using RueMonge2014 knowledge, the inference process was not able to segment properly even under the most common feature: wall. Unlikely, some knowledge generalized it to sky, sidewalk and street, especially when there is no general class that represents too many objects in the scene (Figure \ref{overview-result-all-togetherc}). When the class is annotated correctly such as sky, a proper segmentation can be seen: that is the case with ECP (Figure \ref{overview-result-all-togetherd}), ENPC (Figure \ref{overview-result-all-togethere}), and Graz (Figure \ref{overview-result-all-togetherf}). When it is not, the inference is poor or average: which was the case with RueMonge2014 (Figure \ref{overview-result-all-togethera}). Features in RueMonge2014 were pretty much dependent on local architectural style. In general, eTRIMS is the dataset with the most similar features for SJC. Despite being trained with only 4 classes, including background, the results have shown a certain level of intelligence in detecting sidewalks and street as being part of the background, as well as for sky and vegetation.
 
 Therefore, when using a supervised neural network, it is evident that the arrangement of the annotations can affect the inference, either positively or negatively. For instance, annotations for all the sky coverage instead of only part of it, or background annotations for sidewalks and street, in cases that it is not a desired feature. The confusion matrix of all-together knowledge applied in SJC data is shown in Table \ref{cm-sjc}.
 
 The confusion can be mainly described between the classes roof, sky, balcony and door. Only classes background, wall and window were reasonably assigned, most influenced by the knowledge from eTRIMS and Graz (Figures \ref{overview-result-all-togetherb} and \ref{overview-result-all-togetherf}).
-\begin{table}[H]
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.2}
     \caption{Normalized confusion matrix for SJC (all-together) predictions.}
     \scriptsize \centering		
@@ -460,9 +433,9 @@ The confusion can be mainly described between the classes roof, sky, balcony and
         & 5 & \textcolor{myPurple}{\faCircle} & Balcony & & &\\      
         & 6 & \textcolor{red}{\faCircle} & Window & & &\\      
         & 7 & \textcolor{orange}{\faCircle} & Door & & &\\      
-        & 8 & \textcolor{green}{\faCircle} & Shop & & &\\       
+        & 8 & \textcolor{gray!30}{\faCircleThin} & Shop & & &\\       
         \bottomrule
-        & & & \multirow{2}{*}{\textbf{Rates:}} & \multicolumn{8}{l}{\textcolor{black}{\faCircle}~\textcolor{myCyan}{\faCircle}~\textcolor{blue}{\faCircle}~\textcolor{yellow}{\faCircle}~\textcolor{red}{\faCircle}~\textcolor{myPurple}{\faCircle}~\textcolor{orange}{\faCircle}} & \textbf{Accuracy}: & \textbf{0.8591}\\ \cmidrule{13-14}
+        & & & \multirow{2}{*}{\textbf{Rates:}} & \multicolumn{8}{l}{} & \textbf{Accuracy}: & \textbf{0.8591}\\ \cmidrule{13-14}
         & & & & \multicolumn{8}{l}{} & \textbf{F1-Score}: & \textbf{0.4706}\\     
         \bottomrule
     \end{tabular}
@@ -470,8 +443,8 @@ The confusion can be mainly described between the classes roof, sky, balcony and
     \FONTE{Author's production.}
 \end{table}
 
-In Figure \ref{overview-result-all-togetherg}, a summarized contributions of each dataset is presented. For instance, eTRIMS was the only one sensitive to sidewalk and street, balconies were only detected in CMP, even though this was incorrectly segmented. Meanwhile, the results for unknown features were understandable and expected. With the addition of more classes (e.g. gate), improvements to the annotation process and an increase in the number of training epochs, the better the results of the inferences would be. Table \ref{training-validation} below shows the accuracy overview for each individual learned feature (knowledge) over the SJC dataset.  
-\begin{table}[H]
+In Figure \ref{overview-result-all-togetherg}, a summarized contribution of each dataset is presented. For instance, eTRIMS was the only one sensitive to sidewalk and street, balconies were only detected in CMP, even though this was incorrectly segmented. Meanwhile, the results for unknown features were understandable and expected. With the addition of more classes (e.g. gate), improvements to the annotation process and an increase in the number of training epochs, the better the results of the inferences would be. Table \ref{training-validation} shows the accuracy overview for each individual learned feature (knowledge) over the SJC dataset.  
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.4}
     \caption{Inference accuracy over SJC data. Last row corresponds to the accuracy with the knowledge of all training together. The values in bold, expose the best datasets according to the Accuracy and F1-Score metrics. When together, the quality metrics increased due to the better generalization of the neural network, as it has received a bigger amount of images.}
     \scriptsize \centering		
@@ -494,18 +467,18 @@ In Figure \ref{overview-result-all-togetherg}, a summarized contributions of eac
 
 Both visually (Figure \ref{overview-result-etrims}) and in the table, it is evident that eTRIMS was better suited to deal with the architectural style seen in the SJC dataset. It was expected however, that the values for accuracy and precision would be low, due to the characteristics (similarities) of the SJC dataset. eTRIMS consists of non-rectified facades, lacks symmetry between doors and windows and presents specific architectural styles, characteristics that have similarity with the SJC images. Once the entire online collection has been merged (all-together dataset), the accuracy was increased, but without improvements to the correct delineation of the objects (low F1-score).
 
-\section{3D labeling - Experiments 4 and 5}  
+\section{3D labeling - Experiments 4 and 5 - Table \ref{training-explained}}  
 \subsection{RueMonge2014}
 The quality of the reconstructed surface (mesh) is highly dependent on the density of the point cloud and the method of reconstruction. Very sparse point clouds can generalize feature volumetry too much, while very dense point clouds can represent it faithfully, but the associated computational cost will also increase. Therefore, there is a limit between the quality of the 3D labeled model and the point cloud density, which falls on the question: how many points it is needed to fairly represent a specific feature? 
 
 Features that are segmented in 2D domain might perfectly align with their geometry, but imprecisions between the geometric edges and the classification may occur. Despite of that, the segmentation alignment onto the mesh is also related to the estimated camera parameters, which are used during ray-tracing. These impressions are directly related to the mesh quality. 
 
 Table \ref{3d-validation} shows how the ray-tracing procedure performed. It was responsible for connecting each segmented feature onto its respective geometry. The 3D reconstruction of both scene had average performance and was not critical since the density was not the highest. RueMonge2014 dense point cloud has around 9 million points, reconstructed in 46.4 minutes. Using a proper computer, equipped with GPU, this rate could certainly be optimized, as well as the other reconstructions.
-\begin{table}[H]
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.4}
     \caption{Ray-tracing performance for geometry classification.}
     \scriptsize \centering		
-    \begin{tabular}{L{2.2cm}C{2.2cm}C{2.2cm}C{2.6cm}C{2.4cm}}
+    \begin{tabular}{L{2.4cm}C{2.4cm}C{2.4cm}C{2.8cm}C{2.6cm}}
         \toprule
         \textbf{Dataset} & \textbf{Point Cloud density} & \textbf{Num. faces (triangles)} & \textbf{3D reconstruction - SfM/MVS (min)} & \textbf{Ray-tracing (sec)}  \\ 
         \toprule
@@ -519,10 +492,10 @@ Table \ref{3d-validation} shows how the ray-tracing procedure performed. It was 
     \FONTE{Author's production.}
 \end{table}
 
-In order to illustrate the influences of the point cloud density on the quality of 3D labeling, Figure \ref{mesh-result-ruemonge} shows the result for the RueMonge2014 dataset. Only sparse and dense point clouds were tested. However, to explore the limits between the number of points and the geometric accuracy is some of the issues to approach in a future work.
-\begin{figure}[H]
+In order to illustrate the influences of the point cloud density on the quality of 3D labeling, Figure \ref{mesh-result-ruemonge} shows the result for the RueMonge2014 dataset. Only sparse and dense point clouds were tested. However, to explore the limits between the number of points and the geometric accuracy is some of the issues to approach in a future work. Also note in Figure \ref{mesh-result-ruemongea} that the geometry of the whole street was reconstructed, with few deformations caused by the SfM.
+\begin{figure}[!htp]
     \centering   
-    \caption{3D labeled model of RueMonge2014. (a) Wide view and of the street. (b) Details of facade geometry by a sparse point cloud, (c) its labels after ray-tracing analysis, and (d) close-look of 3D window labels. (e) The facade geometry by a dense point cloud and (f) its labels, and (g) close-look of 3D window labels.}
+    \caption{3D labeled model of RueMonge2014. (a) Wide view of the street. (b) Details of facade geometry by a sparse point cloud, (c) its labels after ray-tracing analysis, and (d) close-look of 3D window labels. (e) The facade geometry by a dense point cloud and (f) its labels, and (g) close-look of 3D window labels.}
     \vspace{6mm}    
     \subfigure[]{\label{mesh-result-ruemongea}\includegraphics[width=1\textwidth]{\dropbox/phd/pics/ruemonge/ruemonge2014-dense-50k.png}}    
     \subfigure[]{\label{mesh-result-ruemongeb}\includegraphics[width=0.4\textwidth]{\dropbox/phd/pics/ruemonge/mesh-sparse.png}}
@@ -540,24 +513,24 @@ In order to illustrate the influences of the point cloud density on the quality 
 In Figures \ref{mesh-result-ruemonged} and \ref{mesh-result-ruemongeg}, it is highlighted how well the point cloud density could represent a labeled 3D model. Assuming a hypothetical situation where area or window height information are required in a building inspection to estimate luminosity (indoor and outdoor), the estimation of these parameters should be as close as possible to reality. Therefore, the height and area obtained from the mesh, as in the respective figures, may be inaccurate to this kind of need. \citeonline{martinovic2015} and \citeonline{boulch2013} propose a post-processing procedure, in which the facade has its features simplified by the so called Parsing, where most of the time, Grammar-based approaches \cite{stiny1971} are used. Perhaps the post-processing phase is essential in applications where precise geometric information is required, but it has to ensure that the geometric accuracy does not be penalized once the Grammar can over-generalize the facade feature shape.
 
 In the Figure \ref{zoom-ruemonge}, is highlighted four details about the labeling. In \textquotedblleft A\textquotedblright and \textquotedblleft B\textquotedblright, details on the bottom region of the building, where the store and door class mainly appear. This part of the building, as well as the top, are the critical regions during the reconstruction. 
-\begin{figure}[H]
+\begin{figure}[!htp]
     \centering	   
-    \caption{Zoom-in details of the 3D labeled RueMonge2014 reconstruction. (A) and (B) Building's bottom-part: objects that impair the reconstruction and labeling. (C) and (D) Building's upper-part: here, the reconstruction and labeling are impaired by the view that the photos have been taken.}
+    \caption{Zoom-in details of the 3D labeled RueMonge2014 reconstruction. (A) and (B) Building's bottom-part: objects that impair the reconstruction and labeling. (C) and (D) Building's upper-part: here, the reconstruction and labeling are impaired by the view that the photos have been taken. On the bottom pictures, is shown the real details.}
     \vspace{6mm}    
-    \includegraphics[width=1\textwidth]{\dropbox/phd/pics/zoom/zoom-in-result-3D-ruemonge.png}
+    \includegraphics[width=1\textwidth]{\dropbox/phd/pics/zoom/zoom-in-result-3D-ruemonge-01.png}
     \vspace{2mm}
 	\legenda{}
     \label{zoom-ruemonge}
     \FONTE{Author's production.}
 \end{figure}
 
-At the bottom, the presence of pedestrians, cars, light poles not only hinder the reconstruction, but also become part of the incorrect classification during the projection of pixels on the mesh. In detail in \textquotedblleft A\textquotedblright, however, it may be noted that, despite the presence of vehicles, the classification of stores (in green) is not much impaired. In the illustrations in \textquotedblleft C\textquotedblright~and \textquotedblleft D\textquotedblright, features are highlighted at the top of the building. In this case, the classification is impaired by the projection center. In some regions, as in \textquotedblleft D\textquotedblright, the balconies often open without background. This absence, however, is a consequence of the type of acquisition, not necessarily of a poor labeling, like the information from roof in \textquotedblleft C\textquotedblright. By terrestrial acquisition only, it is not possible to observe much about this structure (as seen in Figure \ref{building-field-of-view-1} and \ref{building-field-of-view-2}, Section \ref{urban-environment}).
+At the bottom, the presence of pedestrians, cars, light poles not only hinder the reconstruction, but also become part of the incorrect classification during the projection of pixels on the mesh. In detail in \textquotedblleft A\textquotedblright, however, it may be noted that, despite the presence of vehicles, the classification of stores (in green) is not much impaired. In the illustrations in \textquotedblleft C\textquotedblright~and \textquotedblleft D\textquotedblright, features are highlighted at the top of the building. In this case, the classification is impaired by the projection center. In some regions, as in \textquotedblleft D\textquotedblright and \textquotedblleft C\textquotedblright, the balconies and roof are often represented either by background or partially the right class. The absence of information is a consequence to the perspective which the photos were taken, not necessarily a poor labeling. By terrestrial acquisition only, it is not possible to observe much about this structure (as seen in Figure \ref{building-field-of-view-1} and \ref{building-field-of-view-2}, Section \ref{urban-environment}).
 
 \subsection{SJC}
 The 3D reconstruction performed by SfM is based on the identification of corners and image analysis, with the purpose of checking for correspondence and acquiring overlapping pairs of images. For this reason, the spectral properties from the urban elements influence the reconstruction process directly. For example, surfaces where the texture is too homogeneous or specular, these will be potential problems and will not be detected by the algorithm. Once not detected, the 3D model will end up with a rough representation, with gaps instead of mapped features. Similarly, the MVS technique (responsible for dense 3D reconstruction) is equally dependent on the homogeneity of the objects.
 
 Unfortunately, many of these spectral properties over SJC facades can be seen. The texture related to walls are often uniform, with windows completed in glasses. Besides, the geometry of acquisition did not contribute in this case. As seen in Figures \ref{mesh-result-sjc2b} to \ref{mesh-result-sjc2d}, all over the street, there are always gaps between the gate and the facade itself. These gaps often imposes problems during and after the reconstruction. As a consequence, a lot of them among important artifacts that could be determinant when trying to identify features in a semantic system. Hence, in order to fully map buildings through the use of SfM/MVS, the imaging of these areas, at least in Brazil, should be complemented by aerial imagery with the aim of targeting these areas (as presented and discussed in Section \ref{facade-features}, Figure \ref{building-field-of-view-2}). The final 3D reconstruction, however, was moderate as the segmentation in 2D domain. 
-\begin{figure}[H]
+\begin{figure}[!htp]
     \centering   
     \caption{3D model of SJC. (a), (b), and (c) Example of gap between the gate and the facade, often present in this specific architectural style. The picture (c) represents the point of view in (b), and vice-versa.}
     \vspace{6mm}
@@ -570,27 +543,27 @@ Unfortunately, many of these spectral properties over SJC facades can be seen. T
     \FONTE{Author's production.}
 \end{figure}
 
-The Figures \ref{mesh-result-sjcb} (overview), \ref{mesh-result-sjcd} (reconstruction from sparse point cloud), and \ref{mesh-result-sjce} (reconstruction from dense point cloud), are the same residential building as the previous picture, whose geometry is characterized by high walls and gates. Trees and cars appear in most of the images. These objects serve as obstacles, especially in terrestrial and optical campaigns. Of course, this depends solely on the imaged region. In case of RueMonge2014, for example, while pedestrians, cars and vegetation act negatively in the reconstruction, the texture of the facade contributes positively. This makes the final 3D model be penalized, but still, it is an acceptable product. As can be seen in Figures \ref{mesh-result-sjc2} and \ref{mesh-result-sjc}, however, not only the texture, but also the houses geometry and the frequent presence of obstructing objects, negatively affected the reconstruction. In Figure \ref{mesh-result-sjce}, an different area of very poor labeling. Although the gate has been assigned partially correct, the features here are mostly unreadable. 
+The Figures \ref{mesh-result-sjcb} (overview), \ref{mesh-result-sjcd} (reconstruction from sparse point cloud), and \ref{mesh-result-sjce} (reconstruction from dense point cloud), are the same residential building as the previous picture, whose geometry is characterized by high walls and gates. Trees and cars appear in most of the images. These objects act as obstacles, especially in terrestrial and optical campaigns. Of course, this depends solely on the imaged region. In case of RueMonge2014, for example, while pedestrians, cars and vegetation act negatively in the reconstruction, the architectural style contributes positively. This makes the final 3D model be penalized, but still, it is an acceptable product. As can be seen in Figures \ref{mesh-result-sjc2} and \ref{mesh-result-sjc}, however, not only the texture, but also the houses geometry and the frequent presence of obstructing objects, negatively affected the reconstruction. In Figure \ref{mesh-result-sjce}, a different area of very poor labeling. Although the gate has been assigned partially correct, the features here are mostly unreadable. Two blocks of SJC were imaged, each with approximately 100 meters. The degree of overlap between the images was about 86\%, allowing a detailed reconstruction of the frontal face of the houses.
 \begin{figure}[H]
     \centering   
-    \caption{3D labeled model of SJC. On top, a wide view of the street. (a) Same view of Figure \ref{mesh-result-sjc2c}, after 3D labeling procedure. (b) Region with spurious labeling - most of the 3D street model was spurious due to the image segmentation quality. (c) Close-look at features details reconstructed by sparse point cloud. (d) Example of the same area using a dense point cloud reconstruction.}
+    \caption{3D labeled model of SJC. On top, a wide view of the street. (a) Same view of Figure \ref{mesh-result-sjc2c}, after 3D labeling procedure. (b) Region with spurious labeling - most of the 3D street model was spurious due to the image segmentation quality. (c) Close-look at features details reconstructed by sparse point cloud. (d) Example of the same area using a dense point cloud reconstruction. The labeling legend can be seen in Figure \ref{inputs}.}
     \vspace{6mm}
     \label{mesh-result-sjca}\includegraphics[width=1\textwidth]{\dropbox/phd/pics/sjc/labeled-street-sjc.png}
-    \subfigure[]{\label{mesh-result-sjcb}\includegraphics[width=0.38\textwidth]{\dropbox/phd/pics/sjc/snapshot-200.png}}\hspace{1cm}
-    \subfigure[]{\label{mesh-result-sjcc}\includegraphics[width=0.38\textwidth]{\dropbox/phd/pics/sjc/snapshot.png}}    
-    \subfigure[]{\label{mesh-result-sjcd}\includegraphics[width=0.38\textwidth]{\dropbox/phd/pics/sjc/sparse-window.png}}\hspace{1cm}    
-    \subfigure[]{\label{mesh-result-sjce}\includegraphics[width=0.38\textwidth]{\dropbox/phd/pics/sjc/dense-window.png}}
+    \subfigure[]{\label{mesh-result-sjcb}\includegraphics[width=0.44\textwidth]{\dropbox/phd/pics/sjc/snapshot-200.png}}
+    \subfigure[]{\label{mesh-result-sjcc}\includegraphics[width=0.44\textwidth]{\dropbox/phd/pics/sjc/snapshot.png}}    
+    \subfigure[]{\label{mesh-result-sjcd}\includegraphics[width=0.44\textwidth]{\dropbox/phd/pics/sjc/sparse-window.png}}   
+    \subfigure[]{\label{mesh-result-sjce}\includegraphics[width=0.44\textwidth]{\dropbox/phd/pics/sjc/dense-window.png}}
     \legenda{}
     \label{mesh-result-sjc}
     \FONTE{Author's production.}
 \end{figure}
 
-In Figure \ref{zoom-sjc}, some peculiarities are highlighted in the reconstruction and classification of the SJC dataset. In the illustration in \textquotedblleft A\textquotedblright, it is possible to notice details of the roof geometry (high resolution reconstruction - dense cloud), however, the classification of the roof is labeled as a wall (in yellow), and partially correct in the region of the gate (in orange). In \textquotedblleft B\textquotedblright, as previously highlighted, windows with features very similar to the online datasets were correctly identified. However, there were very few occurrences. The architectural style of SJC has its own style and very different from the styles used during CNN training (In \textquotedblleft C\textquotedblright, details of the gap between the gate and the wall itself). Even so, it is concluded that it is possible to identify features of interest using generic training data. The highlight in D, is shown the poor classification in regions whose gates with \textquotedblleft grid\textquotedblright~aspects, confused the prediction with the window feature.
-\begin{figure}[H]
+In Figure \ref{zoom-sjc}, some peculiarities are highlighted in the reconstruction and classification of the SJC dataset. In the illustration, the letter \textquotedblleft A\textquotedblright highlights details of the roof geometry (high resolution reconstruction - dense cloud), however, the classification of the roof is labeled as a wall (in yellow), and partially correct in the region of the gate (in orange). In \textquotedblleft B\textquotedblright, as previously highlighted, windows with features very similar to the online datasets were correctly identified. However, there were very few occurrences. The architectural style of SJC has its own style and very different from the styles used during CNN training (In \textquotedblleft C\textquotedblright, details of the gap between the gate and the wall itself). Even so, it is concluded that it is possible to identify features of interest using generic training data. The highlight in D, is shown the poor classification in regions whose gates with \textquotedblleft grid\textquotedblright~aspects, confused the prediction with the window feature.
+\begin{figure}[!htp]
     \centering	   
-    \caption{Zoom-in details of the 3D labeled SJC reconstruction. (A) Detail of the gate partially segmented. (B) Few windows and balconies were detected, this is an example of a properly detected feature. (C) Gaps between the gate and house (facade). (D) Confusion under gates with \textquotedblleft grid\textquotedblright~characteristics.}
+    \caption{Zoom-in details of the 3D labeled SJC reconstruction. (A) Detail of the gate partially segmented. (B) Few windows and balconies were detected, this is an example of a properly detected feature. (C) Gaps between the gate and house (facade). (D) Confusion under gates with \textquotedblleft grid\textquotedblright~characteristics. On the bottom pictures, is shown the real details.}
     \vspace{6mm}    
-    \includegraphics[width=1\textwidth]{\dropbox/phd/pics/zoom/zoom-in-result-3D-sjc.pdf}
+    \includegraphics[width=1\textwidth]{\dropbox/phd/pics/zoom/zoom-in-result-3D-sjc-02.png}
     \vspace{2mm}
 	\legenda{}
     \label{zoom-sjc}

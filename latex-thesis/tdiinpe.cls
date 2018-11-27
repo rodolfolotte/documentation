@@ -242,6 +242,7 @@
   \RequirePackage{ae} %% essencial %% fontes para pdf
 \else
   \RequirePackage[T1]{fontenc}
+  \RequirePackage[english]{babel}
 \fi
 
 \usepackage{lmodern}	% permite o copiar/colar com acentuação a partir do pdf

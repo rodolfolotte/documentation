@@ -57,6 +57,13 @@
 \DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
 \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
 
+% \hypersetup{
+%     colorlinks = true,
+%     citecolor = {blue},
+%     linkcolor = {blue},
+%     linkbordercolor = {white}    
+% }
+
 \hypersetup{
     colorlinks,
     linkcolor={blue},
@@ -128,8 +135,8 @@
 \newcommand{\data}{/data/phd}
 \newcommand{\documents}{/home/lotte/Documents}
 \newcommand{\dropbox}{/home/lotte/Dropbox}
-\newcommand{\figspath}{\dropbox/design/phd/thesis} 
-\newcommand{\bibpath}{\dropbox/phd/bib/thesis-2} 
+\newcommand{\figspath}{/home/lotte/design/phd/thesis} 
+\newcommand{\bibpath}{bib/thesis-2} 
 
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
 \newcommand{\q}[1]{``#1''}
@@ -138,8 +145,16 @@
 
 \setlist[description]{leftmargin=\parindent,labelindent=\parindent}
 
-\newcommand{\spheading}[2][10em]{
+\newcommand{\spheading}[2][10em]{% \spheading[<width>]{<stuff>}
   \rotatebox{90}{\parbox{#1}{\centering #2}}}
     
 \newcommand*\daywidth{6cm}
 \newcommand*\hourheight{1.2em}
+
+% \newcommand*{\source}[2]{%
+%   \caption[{#1}]{%
+%     #1%
+%     \\\hspace{\linewidth}%
+%     \textbf{Source:} #2%
+%   }%
+% }

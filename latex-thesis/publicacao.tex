@@ -67,13 +67,16 @@ portuguese,english %% para os documentos em Inglês com abstract.tex em Português
     \maketitle
     
     % -- BEGINNING ------------------------------------------------------------------------------
+    \selectlanguage{english}
     \include{./docs/beginning/epigrafe}
     \include{./docs/beginning/dedicatoria}
     \include{./docs/beginning/agradecimentos}         
+    \selectlanguage{portuguese}
     \include{./docs/beginning/resumo}
+    \selectlanguage{english}
     \include{./docs/beginning/abstract}
     \includeListaFiguras
-    \includeListaTabelas 
+    \includeListaTabelas
     \include{./docs/beginning/abbrev}
     \include{./docs/beginning/simbolos}
     
@@ -82,6 +85,7 @@ portuguese,english %% para os documentos em Inglês com abstract.tex em Português
     % -------------------------------------------------------------------------------------------
     
     % -- CHAPTERS -------------------------------------------------------------------------------
+    \selectlanguage{english}
     \include{./docs/chapter/introduction}
     \include{./docs/chapter/review}
     \include{./docs/chapter/methodology}

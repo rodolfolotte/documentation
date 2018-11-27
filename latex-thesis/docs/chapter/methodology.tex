@@ -1,6 +1,6 @@
 \chapter{MATERIAL AND METHOD}\label{chapter3}
-\section{3D urban mapping in Brazil}
-Although there are few specifications and standards regarding 3D mapping, a complementary study to the Section \ref{map-brazil} was carried out among the Brazilian capitals. The goal in this respective study was to understand more the local mapping infrastructure, the availability of resources for their urban planning, and in how an accurate 3D urban model would help in their management. 
+\section{The current brazilian 3D urban maps}\label{3d-urban-brazil}
+The content presented in this section, represents a complementary study to the Section \ref{map-brazil}, driven by the need to understand the current state of Brazilian 3D urban mapping. The goal in this respective study was to understand more the local mapping infrastructure among the Brazilian capitals, the availability of resources for their urban planning, and in how an accurate 3D urban model would help in the management of the city. 
 
 For this task, a poll was elaborated on the use of 3D maps for the strategic planning of municipalities and sent to the secretaries of each Brazilian capital. The capitals were used as reference for the research, therefore, when reporting as being a \textquotedblleft non-user\textquotedblright~of any 3D information, it was considered that all cities referring to the respective state were also considered as non-users. The questions of the poll were:
 \begin{enumerate}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
@@ -11,49 +11,47 @@ For this task, a poll was elaborated on the use of 3D maps for the strategic pla
     \item How could 3D urban maps contribute?
 \end{enumerate}
 
-Among the 26 Brazilian capitals and 1 federal district, only 8 of them answered the poll (Table \ref{poll-answers}).
-\begin{table}[H]
-    \renewcommand{\arraystretch}{1.6}
+Among the 26 Brazilian capitals and 1 federal district, only 8 of them answered the poll (Table \ref{poll-answers}). The details of each answer can be seen in Table \ref{poll-answers2}, in Appendix \ref{apendiceC}.
+\begin{table*}[!htb]
+    \renewcommand{\arraystretch}{1.4}
     \caption{Poll answers from each Brazilian Capital regarding the use of 3D maps on urban planning.}
-    \tiny \centering
-    \rowcolors{2}{white}{gray!25}
-    \begin{tabular}{lcp{11.5cm}}            
+    \scriptsize \centering
+    \rowcolors{2}{white}{blue!15}
+    \begin{tabular}{L{2.1cm}C{1.7cm}C{1.9cm}C{1.8cm}C{1.0cm}C{1cm}C{1cm}C{1.2cm}}
         \toprule
-        \textbf{Capital} & \textbf{State}  & \textbf{Answer} \\ 
-        \toprule
-        Fortaleza & CE & \textbf{a)} The City Hall of Fortaleza is acquiring the 3D mapping by laser profiling. Currently, department does not use this data for studies.\par \textbf{d)} Planning is performed without any 3D map.\par \textbf{e)} Studies using the Z component.\\% & ouvidoria.seuma@fortaleza.ce.gov.br\\
-        
-        Vitória & ES & \textbf{a)} No.\par \textbf{d)} By 2D thematic maps, with additional database information, such as occupation, use, height, feedback, distribution of activities, commerce and urban services, public equipment, socioeconomic characteristics, among others.\par \textbf{e)} For example, Vitória has a map on the protection of the natural heritage of the municipality and the landscape. A 3D map would aid in reconciling territory occupation policies with the protection policy of this heritage, as well as advanced studies such as volumetric tests, among others. It can be an important tool in the studies of protection of the environmental patrimony, mangroves, hills and conservation units, allowing a reading of the constructed object of the city and its relation with the environmentally protected areas.\\% & clivia.leite@correio1.vitoria.es.gov.br\\
-        
-        Porto Alegre & RS & \textbf{a)} Yes, Digital Surface Model (DSM) and Digital Terrain Model (DTM).\par \textbf{b)} At the moment, in the identification of areas susceptible to geological, geotechnical and hydrological risks; in the estimation of the height of the buildings, for tax purposes. GIS system in Web platform, for internal queries.\par \textbf{e)} Support for decision making, confronting the planned environment with the built environment, impact and shading simulations, volumetric simulations. Volumetric studies.\\% & rodrigoml@smurb.prefpoa.com.br\\
-        
-        São Paulo & SP & \textbf{a)} Yes. DSM and DTM. In 2017, a new campaign using LiDAR sensors was performed and new 3D models will be produced.\par \textbf{b)} Workings such as the Strategic Master Plan, Zoning, Drainage Plan, among others. \par \textbf{c)} The DTM is used as a reference for other surveys, including planning and execution of some current aerial imaging stages. However, in projects and infrastructure, the effective use of these 3D digital technologies is still in the process of being disseminated to the technical staff.\par \textbf{d)} Although the 3D models are available, 2D is still predominantly used in urban planning activities.\par \textbf{e)} They incorporate technical features that are extremely useful for urban management.\\% & amlaurenza@prefeitura.sp.gov.br\\
-        
-        Belo Horizonte & MG & \textbf{a)} Yes. The execution of 3D modeling is carried out on demand in projects or urban plans that require analysis of modifications in the urban landscape.\par \textbf{b)} The 3D maps help in the visualization of impacts, in the increase of the constructive density, in the generation of obstructions of sightings, in the relations between equipment and urban infrastructures, among others.\par \textbf{c)} Volumetry studies are carried out for specific projects, such as regions of Urban Operations, Plans in Areas of Social Interest, Plans of Cultural Regions.\par \textbf{d)} Planning is already done with the eventual use of 3D modeling of the terrain and buildings.\par \textbf{e)} The 3D maps help in diagnosing the situation before and after the implementation of projects to evaluate the urban impacts of density and volumetry in parameters established in the plans.\\% & guilherme.vargas@pbh.gov.br\\
-        
-        Rio de Janeiro & RJ & \textbf{a)} The buildings are represented in two dimensions with possibility of elevation in 3D. Calculated density calculations for proposed zoning alterations, urban parameters and studies of impacts on the landscape.\par \textbf{b)} 3D simulations allow for technical discussion, improvement of proposals and better communication with managers, city councilors and the general population.\par \textbf{c)} Most of urban law plans made in the last five years have included 3D maps on strategic areas.\par \textbf{d)} In addition to the 3D studies, the urban planning uses information produced by both federal and state bodies such as IBGE, ISPE and also municipal, produced by the municipal authorities.\par \textbf{e)} Associating the relief with the buildings, it contributes to studies of insolation, heat islands, aimed at the natural and cultural landscape, simulations and urban parameters such as building heights and their distances to the other buildings and impacts on the environment.\\% & valeriahazan.pcrj@gmail.com\\
-        
-        Curitiba & PR & \textbf{a)} Yes. Partial maps, that is, not of the whole city, but of parts of it.\par \textbf{b)} Providing visualization of occupancy scenarios (for example, using all basic building potential or with extra potential acquisition); in studies of insolation and microclimate. Answered in the previous question.\par \textbf{e)} In addition to the current applications, these maps could be used, for example, in Neighborhood Impact Studies and project detailing.\\% & geoprocessamento@ippuc.org.br\\
-        
-        Recife & PE & \textbf{a)} Yes, the Urban Planning Dept. has georeferenced databased with vector and raster data from LiDAR campaings. Another tool that it is used is Google Earth Pro, which has the 3D model of the entire municipality of Recife.\par \textbf{b)} A 3D model allows us to manipulate, take measurements, visualize any interventions already built, and also simulate transformations from anywhere.\par \textbf{c)} Any analysis of morphology and occupation of the territory. These activities include analyzes of impact projects, simulation of changes in legislation and simulations, and studies of interventions. \\%& icps@recife.pe.gov.br\\
+        \textbf{City} & \textbf{Question 1} & \textbf{Released or Planned?} & \textbf{Products} & \textbf{Sensor}  & \textbf{Platform}  & \textbf{Scale} & \textbf{Coverage}\\ 
+        \toprule                
+        Fortaleza & $\times$ & Planned & -- & Laser & \faPlane & Large & --\\
+        Vitória & $\times$ & Planned & -- & Laser & \faPlane & Large & --\\
+        Porto Alegre & \checkmark & Planned & DSM, DTM & Laser & \faPlane & Large & Full\\
+        São Paulo & \checkmark & Released & DSM, DTM & Laser & \faPlane & Large & Full\\
+        Belo Horizonte & \checkmark & Released & -- & Laser & \faPlane & Large & Medium\\
+        Rio de Janeiro & \checkmark & Released & -- & Laser & \faPlane & Large & Medium\\
+        Curitiba & \checkmark & Released & -- & Laser & \faPlane & Large & Medium\\
+        Recife & \checkmark & Released & -- & Laser & \faPlane & Large & Full\\
         \bottomrule
-    \end{tabular}
-    \label{poll-answers}
+    \end{tabular}      
+    \label{poll-answers}        
+    \vspace{0.1cm}
+    \begin{flushleft}
+        \scriptsize{(\faPlane) onboard of airplane}\\      
+    \end{flushleft}
+    \FONTE{Author's production.}
 \end{table}
-
+        
 Even though only a few secretaries have replied, the answers from the largest capitals have been obtained. Despite the different responses, it is believed that the vast majority still adopt the same technologies for 3D surveys: long-range aerial surveys through LiDAR, to roughly observe the urban structuring. Still, the datasets acquired by some of these cities are out of operation for urban planning purposes. The names and emails of those responsible for the answers can be seen in Appendix \ref{apendiceC}.
 
 \section{Study areas and datasets}\label{study-area}  
-To train supervised deep-learning methods with a good generalization, a large datasets is always required. This would contribute to both fine-tuning models and training small networks from scratch \cite{zhu2017}. In order to vary the building architectural styles, the experiments in this work cover different areas. In recent years, several datasets have been shared in order to contribute in new studies, such as to train deep neural networks, for benchmarks, or simply both.
+To train supervised DL methods with a good generalization, a large dataset is always required. This would contribute to both fine-tuning models and training small networks from scratch \cite{zhu2017}. In order to vary the building architectural styles, the experiments in this work cover different areas. In recent years, several datasets have been shared in order to contribute in new studies, such as to train deep neural networks, for benchmarks, or simply both.
 
-In Table \ref{datasets}, seven different datasets are listed. The first 6 rows are online shared datasets, mainly used for evaluation and to perform benchmarks over different extraction models. They are then used in this study as diversified inputs, since each of them presents different facade characteristics. The last row is a dataset obtained exclusively for this work and used as test images. We aim to extract eight semantic classes: roof, wall, window, balcony, door, shop, and finally two more, but unrelated to the facade: sky and background. Some of the datasets listed did not provide all eight classes and, in some cases, their annotations had to be adapted.
-\begin{table}[H]
+In Table \ref{datasets}, seven different datasets are listed. The first 6 rows are online shared datasets, mainly used for evaluation and to perform benchmarks over different extraction models. They are then used in this study as diversified inputs, since each of them presents different facade characteristics. The last row is a dataset obtained exclusively for this work and used as test images. Eight semantic classes were defined: roof, wall, window, balcony, door, shop, and finally two more, but unrelated to the facade: sky and background. Some of the datasets listed did not provide all eight classes and, in some cases, their annotations had to be adapted.
+\begin{table}[!htp]
     \renewcommand{\arraystretch}{1.4}
     \caption{Datasets for facade analysis and benchmarks. RueMonge2014 and Graz, ETH Zürich; CMP, Center for Machine Perception; eTRIMS, University of Bonn; ECP, Ecole Centrale Paris; SJC, São José dos Campos.}
     \tiny \centering		
     \begin{tabular}{L{1.4cm}L{1.2cm}L{1.4cm}C{0.8cm}C{1cm}C{0.9cm}C{1.2cm}L{3.8cm}}
         \toprule
-        \textbf{Name} & \textbf{Location}  & \textbf{Archtecture} & \textbf{Images} & \textbf{Labels} & \textbf{Rectified} & \textbf{PC Generation} & \textbf{Reference} \\ 
+        \textbf{Name} & \textbf{Location}  & \textbf{Architecture} & \textbf{Images} & \textbf{Labels} & \textbf{Rectified} & \textbf{PC Generation} & \textbf{Reference} \\ 
         \toprule
         RueMonge2014 & France & \emph{Hausmaniann} & 428 & 219 & $\times$ & \checkmark & \cite{hayko2014} \\      
         CMP & Multiple & Multiple & 378 & 378 & \checkmark & $\times$ & \cite{tylevcek2013}\\
@@ -82,8 +80,8 @@ In Table \ref{datasets}, seven different datasets are listed. The first 6 rows a
 
 \textbf{São José dos Campos (SJC)}: The SJC dataset consists of buildings at a residential area in São José dos Campos, São Paulo, Brazil. Like most of the country, the architectural style throughout this city is not unique, often diverging between free-form and modern styles. This set consists of 175 sequential images, overlapped, and taken at the same moment.
 
-\section{Methodology}
-The complete methodology of this case study, as shown in Figure \ref{methodology}, consists of three stages: A supervised CNN model for semantic segmentation (blue); Scene geometry acquirement (3D reconstruction) through SfM pipeline (red); MVS (also in red); Post-processing procedures (yellow); and 3D labeling through ray-tracing analysis. The boxes in gray represent the products, delivered in different steps of the workflow. The following sections, therefore, are presented according to this sequence.
+\section{Method}
+The complete methodology of this case study, as shown in Figure \ref{methodology}, consists of three stages: A supervised CNN model for semantic segmentation (blue); Scene geometry acquirement (3D reconstruction) through SfM and MVS pipeline (red); Post-processing procedures (yellow); and 3D labeling through ray-tracing analysis (white). The boxes in gray represent the products, delivered in different steps of the workflow. The following sections, therefore, are presented according to this sequence.
 \begin{figure}[H]
     \centering	   
     \caption{3D facade model: Facade feature extraction and reconstruction workflow.}
@@ -99,7 +97,7 @@ The complete methodology of this case study, as shown in Figure \ref{methodology
 
 \subsubsection{Training dataset}\label{training-set}
 Each of the 6 datasets has been divided in three different subsets: training, validation, and tests. 80\% of the annotated images were used for training, and 20\% for validation. Only RueMonge2014 had a non-annotated set of images (209), which was used as test. Due to the small number of training samples, no set of test images was used for the other group of data. Instead, a new acquisition with similar geometry as RueMonge2014 was performed in the city of São José dos Campos (SJC), São Paulo, Brazil. The images will be used only for test, where each of the mentioned datasets are used for training.
-\begin{figure}[H]
+\begin{figure}[!htp]
     \centering	   
     \caption{Example of input images for training. (a) Pair of non-rectified images (original and annotated) from RueMonge2014 dataset. (b) Pair of rectified images (original and annotated) from ECP dataset.}
     \vspace{6mm}
@@ -115,29 +113,77 @@ Each of the 6 datasets has been divided in three different subsets: training, va
 \end{figure}
 
 \subsubsection{Neural model}\label{neural-model-description} 
-The classic DL architectures used in visual data processing can be categorized in Autoencoders (AE) and CNN architectures \cite{zhu2017} (as discussed in Section \ref{deep-learning}). An AE is a neural network that is trained to reconstruct its own input as an output. It consists of three layers: input, hidden, and output. The hidden layer takes care of all operations behind this model, here, the weights are iteratively adjusted to become more and more sensitive to the input \cite{goodfellow2016}. 
+The classic DL architectures used in visual data processing can be categorized in Autoencoders (AE) and CNN architectures \cite{zhu2017} (as discussed in Section \ref{deep-learning}). An AE is a neural network that is trained to reconstruct its own input as an output. It consists of three layers: input, hidden, and output. The hidden layer takes care of all operations behind this model. The weights are iteratively adjusted to become more and more sensitive to the input \cite{goodfellow2016}. 
 
 The CNNs, on the other hand, take advantage of performing numerous convolution operations in the image domain, where a finite number of filters are repetitively applied in a downsampling image strategy, which allows the analysis of the scene at different orientations and scales. The convolution is one of the most important operations in signal and image processing, and can be applied in different domains: 1D, in speech processing \cite{swietojanski2014}, 2D, in image processing \cite{krizhevsky2012, audebert2017, long2015} or 3D, in video processing \cite{karpathy2014}.
 
-Although the neural model projected for this study has an AE architecture, which also 
- 
-The decoder is seen as a component that interprets chaotic signals into something intelligible, akin to the human senses. For example, it would be like the equivalence between a noise (signal) and a person talking in a known language (interpreted signal by our brain), radiation (signal) and the perception of being under a garden with flowers and animals (brain interpretation of this same radiation), etc. Similarly, we use only one decoder since our purpose is the interpretation of images, emulating what would be the the visual sense. The neural architecture presented by \cite{teichmann2016}, for instance, used 3 different decoders with 3 different tasks in a way that real-time application could be performed. The use of multiple decoders for our purpose, however, is not interesting due to useless computational demand, and unnecessary processing.
+Although it has been categorized by \citeonline{zhu2017} as being different neural architectures, AE and CNN can be at the same architecture, so called Deep Convolutional Encoder-Decoder, but it has only variations on the layers arrangement, not in the concept, then, considered here simply as CNN. 
 
-% FAZER IMAGEM
+The deep neural architecture adopted in this study consists of two main components: encoder and decoder. Most recent deep architectures for segmentation have identical encoder networks, i.e. VGG16 \cite{simonyan2014}, but differ on their decoder, training and inference \cite{segnet}. As the goal in this study is not to test variations of neural architectures, the encoder here corresponds to the same topological structure of the convolution layers of VGG16 \cite{simonyan2014}, initialized using pretrained VGG weights on ImageNet \cite{krizhevsky2012}, randomly initialized using a uniform distribution in the range ($-0.1,0.1$). 
 
-Our final network is then composed of an encoder with a VGG16 network, and a decoder with a Fully Convolutional Network (FCN) architecture \cite{long2015}. The encoder corresponds to the same topological structure of the convolutional layers of VGG16 \cite{simonyan2014}, where it was originally composed by 13 convolutional layers, followed by their respective pooling and fully connected (FC) layers. Our encoder, however, had its FC replaced by a $1\times1$ convolutional layer, which takes the output from the last pooling layer (called \textit{pool5}) of size $39\times12\times512$, and generates a low resolution segmentation of size $39\times12$ \cite{teichmann2016}. This change makes the network smaller and easier to train \cite{segnet}. Then, the FCN decoder takes the $39\times12$ matrix as an input for its 3 convolutional layers, which finally performs the upsampling operation resulting in the pixelwise prediction.
+The encoder is originally composed by 13 convolution layers, followed by their respective Pooling and Fully Connected (FC) layers, which in total gives VGG the name of 16. The FC layer, however, is replaced by a $1\times1$ convolution layer, which takes the output from the last pooling, and generates a low resolution segmentation \citeonline{teichmann2016}, with dimension of $1x1x4096$ (encoded input, see Figure \ref{cnn-lotte}). This makes the network smaller and easier to train \cite{segnet}.  
 
-\paragraph{VGG and the pre-trained weights}
-The encoder is initialized using pretrained VGG weights on ImageNet, which are randomly initialized using a uniform distribution in the range ($-0.1,0.1$). 
+The decoder is seen as a component that interprets chaotic signals into something intelligible, similar to the human senses. For example, it would be like the equivalence between a noise (signal) and a person talking in a known language (interpreted signals by our brain), radiation (signal) and the perception of being under a garden with flowers and animals (environment perception, which is the brain interpretation of this same radiation), etc. The neural architecture presented by \cite{teichmann2016}, for instance, used 3 different decoders with 3 different tasks in a way that real-time application could be performed. Multiple decoders mimics the human multiple sense being performed simultaneously by the brain. Once the purpose here is only the visual sense, the use of multiple decoders is not interesting due to useless computational demand, and unnecessary processing.
 
+Using the previous analogy, the input signals to the decoder is the final matrix from the encoder, which performs the upsampling operation resulting in a pixelwise prediction. The operations performed by this component is composed by 3 deconvolutional layers, so the predictions result in upsampled in the same size as the input image. To better understand the fully path, in the Figure \ref{cnn-lotte} is illustrated the details of the final CNN used in this study, as just described.
+% decoder with a Fully Convolutional Network (FCN) architecture \cite{long2015}. 
+\begin{figure}[!htp]
+    \centering	   
+    \caption{Convolutional Neural Network details used in this study. Encoder-Decoder convolutional architecture.}
+    \vspace{6mm}
+    \includegraphics[width=1\textwidth]{\dropbox/phd/pics/cnn/cnn-lotte.pdf}
+    \vspace{2mm}
+	\legenda{}
+    \label{cnn-lotte}
+    \FONTE{Author's production.}
+\end{figure}
+
+The convolution layers sequentially perform the linear operations regarding a certain kernel size and stride (the number of pixel jumping over the kernel slide). Each convolution layer has also a pre-determined number of filter, their functionality is to learn local features, such as horizontal lines, vertical, curves, so on. As soon as the convolution layers are going further, these filter become more and more, since the dimensionality get decreased. In green, the pooling layers take the convolution result and downsampled it to the next convolution layers. In this transition, the dimension get half of its original size. 
+
+When the encoded input finally encounter the softmax layer (resulting in the probabilities performed by the cross-entropy function), 3 transposed layers decode the signals (deconvolution). In other words, the decoder performs the upsampling based on pooling indexes (from the encoder polling), finally getting the predicted map. The dropout layer is a technique for reducing overfitting, which avoids some redundant or complex adaptations on training data. 
+
+%the weights connected to each filter
+% VGG16
+% Convolution using 64 filters
+% Convolution using 64 filters + Max pooling
+% Convolution using 128 filters
+% Convolution using 128 filters + Max pooling
+% Convolution using 256 filters
+% Convolution using 256 filters
+% Convolution using 256 filters + Max pooling
+% Convolution using 512 filters
+% Convolution using 512 filters
+% Convolution using 512 filters + Max pooling
+% Convolution using 512 filters
+% Convolution using 512 filters
+% Convolution using 512 filters + Max pooling
+% Fully connected with 4096 nodes
+% Fully connected with 4096 nodes
+% Output layer with Softmax activation with 1000 nodes
+
+	  
+% Diferença entre Fully Connected e Fully Convolutional networks: https://www.quora.com/How-is-Fully-Convolutional-Network-FCN-different-from-the-original-Convolutional-Neural-Network-CNN 
+
+% Procurar referência
+%Fully convolutional indicates that the neural network is composed of convolutional layers without any fully-connected layers or MLP usually found at the end of the network. A CNN with fully connected layers is just as end-to-end learnable as a fully convolutional one. The main difference is that the fully convolutional net is learning filters every where. Even the decision-making layers at the end of the network are filters. A fully convolutional net tries to learn representations and make decisions based on local spatial input. Appending a fully connected layer enables the network to learn something using global information where the spatial arrangement of the input falls away and need not apply.
+
+% TensorFlow > https://www.tensorflow.org/tutorials/image_recognition
+
+% https://www.youtube.com/watch?v=LxfUGhug-iQ
+
+% boas explicações
+% https://wildcse.blogspot.com/2018/03/convolution-neural-network-intro.html
 
 \subsection{Multi-View surface reconstruction}  
-Our input is a set of images which are initially fed to standard SfM/MVS algorithms to produce a 3D model. Not all datasets listed in Table \ref{datasets} have properties that could allow the application of SfM/MVS. For instance, random, rectified, and cropped images are not overlapped or, at least, were not taken in the same moment. Only RueMonge2014 was able to run this experiment. A case where random images are taken at different times was proposed by \cite{snavely2009}, but not used in this work. 
+The input is a set of images which are initially fed to standard SfM/MVS algorithms to produce a 3D model. 
+To produce the 3D model using the standard SfM/MVS algorithms, the set of optical images to be presented must respect some specifications. For example, not all datasets listed in Table \ref{datasets} have properties that could allow the application of SfM/MVS. Random, rectified, and cropped images are not overlapped or, at least, were not taken in the same moment. Only with RueMonge2014 it was possible to run this experiment. A case where random images are taken at different time was proposed by \citeonline{snavely2009}, but not used in this study. 
 
-Every measure made by any photogrammetric technique would require the camera calibration in order to obtain high accurate metric information, such as depth and dimensional measurements from 2D domain \cite{he2006}. Camera calibration involves the estimation of either internal (intrinsic) and external (extrinsic) parameters to a certain camera. These determines the relation between the scene and the instrument itself. The first, consists in the parameters particular to the camera, where is determined how the image coordinate of a point are derived, given the spatial position of the point with respect to the instrument (camera positioning). The external, on the other hand, determine the geometrical relation between the camera and the scene, or even different cameras \cite{photoscan}.
+Every measure made by any photogrammetric technique would require the camera calibration in order to obtain high accurate metric information, such as depth and dimensional measurements from 2D domain \cite{he2006}. Camera calibration involves the estimation of either internal (intrinsic) and external (extrinsic) parameters to a certain camera. These determine the relation between the scene and the instrument itself. The first, consists in the parameters particular to the camera, where is determined how the image coordinate of a point is derived, given the spatial position of the point with respect to the instrument (camera positioning). The external, on the other hand, determines the geometrical relation between the camera and the scene, or even different cameras \cite{photoscan}.
 
-The SfM, however, is a fully automatic and iteratively way to solve this need. During the process, the camera parameters are estimated and the outcome point cloud is then densified by the MVS technique. In this study, the estimated internal and external parameters are also used to ray-trace the segmented image toward the mesh (see Section \ref{ray-tracing-section}), where they are preserved from the reconstruct operation to ray-tracing (Figure \ref{ray-tracing-1}). The internal parameters are then given by the distance between the lens and image sensor, called focal length ($f$), the principal point offset ($c_x, c_y$), the skew coefficient ($b$), and the pixel size ($s_x, s_y$). 
-\begin{figure}[H]
+The SfM, however, is a fully automatic and iteratively way to solve this need. During the process, the intrinsic and extrinsic parameters are estimated and the outcome point cloud is then densified by the MVS technique. In this study, the estimated internal and external parameters are also used to ray-trace the segmented image toward the mesh (see Section \ref{ray-tracing-section}), where they are preserved from the reconstruct operation to ray-tracing (Figure \ref{ray-tracing-1}). The internal parameters are then given by the distance between the lens and image sensor, called focal length ($f$), the principal point offset ($c_x, c_y$), the skew coefficient ($b$), and the pixel size ($s_x, s_y$). 
+
+The lens distortions parameters not considered
+\begin{figure}[!htp]
     \centering	   
     \caption{Facade geometry obtained from photos. (a) Street-side images of facades and its reconstructed surface after the SfM/MVS technique. (b) The camera parameters are kept and the photos are replaced by the CNN facade features predictions.}
     \vspace{6mm}
@@ -151,7 +197,7 @@ The SfM, however, is a fully automatic and iteratively way to solve this need. D
 
 The external are given by two parameters, $R$ and $T$. They are the coordinate system transformations from 3D world coordinates to 3D local camera coordinates system, where $R = (R_X(\omega), R_Y(\phi), R_Z(\kappa))$ is the rotation matrix, and $T = (T_X, T_Y, T_Z)$, the translation matrix, consisting in the local camera coordinate system with origin at the camera projection center. The $Z$ axis points towards the viewing direction, $X$ axis to the right, and $Y$ axis points down. The image coordinate system has origin at the top left image pixel, with the center of the top left pixel having coordinates ($0.5, 0.5$), $u_0$ and $v_0$, respectively (bottom-right in Figure \ref{ray-tracing-1b}).
 
-Summarizing, the camera can be described by a matrix notation, which is the cumulative effect of all parameters \cite{hartley2004}:
+Summarizing, the camera can be described by a matrix notation, which is the cumulative effect ($\varPi$) of all parameters \cite{hartley2004}:
 \begin{equation}
     \varPi = K~P~[R~T] 
     \begin{bmatrix}
@@ -170,7 +216,7 @@ K=
     0 & 0 & 1
    \end{bmatrix}~,
 \end{equation} 
-which can be decompose on the three principal 2D units: principal point offset, focal length, and skew:
+which can be decomposed on the three principal 2D units: principal point offset, focal length, and skew:
 \begin{equation}
 K=
   \begin{bmatrix}
@@ -191,7 +237,7 @@ K=
     0 & 0 & 1
    \end{bmatrix}~,
 \end{equation}
-where $f_x$ and $f_y$ correspond to $f$, with the same value. $P$ denote a $4\times3$ matrix, which corresponds to the projection:
+where $f_x$ and $f_y$ correspond to $f$, with same value. $P$ denote a $4\times3$ matrix, which corresponds to the projection:
 \begin{equation}
 P=
   \begin{bmatrix}
@@ -229,20 +275,20 @@ and the camera position $C$ given by:
 
 All the procedures in this stage were performed through Agisoft\texttrademark~PhotoScan\textregistered. Very similar results could be reached by the use of VisualSfM \cite{wu2011vsfm} or COLMAP \cite{schoenberger2016sfm}, for instance. The respective softwares have more flexible licenses and preserve most of the guarantees proposed by Photoscan. However, it still needs some expertise to install and to use. PhotoScan incorporates an improved SIFT algorithm for Feature Matching across the photos; for camera intrinsic and extrinsic orientation parameters, the software uses a greedy algorithm to find approximate camera locations and refines them later using BA.
 
-In addition to the camera parameters estimation, operations involving the use of SfM require good photo-taking practices. One of these is the texture conditions of the targets. Targets whose surface is too homogeneous or with specular properties, will harm the method. Any instrument configuration (e.g. zoom, lens or distortions), once configured, must be preserved until the end of the acquisition. In case of facades, the motion between one photo and another must have orientation as constant as possible and always perpendicular to the target. Therefore, these measures were considered during the acquisition of SJC images.
+In addition to the camera parameters estimation, operations involving the use of SfM require good photo-taking practices. One of these is the texture conditions of the targets. Targets whose surface is too homogeneous or with specular properties, will harm the method. Any instrument configuration (e.g. zoom, lens or distortions), once configured, must be preserved until the end of the acquisition. In case of facades, the motion between one photo and another must have orientation as constant as possible and always perpendicular to the target. Therefore, these condictions were considered during the acquisition of SJC images.
 
 The geometric accuracy in this study corresponds to the proximity between the reconstructed model and the point cloud, not necessarily to the positional part. In this case, it was assumed that the point cloud had previously proven positional accuracy. It was beyond the scope of this study to analyze adjustments or positioning issues. Then, no geometrical accuracy has been reported due to the fact that no 3D references were modeled to compare against the 3D models reconstructed. 
 
 \subsection{3D labeling by ray-tracing analysis}\label{ray-tracing-section}
 At this methodological point, two products were archived: the classified facade features (2D image segmentation) and their respective geometry (mesh). The idea here is to merge each feature to its respective geometry, and that can be done by analysing the ray-tracing of each image respect to their camera projection (estimated during the SfM pipeline) onto the mesh.   
 
-Often used in computer graphics for rendering real-world scenarios, such as lighting and reflections, ray-tracing analysis mimics real physical processes that happen in nature. A energy source emits radiation at different frequencies of the electromagnetic spectrum. The small portion visible to human eyes, called the visible region, travels straight in wave forms and it is only intercepted when it encounters a surface in its trajectory. Such surface has specific physical, chemical and biological properties. Such characteristics define the behavior of radiation under its structure, determining exactly what it is seen. For example, a surface whose absorption characteristics is high, the tendency is that this object has a dark appearance, as the radiation incident on its surface is absorbed, and a minimal portion is reflected to the eyes.
+Often used in computer graphics for rendering real-world scenarios, such as lighting and reflections, ray-tracing analysis mimics real physical processes that happen in nature. A energy source emits radiation at different frequencies of the electromagnetic spectrum. The small portion visible to human eyes, called the visible region, travels straight in wave forms and it is only intercepted when it encounters a surface in its trajectory. Such surface has specific physical, chemical and biological properties, responsible to define the radiation behavior under this specific structure. A surface whose absorption characteristics is high, the tendency is that this object has a dark appearance, as the radiation incident on its surface is absorbed, and a minimal portion is reflected to the eyes.
 
 Each facade image, in essence, is the record of the reflection of electromagnetic waves in a tiny interval of time, captured by a sensor at a certain distance and orientation. Once the camera's projection parameters are known, the original images used for its estimation during SfM are replaced by the CNN predictions. Thus, the \textquotedblleft reverse\textquotedblright~ray-tracing process can then be performed.
 
 The ray-tracing consists in the transformation from point coordinates in the local camera coordinate system to the pixel coordinates in the image. It is essential to consider in which context the photos were taken in order to use the right transformation from the center of projection toward the mesh. For example, if a fish-eye model transformation is used in camera frame model, the result would certainly not be the right one. 
 
-Semi-professional or even professional cameras are usually used to make this campaigns. Some cameras provide several categories of parametric lens distortions, some of them, by default, also include non-distorted configurations (RAW images), which does not apply any transformation to the image. Therefore, both RueMonge2014 and SJC are images obtained in the camera frame model, which pixel coordinate ($u, v$) from the 3D point projection are given by the following transformation. Let:
+Semi-professional or even professional cameras are usually used to make these campaigns. Some cameras provide several categories of parametric lens distortions, some of them, by default, also include non-distorted configurations (RAW images), which does not apply any transformation to the image. Therefore, both RueMonge2014 and SJC are images obtained in the camera frame model, which pixel coordinate ($u, v$) from the 3D point projection are given by the following transformation. Let:
 \begin{equation} 
 \begin{pmatrix}
     x\\
@@ -258,7 +304,7 @@ be the homogeneous point $r$ the squared 2D radius from the optical center:
 \begin{align}
  r = \sqrt{x^2 + y^2}~,
 \end{align}
-then, all the coefficients of distortions have to be consider. Then, the pixel coordinate ($u, v$) of the 3D point projection with distortion model is given by:
+then, all the coefficients of distortions have to be considered. Then, the pixel coordinate ($u, v$) of the 3D point projection with distortion model is given by:
 \begin{equation}
  \begin{pmatrix}
     u\\
@@ -270,7 +316,7 @@ then, all the coefficients of distortions have to be consider. Then, the pixel c
     (h * 0.5) + c_y + \Theta_yf_y 
    \end{pmatrix}~,
 \end{equation}
-where $b_1$ and $b_2$ are the skew coefficients, $w$ and $h$ the image width and height. The $\Theta$ denotes the radial and tangential distortions: 
+where $b_1$ and $b_2$ are the skew coefficients, $w$ and $h$ the image width and height. The parameter $\Theta$ denotes the radial and tangential distortions: 
 \begin{equation}
 \scriptsize
  \begin{pmatrix}
@@ -286,12 +332,18 @@ where $b_1$ and $b_2$ are the skew coefficients, $w$ and $h$ the image width and
 \normalsize
 where $\xi_1$, $\xi_2$, $\xi_3$, and $\xi_4$ are the radial and, $\zeta_1$, $\zeta_2$, $\zeta_3$, and $\zeta_4$, the tangential distortion coefficients. As the images used have no radial and tangential distortions, they are null and turn $\Theta$ as being the own axis $x$ and $y$.
 
+% As described in previous section, each image has its position $C$ and orientation $R$, consisting respectively of the camera projection center located at the origin of the 3D coordinate system $C = (C_X, C_Y, C_Z)$, and rotation matrix $R = (R_X, R_Y, R_Z)$. The origin of a certain ray, then, it is all camera projection center $C$, with its direction given by $R$. Considering no optical blur, distortion, or defocus, a point $C_i$ is mapped to a point in the image plane $(u, v)$ by:  
+% \begin{align}
+%     p_i(u,v,f) = \frac{f}{Z}\begin{pmatrix}X\\Y\\Z\end{pmatrix}~,
+% \end{align}
+% where $f$ is the known focal distance (left in Figure \ref{ray-tracing}), $u=f\frac{X}{Z}$, and $v=f\frac{Y}{Z}$. 
+% 
 Now, knowing the pixel class from the incident ray (Figure \ref{ray-tracing-2a}), the mesh triangle is finally labeled as such. It is evident, therefore, that the rays trajectory from the images can intersect one another. Because of that, different rays can reach an identical point on the mesh, what in fact creates questions such as \textquotedblleft which class should be assigned to each individual mesh facet?\textquotedblright. \cite{hayko2014} proposed the Reducing View Redundancy (RVR) technique, where the number of overlapped images is reduced, which does not fit to our purpose, since the greater the number of overlaps, better the labeling (more classes to choose).
 
-If more than one ray reach the same triangle (detail in Figure \ref{ray-tracing-2a}), then, the face is labeled by the most frequent class from the $C_n$ rays (Figure \ref{ray-tracing-2b}).
-\begin{figure}[H]
+If more than one ray reach the same triangle (detail in Figure \ref{ray-tracing-2a}), then, it is labeled by the most frequent class from the $C_n$ rays (Figure \ref{ray-tracing-2b}).
+\begin{figure}[!htp]
     \centering	   
-    \caption{Ray-tracing analysis: This diagram shows the intersections of rays between the overlapped images, where the class assignment is made by choosing the most frequent class (mode) at the intersections. The colors on the right side of the picture, correspond to the pixels from different images, overlapping the same region on the mesh. To decide which class to assign, a simple mode (most frequent class) operation is used.}
+    \caption{Ray-tracing analysis: This diagram shows the intersections of rays between the overlapped images, where the class assignment is made by choosing the most frequent class (mode) at the intersections. The colors on the right side of the picture, correspond to the pixels from different images, overlapping the same region on the mesh. To decide which class to assign, a simple mode (most frequent class) operation is used. The labeling legend can be seen in Figure \ref{inputs}.}
     \vspace{6mm}
     \subfigure[]{\label{ray-tracing-2a}\includegraphics[width=0.4\textwidth]{\dropbox/phd/pics/ray-tracing/ray-tracing-thesis-03.png}}
     \subfigure[]{\label{ray-tracing-2b}\includegraphics[width=0.54\textwidth]{\dropbox/phd/pics/ray-tracing/ray-tracing-thesis-04.png}}
@@ -301,8 +353,9 @@ If more than one ray reach the same triangle (detail in Figure \ref{ray-tracing-
     \FONTE{Author's production.}
 \end{figure}
 
-The final result of 3D labeling by ray-tracing is then acquired (Figure \ref{ray-tracing-3}). Regions that have not been segmented (such as facades not perpendicular to acquisition - adjacent streets) are also treated as such during the process (dark regions in the figure - background). Other regions, although they have been labeled as background, they were a consequence of the acquisition and angle of incidence of the rays.  
-\begin{figure}[H]
+%That could be solved though the application of a simple rule such as the mode (most frequent class) or even a smarter decision rule (e.g. choose the class where the segmented image's ray had the highest accuracy during the CNN inference), but we have noticed that a simple mode operation can provide sufficient labeling.   
+The final result of 3D labeling by ray-tracing is then acquired (Figure \ref{ray-tracing-3}). Regions that have not been segmented (such as facades not perpendicular to acquisition - adjacent streets) are also treated as such during the process (dark regions in the figure - class background). Other regions, although they have been labeled as background, they were a consequence of the acquisition and angle of incidence of the rays.  
+\begin{figure}[!htp]
     \centering	   
     \caption{Ray-tracing analysis: Details of the final ray-tracing result. (Center) The most common labels from 2D images are given to the geometric feature, which are not always correctly label due to the acquisition view point.}
     \vspace{6mm}
@@ -312,3 +365,52 @@ The final result of 3D labeling by ray-tracing is then acquired (Figure \ref{ray
     \label{ray-tracing-3}
     \FONTE{Author's production.}
 \end{figure}
+
+\section{Experiments}
+Aligning with the hypotheses of this study, in this section we present details about the analysis strategy and the validation metrics adopted throughout the tests. The experiments were elaborated as much as possible on the conditions that were also imposed on the objectives.
+
+\subsection{Strategy of analysis}
+The experiments in this study were divided in 2D and 3D domains. To mitigate the influences of each dataset, or the influences of the model under each specific architectural style, it was split the 2D experiments in three different CNN trainings. First, all the six online datasets listed in Table \ref{datasets} were trained and inferred independently. Second, each knowledge reached from the respective datasets is used to test under SJC, which has a complete undefined architectural style. Third, all datasets were then put together and a new training was made under SJC (see Table \ref{training-explained}). The term \textquotedblleft independent\textquotedblright~means the inference was made using only one dataset for training or prediction. In 3D analysis, the experiments consist of permuting the point cloud density, allowing us to know how the number of points that affects the 3D labeling, and how many is actually necessary to acquire reliable geometry.
+\begin{table}[!htp]
+    \renewcommand{\arraystretch}{1.6}  
+    \caption{Experiments performed in this study.}
+    \scriptsize \centering		
+    \rowcolors{2}{white}{gray!25}
+    \begin{tabular}{L{0.5cm}L{1.1cm}L{2cm}L{1.6cm}L{7.5cm}}    
+        \toprule      
+        \textbf{\#} & \textbf{Domain}  & \textbf{Dataset} & \textbf{Inferences} & \textbf{Goal} \\ 
+        \toprule
+        1 & 2D & Independent & Independent & Evaluate the performance of the neural model according to each dataset\\      
+        2 & 2D & Independent & SJC & Evaluate the performance of the neural model according to SJC dataset, where the inferences are made six times, using each dataset knowledge separately\\
+        3 & 2D & All-together & SJC & Evaluate the performance of the neural model according to the SJC dataset, where only one inference is made, using all-together knowledge\\
+        4 & 3D & RueMonge2014 & - & Evaluate how accurate the 3D labeling is according to the point cloud density (sparse and dense), under a known dataset\\      
+        5 & 3D & SJC & - & Evaluate how accurate the 3D labeling is according to the point cloud density (sparse and dense), under an unknown dataset\\ 
+        \bottomrule
+    \end{tabular}
+    \label{training-explained}
+    \FONTE{Author's production.}
+\end{table}
+
+\subsection{Evaluation}\label{evaluation-section}
+Only two validation metrics were adopted to measure the quality of the predictions, accuracy and F1-score. In addition, this section also explains the objective function defined to the neural model, Cross-Entropy.
+
+\subsubsection{Accuracy}
+The accuracy is calculated according to a pixelwise analysis, in which the success and error rates are measured through values of True Positive (TP), True Negative (TN), False Positive (FP) and False Negative (FN), then, placed in a confusion matrix\footnote{Considering a matrix which ground truth is in $x$ and predicted in $y$, the TP is given by elements in diagonal, TN, sum of all elements except the diagonal, FP, the sum of elements in $x$ minus diagonal and, FN, the sum of elements in $y$ minus diagonal.} $M$ (more details in Annex \ref{annexB}). Finally, the accuracy is given by:
+\begin{align}
+ Accuracy &= \frac{\sum_{i=1, j=i}^n M_{ij}}{N}~,
+\end{align}
+where $n$, the number of classes, and $N$, the number of samples used. The numerator consists in the sum of all elements in diagonal.
+
+\subsubsection{Objective function}
+An optimization problem seeks to minimize a loss-function. The weight-loss consists of the error levels in which the neural network has according to an ideal of prediction that is given by the reference images. This ideal is an optimization problem which aims to be minimal, called then loss-function. In this case, the loss-function is given by the cross-entropy \cite{long2015}, a common and effective way to calculate the distance between multiple predicted and ground-truth classes, also known as multinominal logistic classification, given by:
+\begin{align}
+ Loss_{y'}(y) &= -\sum_{i}y_i'~\log~(y_i)~,
+\end{align}
+where $y_i$ is the predicted probability value for class $i$, and $y_i'$ is the ground-truth probability for that class (more about cross-entropy calculation and meaning can be found in Annex \ref{annexA}).
+
+\subsubsection{F1-Score}
+F1-Score expresses the harmonic mean of precision and recall. These are calculated values to understand how aligned the prediction is in relation to the reference object. F1-score is given by:
+\begin{align}
+ F1 &= 2 * \frac{precision * recall}{precision + recall}~, 
+\end{align}
+where $precision=TP/(TP+FP)$, and $recall=TP/(TP+FN)$. Then, both values reveal how good the segmentation was according to the correct object delineation (more details in Annex \ref{annexB}).

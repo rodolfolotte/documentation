@@ -2,7 +2,7 @@
     \section{Tools and modules used along the study}\label{apendiceA-tools}
     \begin{table}[!htb]
       \renewcommand{\arraystretch}{1.6}
-      \caption{Sources-code, softwares, libraries and its public links on Github.}
+      \caption{Sources-code, softwares, libraries and their public links on Github.}
       \scriptsize \centering	
       \rowcolors{2}{white}{gray!25}
       \begin{tabular}{L{1.8cm}|L{3.2cm}|C{1.8cm}|C{0.9cm}|C{1.4cm}|C{0.8cm}|L{2.5cm}}
@@ -43,16 +43,77 @@
 	      \textbf{Name} & \textbf{Description} & \textbf{Methodological stage} & \textbf{Language} & \textbf{Github} & \textbf{Type} & \textbf{URL}\\
 	      \toprule
 	      Image processing & Preprocessing on images to apply the Superpixel routine. The preprocessing procedures here include filtering, colormap conversion (i.e. HSV, Lab, Local Entropy), etc & Detection & C++ & rodolfolotte/image & - & \href{https://github.com/rodolfolotte/image/tree/master/processing}{\faGithub}\\	      
-	      Superpixel & Segmentation routine with numerous versions of Superpixels, for example, SLIC, SLICO, LSD and SEEDS. The routine was programmed to perform experiments involving classification of façades & Detection & C++ & rodolfolotte/gdal-segment & \faCodeFork & \href{https://github.com/rodolfolotte/gdal-segment}{\faGithub}\\ 	      
+	      Superpixel & Segmentation routine with numerous versions of Superpixels, for example, SLIC, SLICO, LSD and SEEDS. The routine was programmed to perform experiments involving classification of facades & Detection & C++ & rodolfolotte/gdal-segment & \faCodeFork & \href{https://github.com/rodolfolotte/gdal-segment}{\faGithub}\\ 	      
 	      Point cloud preprocessing & Includes point cloud preprocessing routines, such as simplification, filtering, CRF classification, etc & Reconstruction & C++ & rodolfolotte/point-cloud & - & \href{https://github.com/rodolfolotte/point-cloud}{\faGithub}\\	      
           Inputs preparation & Preparation code for neural network inputs. The code includes preparation of annotated images and creation of text files containing the paths of the images & Detection & Python & rodolfolotte/deep-learning & - & \href{https://github.com/rodolfolotte/deep-learning/tree/master/cnn-projects/inputs}{\faGithub}\\	      
           CNN & Routines responsible for the Convolutional Neural Network training, as well as the routines for the inferences & Detection & Python & rodolfolotte/deep-learning & \faCodeFork & \href{https://github.com/rodolfolotte/KittiSeg}{\faGithub}\\	      
 	      Ray-tracing & Read the camera parameters, and by the configuration of image blocks, project the segmented image onto the mesh, in a way the triangles mesh are assigned according to each class & Ray-Tracing & C++ & rodolfolotte/3d-reconstruction & - & \href{https://github.com/rodolfolotte/3d-reconstruction}{\faGithub}\\	      
 	      Evaluation & Evaluates the segmented images against ground-truth. Here, all evaluation metrics and plots can be setted up & Detection & Python & rodolfolotte/image & - & \href{https://github.com/rodolfolotte/image/tree/master/evaluation}{\faGithub}\\	      
 	      PC vizualization & Routines to visualize meshes and customized point of views, colors, etc & Reconstruction & C++ & rodolfolotte/3d-reconstruction & - & \href{https://github.com/rodolfolotte/3d-reconstruction}{\faGithub}\\ \hline
-	      Thesis & \LaTeX version of this thesis & Documentation & \LaTeX\ & rodolfolotte/documentation & - & \href{https://github.com/rodolfolotte/documentation}{\faGithub}\\ \hline
+	      Thesis & \LaTeX version of this thesis & Documentation & \LaTeX\ & rodolfolotte/doc & - & \href{https://github.com/rodolfolotte/documentation}{\faGithub}\\
 	      \bottomrule	
       \end{tabular}
       \label{tools-developed}
       \FONTE{Author's production.}
     \end{table}
+    %%exemplo: https://books.google.de/books?id=AQjmCgAAQBAJ&pg=PA36&lpg=PA36&dq=python+segmentation+statistics+parameters&source=bl&ots=o4kqBclAqV&sig=xX8oiOdu__38B8pO-fhsRNMiWR4&hl=pt-BR&sa=X&ved=0ahUKEwiVvI-C4sTVAhUCsxQKHUogDVwQ6AEIQTAD#v=onepage&q=python%20segmentation%20statistics%20parameters&f=false
+
+    % The CGAL library
+
+    %technologies that have appeared over the past few years include the stabilization of numeric arrays and processing (NumPy), the advancement continuing stabilization of a broad base of scientific algorithms (SciPy), the development of a robust interface to the R statistical modeling package (RPy), and array and volume visualization (Matplotlib). 
+
+    %...we have found that the use of Python as the core programming language for our methodology provides significantly better control over most aspects of an experiment than is possible with existing packages, including commercial packages.
+
+    
+    
+
+    %Hough_normal_estimation
+    %Hough_normal
+    % @article{Boulch:2012:FRN:2346796.2346811,
+    %  author = {Boulch, Alexandre and Marlet, Renaud},
+    %  title = {Fast and Robust Normal Estimation for Point Clouds with Sharp Features},
+    %  journal = {Comp. Graph. Forum},
+    %  issue_date = {August 2012},
+    %  volume = {31},
+    %  number = {5},
+    %  month = aug,
+    %  year = {2012},
+    %  issn = {0167-7055},
+    %  pages = {1765--1774},
+    %  numpages = {10},
+    %  url = {http://dx.doi.org/10.1111/j.1467-8659.2012.03181.x},
+    %  doi = {10.1111/j.1467-8659.2012.03181.x},
+    %  acmid = {2346811},
+    %  publisher = {John Wiley \& Sons, Inc.},
+    %  address = {New York, NY, USA},
+    %  keywords = {I.3.5 [Computer Graphics]: Computational Geometry and Object Modeling\&\#x2014;}
+
+    % nanoflann
+    % @misc{blanco2014nanoflann,
+    %   title        = {nanoflann: a {C}++ header-only fork of {FLANN}, a library for Nearest Neighbor ({NN}) wih KD-trees},
+    %   author       = {Blanco, Jose Luis and Rai, Pranjal Kumar},
+    %   howpublished = {\url{https://github.com/jlblancoc/nanoflann}},
+    %   year         = {2014}
+    % }
+
+    % \section{Source-code related to this thesis}
+    % As we were benefit with a lot of open-source and free implementations from inumerous institutes, faculties, and foruns, we have also a pleasure to describe and share each piece of our work. In order to do that, we have use the Github platform \cite{github}, which easily provide all support to make it public, shareable, \footnote{Too see how to cite a respective source-code, we recommend the follow reading: https://guides.github.com/activities/citable-code/.}. Following the workflow presented in the Figure \ref{methodology}, the Table \ref{source-code} gives the source-code links of each respective step. 
+    % \begin{table}\label{source-code}
+    %   \renewcommand{\arraystretch}{1.1}
+    %   \caption{Sources-code methodology and its public links on Github.}
+    %   \footnotesize \centering		
+    %    \begin{tabular}{l|C{2.6cm}|C{2.0cm}|C{0.6cm}|C{1.5cm}|C{1.8cm}|C{0.5cm}}
+    % 	  \hline \hline
+    % 	  \textbf{Name} & \textbf{Description}  & \textbf{Type} & \textbf{Version} & \textbf{Purpose} & \textbf{URL} & \textbf{Reference} \\ \hline
+    % 	  SciPy & Python-based for mathematics, science, and engineering & Python module & & - & https://www.scipy.org/ & - \\ \hline
+    % 	  NumPy & Scientific computing & SciPy module & & - & http://www.numpy.org/ & - \\ \hline	  			
+    % 	  Matplotlib & Comprehensive 2D Plotting & SciPy module & & - & http://matlibplot.sourceforce.net & \cite{hunter2007} \\ \hline
+    % 	  SkLearn & Machine Learning & Python module & 0.18.1 & - & http://scikit-learn.org/stable/ & - \\ \hline
+    % 	  PyLSD & Line Segment Detector & Library & - & - & https://github.com/primetang/pylsd & - \\ \hline
+    % 	  cv2 & OpenCV Image Processing & Library & 3.2.0.8 & & http://opencv.org/ & -\\ \hline	
+    % 	  CGAL &  Computational Geometry Algorithms & C++ Library & 4.10 & & http://www.cgal.org/ & \cite{cgal410} \\ \hline
+    % 	  CloudCompare & 3D point cloud and mesh processing & IDE & 2.9 & Visual & http://www.cloudcompare.org/ & - \\ \hline
+    % 	  MeshLab & 3D point cloud and mesh processing & IDE & 2.9 & Visual & http://www.meshlab.net/ & \cite{meshlab} \\ \hline 	  
+    % 	  \hline			
+    %   \end{tabular}			
+    % \end{table}
